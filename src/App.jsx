@@ -6,6 +6,8 @@ import ProtectedRoute from './Shared/Components/ProtectedRoute'
 import Header from './Shared/Components/Header'
 import { store } from '../store/store'
 import { ToastContainer } from 'react-toastify'
+import Pacientes from './Pages/Pacientes/Pacientes'
+import DetallePaciente from './Pages/Pacientes/DetallePaciente'
 
 
 function App() {
@@ -21,11 +23,11 @@ function App() {
             {/* Rutas públicas */}
             {/* <Route path="/" element={<Login />} /> */}
             {/* <Route path="/registro" element={<Registro />} /> */}
+            <Route path="/pacientes" element={<Pacientes />} />
+            <Route path="/pacientes/:id" element={<DetallePaciente />} />
 
             {/* Rutas protegidas */}
             <Route element={<ProtectedRoute />}>
-              {/* Aqui irian tus componentes: */}
-              {/* <Route path="/pacientes" element={<Pacientes />} /> */}
               {/* <Route path="/usuarios" element={<Usuarios />} /> */}
             </Route>
 

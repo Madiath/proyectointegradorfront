@@ -1,8 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
-//EJ: import peliculasSlice  from "../features/peliculasSlice";
+import pacientesReducer from "../features/pacientesSlice";
 
 export const store = configureStore({
     reducer: {
-      //Ej:  peliculas: peliculasSlice
+        pacientes: pacientesReducer,
     }
 })
