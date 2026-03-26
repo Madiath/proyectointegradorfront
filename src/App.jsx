@@ -1,8 +1,9 @@
 import { Provider } from 'react-redux'
 import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import ProtectedRoute from './Components/ProtectedRoute'
+import { BrowserRouter, Route, Routes } from 'react-router'
+import ProtectedRoute from './Shared/Components/ProtectedRoute'
+import Header from './Shared/Components/Header'
 import { store } from '../store/store'
 import { ToastContainer } from 'react-toastify'
 
@@ -12,20 +13,24 @@ function App() {
     <Provider store={store}>
       <BrowserRouter>
         <ToastContainer />
-        
-        <Routes>
+        <Header />
 
-          {/* Rutas públicas */}
-          {/* <Route path="/" element={<Login />} /> */}
-          {/* <Route path="/registro" element={<Registro />} /> */}
+        <main className="container-fluid p-4">
+          <Routes>
 
-          {/* Rutas protegidas */}
-          <Route element={<ProtectedRoute />}>
-            {/* Aqui iria el resto de rutas una ves pasado el login Ejemplo: */}
-            {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-          </Route>
+            {/* Rutas públicas */}
+            {/* <Route path="/" element={<Login />} /> */}
+            {/* <Route path="/registro" element={<Registro />} /> */}
 
-        </Routes>
+            {/* Rutas protegidas */}
+            <Route element={<ProtectedRoute />}>
+              {/* Aqui irian tus componentes: */}
+              {/* <Route path="/pacientes" element={<Pacientes />} /> */}
+              {/* <Route path="/usuarios" element={<Usuarios />} /> */}
+            </Route>
+
+          </Routes>
+        </main>
 
       </BrowserRouter>
     </Provider>
