@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
-import {loginUsuario}  from "../../Services/usuarioService";
+import { loginUsuario } from "../../Services/usuarioService";
 import '../../Shared/CSS/style.css' // tu css
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 
 const Login = () => {
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false)
 
 
   const [form, setForm] = useState({
@@ -23,29 +24,31 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-
+    setLoading(true)
     console.log(form)
 
-  try {
-    const data = await loginUsuario(form)
+    try {
+      const data = await loginUsuario(form)
 
-    console.log("Login correcto:", data)
+      console.log("Login correcto:", data)
 
-    //Guardar token y nombre
-    localStorage.setItem("token", data.token)
-    localStorage.setItem("usuario", data.email)
-    //Redirigir
-    navigate("/pacientes")
+      //Guardar token y nombre
+      localStorage.setItem("token", data.token)
+      localStorage.setItem("usuario", data.email)
+      //Redirigir
+      navigate("/pacientes")
 
-  } catch (error) {
-    console.error("Error:", error.message)
-    toast.error(error.message);
-  }
+    } catch (error) {
+      console.error("Error:", error.message)
+      toast.error(error.message);
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <section className="section-login">
-      
+
       <div className="logo-container">
         <div className="logo"></div>
         <h1>Iniciar Sesión</h1>
@@ -77,8 +80,12 @@ const Login = () => {
           </div>
 
           <div className="btn-container">
-            <button type="submit" className="login-btn primary-button">
-              Iniciar Sesión
+            <button
+              type="submit"
+              className="login-btn primary-button"
+              disabled={loading}
+            >
+              {loading ? "Cargando..." : "Iniciar Sesión"}
             </button>
           </div>
 

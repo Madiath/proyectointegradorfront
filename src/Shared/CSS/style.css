@@ -26,28 +26,31 @@
     bottom: 0;
 }
 
-    /* Crear el pseudo-elemento pero sin ocupar espacio */
-    .add-btn::after {
-        content: 'Agregar paciente';
-        width: 0;
-        color: white;
-        text-decoration: none !important;
-        overflow: hidden;
-        opacity: 0;
-        transition: width 0.5s ease-in-out, opacity 0.5s ease-in-out;
-        white-space: nowrap; /* Evita que el texto se corte */
-    }
+.add-btn::after {
+    content: 'Agregar paciente';
+    width: 0;
+    color: white;
+    text-decoration: none !important;
+    overflow: hidden;
+    opacity: 0;
+    transition: width 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    white-space: nowrap;
+}
 
-    /* Mostrar el texto en hover */
-    .add-btn:hover::after {
-        width: auto;
-        opacity: 1;
-        margin-left: 0.5rem; /* Espacio entre el icono y el texto */
-    }
+.add-btn:hover::after {
+    width: auto;
+    opacity: 1;
+    margin-left: 0.5rem;
+}
+
+/* ========================= */
+/* BOTONES (CORREGIDO) */
+/* ========================= */
 
 .primary-button {
     background: var(--bg-primary-btn);
     color: white;
+    transition: all 0.15s ease;
 }
 
 .primary-button, .secundary-button {
@@ -59,6 +62,27 @@
     cursor: pointer;
 }
 
+/* Hover */
+.primary-button:hover {
+    transform: scale(1.05);
+}
+
+/* Click */
+.primary-button:active {
+    transform: scale(0.95);
+    filter: brightness(0.8);
+    box-shadow: inset 0px 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Disabled */
+.primary-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(30%);
+    transform: none;
+    box-shadow: none;
+}
+
 .secundary-button {
     background-color: white;
     color: black;
@@ -66,16 +90,21 @@
     transition: all 0.3s;
 }
 
-    .secundary-button:hover {
-        background-color: black;
-        color: white;
-    }
-
-
-/* LOGIN SCREEN */
-
-.section-login {
+.secundary-button:hover {
+    background-color: black;
+    color: white;
 }
+
+.secundary-button:active {
+    transform: scale(0.95);
+    box-shadow: inset 0px 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================= */
+/* LOGIN SCREEN */
+/* ========================= */
+
+.section-login {}
 
 .logo-container {
     width: 100%;
@@ -108,12 +137,12 @@
     box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
 }
 
-    .form-container form {
-        display: flex;
-        width: 100%;
-        flex-direction: column;
-        gap: 1rem;
-    }
+.form-container form {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 1rem;
+}
 
 .input-container {
     display: flex;
@@ -138,12 +167,18 @@
     border: 1px solid #0a45de46;
     box-shadow: var(--box-shadow-sm);
     transition: all 0.3s ease-in-out;
+    background-color: white;
+    color: black;
 }
 
-    .input-container input:focus {
-        outline: none;
-        border: 1px solid #0a45de;
-    }
+.input-container input:focus {
+    outline: none;
+    border: 1px solid #0a45de;
+}
+
+.input-container input::placeholder {
+    color: #999;
+}
 
 .btn-container {
     display: flex;
@@ -154,519 +189,9 @@
 .login-btn {
     max-width: 15rem;
 }
-/* DASHBOARD SCREEN */
-.dashboard-container {
-    width: 75vw;
-    margin: 0 auto;
-    position: relative;
-    min-height: 82vh;
-}
 
-
-
-.form-home {
-    display: flex;
-    gap: 2rem;
-}
-
-.search-container {
-    display: flex;
-    gap: 2rem;
-    align-items: center;
-}
-
-.button-container {
-    background: linear-gradient(90deg, rgb(0, 0, 0) 0%, rgb(50, 48, 48) 100%);
-    padding: 1.2rem;
-    padding-inline: 1.3rem;
-    border-radius: var(--border-ra-btn);
-    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
-    cursor: pointer;
-}
-
-.input-dashboard {
-    width: 25rem;
-}
-
-.search-container input {
-    width: 100%;
-}
-
-.table-container {
-    margin-top: 4rem;
-}
-
-.header-table {
-    display: grid;
-    grid-template-columns: repeat(3, 12rem);
-    margin-bottom: 1rem;
-    padding-left: 1rem;
-}
-
-.buttons-row {
-    display: flex;
-    gap: 2rem;
-    align-items: center;
-}
-
-.btn_delate {
-    opacity: 0;
-    transition: 0.3s;
-    cursor: pointer;
-}
-
-.table-row:hover .btn_delate {
-    opacity: 1;
-}
-
-.header-table p {
-    font-weight: 500;
-    font-size: 1rem;
-    opacity: 0.7;
-}
-
-.add-container button {
-    width: 100%;
-    padding-inline: 2rem;
-    margin: 0;
-}
-
-.body-table {
-    margin-top: 2rem;
-}
-
-.table-row {
-    display: grid;
-    grid-template-columns: repeat(6, 13rem);
-    padding-block: 1.5rem;
-    padding-left: 1rem;
-    transition: all .3s;
-    align-items: center;
-}
-
-    .table-row:hover {
-        box-shadow: var(--box-shadow-sm);
-        transform: scale(1.03);
-    }
-
-.buttons-row a {
-    font-weight: 500;
-    position: relative;
-    color: #0a45de
-}
-
-    .buttons-row a:hover {
-    }
-
-    .buttons-row a::before {
-        content: "";
-        position: absolute;
-        bottom: -10px;
-        left: 0;
-        width: 0%;
-        height: 3px;
-        background-color: #0a45de;
-        transition: all .5s
-    }
-
-    .buttons-row a:hover::before {
-        left: 0;
-        width: 100%;
-    }
-
-.btn-search {
-    border-radius: var(--border-ra-btn);
-    background: var(--bg-primary-btn);
-    padding: 1rem;
-    color: white;
-    border: 0px;
-    transition: 0.3s;
-    cursor: pointer;
-}
-
-    .btn-search:hover {
-        transform: scale(1.2);
-    }
-
-.trash svg {
-    transition: .3s;
-}
-
-.trash:hover svg {
-    transform: scale(1.2)
-}
-
-.btn_delete {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-
-}
-
-.text-delate {
-    color: red;
-    opacity: 0;
-    transition: opacity 0.3s ease-in;
-    font-weight: 800;
-}
-
-.btn_delete:hover .text-delate {
-    opacity: 1;
-}
-
-.search-btn-container {
-    margin-top: 25px;
-}
-/* CLINICA SCREEN */
-.history-section {
-    padding: 50px;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.header-history {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.back-container {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-}
-
-    .back-container a {
-        color: black;
-        opacity: 0;
-        transition: all 0.3s;
-    }
-
-    .back-container:hover a {
-        opacity: 1;
-    }
-
-.header-history p {
-    font-weight: 600;
-    font-size: 1.2rem;
-    text-align: end;
-}
-
-.datePatient-container {
-    box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    align-items: center;
-}
-
-    .datePatient-container h2 {
-        text-align: center;
-        font-size: 2rem;
-    }
-
-ul {
-    list-style: none;
-}
-
-.datePatient-container ul {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-}
-
-.date span {
-    font-weight: 600;
-}
-
-hr {
-    width: 10%;
-    border: 2px solid black;
-    border-radius: 5px;
-    margin-top: -1.5rem;
-}
-
-.history-container {
-    box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    justify-content: center;
-    align-items: center;
-}
-
-    .history-container ul {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .history-container h4 {
-        font-size: 1.2rem;
-    }
-
-        .history-container h4 span {
-            font-weight: 400;
-        }
-
-.buttons-container {
-    display: flex;
-    gap: 4rem;
-    justify-content: center;
-}
-
-.button-clinical {
-    margin-inline: 0px;
-}
-
-/*CREATE PACIENT*/
-
-.create-container{
-    width: 1320px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-    position: relative;
-}
-.form-create {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-.btn-create {
-    font-size: 1.2rem;
-    padding: 1.2rem;
-    border: none;
-    padding-inline: 3rem;
-    border-radius: var(--border-ra-btn);
-    cursor: pointer;
-    background: var(--bg-primary-btn);
-    color: white;
-    box-shadow: var(--box-shadow-sm);
-    transition: all .3s
-}
-.btn-create:hover {
-    transform: scale(1.1);
-    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
-}
-.back-btn {
-    padding: 1rem;
-    background: var(--bg-primary-btn);
-    box-shadow: var(--box-shadow-sm);
-    position: absolute;
-    color: white;
-    border-radius: 30px;
-    left: 0;
-    display: flex;
-    align-items: center;
-    transition: all .3s;
-}
-.back-btn::after, .back-btn2::after{
-    content: 'Volver';
-    display: inline-block;
-    color: white;
-    text-decoration: none !important;
-    overflow: hidden;
-    opacity: 0;
-    max-width: 0; /* Controla el ancho en hover */
-    transition: max-width 0.2s ease-in-out, opacity 0.3s ease-in-out;
-    white-space: nowrap; /* Evita cortes en el texto */
-}
-.back-btn2 {
-    padding: 1rem;
-    background: var(--bg-primary-btn);
-    box-shadow: var(--box-shadow-sm);
-    color: white;
-    border-radius: 30px;
-    display: flex;
-    align-items: center;
-    transition: all .3s;
-}
-
-.back-btn:hover::after, .back-btn2:hover::after {
-    max-width: 50px; /* Ajusta el tama�o seg�n la longitud de "Volver" */
-    opacity: 1;
-    margin-left: 0.5rem; /* Espacio entre el icono y el texto */
-}
-.header-create{
-    margin-bottom: 2rem;
-    text-align: center;
-}
-.detail-section{
-    width: 75vw;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    justify-content: center;
-    box-shadow: var(--box-shadow-sm);
-    padding-block: 2rem;
-    padding-inline: 10rem;
-    align-content: center;
-}
-.top, .middle {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-}
-.top-h, .middle-h {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-}
-.title-detail {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-.title-detail2 {
-    text-align: center;
-    margin-block: 2rem;
-}
-.detail-content-container span{
-    font-weight: 600;
-    font-size: 1.2rem;
-}
-.body-detail{
-    width: 75vw;
-    height: 100vh;
-    position: relative;
-    margin: 0 auto;
-}
-.back-detail{
-    top: 8rem;
-}
-
-.link-registrarse {
-    color: #A0AEC0; /* Gris claro */
-    font-size: 12px; /* Tama�o peque�o */
-    text-align: center;
-    display: block;
-    margin-top: 20px;
-}
-.message-error {
-    text-align: center;
-    padding-top: 2rem;
-    font-size: 1.2rem;
-}
-.btn-addHistory{
-    background: var(--bg-primary-btn);
-    padding: 1.2rem;
-    border-radius: var(--border-ra-btn);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    text-align: center;
-    margin-inline: 43%;
-    margin-top: 1rem;
-    transition: all .3s;
-    box-shadow: var(--box-shadow-sm);
-}
-.btn-addHistory:hover {
-    transform: scale(1.1);
-    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px
-}
-.form-control:focus{
-    box-shadow: none !important;
-}
-
-.historial-section {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    padding-block: 2rem;
-    padding-inline: 5rem;
-}
-
-
-@media (min-width: 768px) and (max-width: 1199px) {
-    .dashboard-container {
-        width: 90vw;
-        margin: 0 auto;
-        position: relative;
-        min-height: 82vh;
-    }
-
-    .table-row {
-        display: grid;
-        grid-template-columns: repeat(6, 8rem);
-        padding-block: 1.5rem;
-        padding-left: 1rem;
-        transition: all .3s;
-        align-items: center;
-    }
-    .detail-section{
-        width: 90vw;
-    }
-    .body-detail {
-        width: 90vw;
-        height: 100vh;
-        position: relative;
-        margin: 0 auto;
-    }
-}
-
-.btn-edit{
-    color: black;
-    padding: 1rem;
-    border: solid 1px black;
-    border-radius: var(--border-ra-input);
-    transition: all .3s;
-}
-.btn-edit:hover{
-    transform: scale(1.1);
-    background: black;
-    color: white;
-}
-.btn-view {
-    background: var(--bg-primary-btn);
-    color: white;
-    border: none;
-    border-radius: var(--border-ra-input);
-    padding: 1.1rem;
-    transition: all .3s;
-}
-.btn-view:hover{
-    transform: scale(1.1);
-}
-.btn-container{
-    width: 100%;
-    display: flex;
-    gap: 2rem;
-    margin-top: 2rem;
-}
-.msg-null{
-    text-align: center;
-}
-.evolution-container{
-    box-shadow: var(--box-shadow-sm);
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    margin-top: 2rem;
-}
-.header-evolution, .content-evolution {
-    display: grid;
-    grid-template-columns: 10vw 25vw;
-    justify-content: center;
-    align-items: center;
-    align-content: center
-}
-.content-evolution{
-    margin-top: 0.5rem;
-    font-weight: 600;
-}
-.content-evolution p{
-    margin-bottom: 0.5rem;
-}
-
-.input-container input {
-    background-color: white;
-    color: black;
-}
-
-.input-container input::placeholder {
-    color: #999;
+.login-btn:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
