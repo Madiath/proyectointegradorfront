@@ -8,6 +8,9 @@ import { store } from '../store/store'
 import { ToastContainer } from 'react-toastify'
 import Pacientes from './Pages/Pacientes/Pacientes'
 import DetallePaciente from './Pages/Pacientes/DetallePaciente'
+import FormularioHistorialClinico from "./Pages/Pacientes/HistorialesClinicos/FormularioHistorialClinico";
+import FormularioEditarHistorialClinico from "./Pages/Pacientes/HistorialesClinicos/FormularioEditarHistorialClinico";
+import DetalleHistorialClinico from "./Pages/Pacientes/HistorialesClinicos/DetalleHistorialClinico";
 
 
 function App() {
@@ -25,7 +28,9 @@ function App() {
             {/* <Route path="/registro" element={<Registro />} /> */}
             <Route path="/pacientes" element={<Pacientes />} />
             <Route path="/pacientes/:id" element={<DetallePaciente />} />
-
+            <Route path="/pacientes/:id/historial" element={<DetalleHistorialClinico />} />
+            <Route path="/pacientes/:id/historial/nuevo" element={<FormularioHistorialClinico />} />
+            <Route path="/pacientes/:id/historial/editar" element={<FormularioEditarHistorialClinico />} />
             {/* Rutas protegidas */}
             <Route element={<ProtectedRoute />}>
               {/* <Route path="/usuarios" element={<Usuarios />} /> */}
