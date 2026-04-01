@@ -21,7 +21,7 @@ const DetalleUsuario = () => {
         setMostrarEditar(false)
         dispatch(fetchDetalleUsuario(id))
     }
-
+//
     const handleEliminar = () => {
         dispatch(eliminarUsuarioLocal(detalle.id))
         navigate('/usuarios')
