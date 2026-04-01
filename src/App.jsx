@@ -8,6 +8,8 @@ import { store } from '../store/store'
 import { ToastContainer } from 'react-toastify'
 import Pacientes from './Pages/Pacientes/Pacientes'
 import DetallePaciente from './Pages/Pacientes/DetallePaciente'
+import Usuarios from './Pages/Usuarios/Usuarios'
+import DetalleUsuario from './Pages/Usuarios/DetalleUsuario'
 import Login from './Pages/Usuarios/Login'
 
 function App() {
@@ -30,6 +32,8 @@ function App() {
             <Route element={<Layout />}>
               <Route path="/pacientes" element={<Pacientes />} />
               <Route path="/pacientes/:id" element={<DetallePaciente />} />
+              <Route path="/usuarios" element={<Usuarios />} />
+              <Route path="/usuarios/:id" element={<DetalleUsuario />} />
             </Route>
 
           </Route>
