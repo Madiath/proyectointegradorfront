@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchDetallePaciente, limpiarDetalle, eliminarPacienteLocal } from '../../../features/pacientesSlice'
 import FormularioEditar from './FormularioEditar'
 
+import { getHistorialClinico } from '../../Services/historialClinicoService'
+
 const DetallePaciente = () => {
     const { id } = useParams()
     const navigate = useNavigate()
@@ -12,10 +14,26 @@ const DetallePaciente = () => {
     const [mostrarEditar, setMostrarEditar] = useState(false)
     const [mostrarConfirmarEliminar, setMostrarConfirmarEliminar] = useState(false)
 
+    const [tieneHistorial, setTieneHistorial] = useState(false)
+
     useEffect(() => {
         dispatch(fetchDetallePaciente(id))
         return () => dispatch(limpiarDetalle())
     }, [id])
+
+
+    useEffect(() => {
+    const cargarHistorial = async () => {
+        try {
+            const data = await getHistorialClinico(id)
+            setTieneHistorial(!!data)
+        } catch {
+            setTieneHistorial(false)
+        }
+    }
+
+    cargarHistorial()
+}, [id])
 
     const handleEditarCerrado = () => {
         setMostrarEditar(false)
@@ -144,15 +162,39 @@ const DetallePaciente = () => {
             </div>
 
             {/* Historia clínica */}
-            <div className="card shadow-sm">
-                <div className="card-header fw-semibold" style={{ backgroundColor: '#f0f0f0' }}>
-                    Historia clínica
-                </div>
-                <div className="card-body">
-                    <p className="text-muted mb-1" style={{ fontSize: '0.8rem' }}>Patología</p>
-                    <p className="mb-0">{detalle.patologia || 'Sin patología registrada'}</p>
-                </div>
-            </div>
+<div className="card shadow-sm">
+    <div className="card-header fw-semibold" style={{ backgroundColor: '#f0f0f0' }}>
+        Historia clínica
+    </div>
+    <div className="card-body">
+       
+
+      {tieneHistorial ? (
+    <div className="d-flex gap-2">
+        <button
+            className="btn btn-secondary"
+            onClick={() => navigate(`/pacientes/${id}/historial`)}
+        >
+            Ver historial
+        </button>
+
+        <button
+            className="btn btn-warning"
+            onClick={() => navigate(`/pacientes/${id}/historial/editar`)}
+        >
+            Editar historial
+        </button>
+    </div>
+) : (
+    <button
+        className="btn btn-primary"
+        onClick={() => navigate(`/pacientes/${id}/historial/nuevo`)}
+    >
+        Agregar historial
+    </button>
+)}
+    </div>
+</div>
         </>
     )
 }
