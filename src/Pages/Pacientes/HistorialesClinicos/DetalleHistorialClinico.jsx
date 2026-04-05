@@ -86,6 +86,15 @@ const DetalleHistorialClinico = () => {
             <p>{historial.tratamiento}</p>
           </div>
 
+          <div className="mt-3">
+         <Link
+        to={`/pacientes/${id}/evoluciones`}
+         className="btn btn-primary"
+    >
+    Evoluciones
+  </Link>
+</div>
+
         
         </div>
       )}
