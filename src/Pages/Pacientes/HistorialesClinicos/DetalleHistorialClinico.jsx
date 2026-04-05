@@ -86,21 +86,7 @@ const DetalleHistorialClinico = () => {
             <p>{historial.tratamiento}</p>
           </div>
 
-          <div className="d-flex gap-2">
-            <Link
-              to={`/pacientes/${id}/historial/editar`}
-              className="btn btn-warning"
-            >
-              Editar
-            </Link>
-
-            <Link
-              to={`/pacientes/${id}/historial/nuevo`}
-              className="btn btn-primary"
-            >
-              Agregar
-            </Link>
-          </div>
+        
         </div>
       )}
     </div>

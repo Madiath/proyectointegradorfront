@@ -8,7 +8,8 @@ import { store } from '../store/store'
 import { ToastContainer } from 'react-toastify'
 import Pacientes from './Pages/Pacientes/Pacientes'
 import DetallePaciente from './Pages/Pacientes/DetallePaciente'
-import Login from './Pages/Usuarios/Login'import FormularioHistorialClinico from "./Pages/Pacientes/HistorialesClinicos/FormularioHistorialClinico";
+import Login from './Pages/Usuarios/Login'
+import FormularioHistorialClinico from "./Pages/Pacientes/HistorialesClinicos/FormularioHistorialClinico";
 import FormularioEditarHistorialClinico from "./Pages/Pacientes/HistorialesClinicos/FormularioEditarHistorialClinico";
 import DetalleHistorialClinico from "./Pages/Pacientes/HistorialesClinicos/DetalleHistorialClinico";
 
