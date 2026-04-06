@@ -14,6 +14,7 @@ import FormularioEditarHistorialClinico from "./Pages/Pacientes/HistorialesClini
 import DetalleHistorialClinico from "./Pages/Pacientes/HistorialesClinicos/DetalleHistorialClinico";
 import ListarEvolucion from "./Pages/Pacientes/HistorialesClinicos/Evoluciones/ListarEvolucion";
 import FormularioEvolucion from "./Pages/Pacientes/HistorialesClinicos/Evoluciones/FormularioEvolucion";
+import FormularioEditarEvolucion from "./Pages/Pacientes/HistorialesClinicos/Evoluciones/FormularioEditarEvolucion";
 
 
 
@@ -30,23 +31,28 @@ function App() {
           
           {/* Ruta públicas */}
           <Route path="/login" element={<Login />} />
+
             <Route path="/pacientes/:id/historial" element={<DetalleHistorialClinico />} />
             <Route path="/pacientes/:id/historial/nuevo" element={<FormularioHistorialClinico />} />
             <Route path="/pacientes/:id/historial/editar" element={<FormularioEditarHistorialClinico />} />
+
             <Route path="/pacientes/:id/evoluciones" element={<ListarEvolucion />} />
             <Route path="/pacientes/:id/evoluciones/nueva" element={<FormularioEvolucion />} />
+            <Route path="/pacientes/:idPaciente/evoluciones/:idEvolucion/editar"element={<FormularioEditarEvolucion />} />
           {/* Rutas protegidas */}
           <Route element={<ProtectedRoute />}>
             {/* Layout SOLO para usuarios logueados */}
             <Route element={<Layout />}>
-            <Route path="/pacientes" element={<Pacientes />} />
-              <Route path="/pacientes/:id" element={<DetallePaciente />} />
+            
               
             </Route>
+            
 
             
 
           </Route>
+          <Route path="/pacientes" element={<Pacientes />} />
+              <Route path="/pacientes/:id" element={<DetallePaciente />} />
 
         </Routes>
 

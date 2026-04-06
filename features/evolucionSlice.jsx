@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   getEvolucionesPorPaciente,
-  altaEvolucion
+  altaEvolucion,
+  editarEvolucion
 } from "../src/Services/evolucionService";
 
 export const fetchEvolucionesPorPaciente = createAsyncThunk(
@@ -25,6 +26,19 @@ export const crearEvolucion = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.mensaje || "Error al registrar evolución"
+      );
+    }
+  }
+);
+
+export const actualizarEvolucion = createAsyncThunk(
+  "evolucion/actualizarEvolucion",
+  async ({ id, evolucionDto }, thunkAPI) => {
+    try {
+      return await editarEvolucion(id, evolucionDto);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.mensaje || "Error al editar evolución"
       );
     }
   }
@@ -66,9 +80,25 @@ const evolucionSlice = createSlice({
       })
       .addCase(crearEvolucion.fulfilled, (state, action) => {
         state.loading = false;
-        state.mensaje = action.payload?.mensaje || "Evolución registrada correctamente.";
+        state.mensaje =
+          action.payload?.mensaje || "Evolución registrada correctamente.";
       })
       .addCase(crearEvolucion.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      .addCase(actualizarEvolucion.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.mensaje = "";
+      })
+      .addCase(actualizarEvolucion.fulfilled, (state, action) => {
+        state.loading = false;
+        state.mensaje =
+          action.payload?.mensaje || "Evolución actualizada correctamente.";
+      })
+      .addCase(actualizarEvolucion.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

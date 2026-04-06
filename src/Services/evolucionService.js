@@ -11,3 +11,8 @@ export const altaEvolucion = async (evolucion) => {
   const response = await axios.post(API_URL, evolucion);
   return response.data;
 };
+
+export const editarEvolucion = async (id, evolucion) => {
+  const response = await axios.put(`${API_URL}/${id}`, evolucion);
+  return response.data;
+};

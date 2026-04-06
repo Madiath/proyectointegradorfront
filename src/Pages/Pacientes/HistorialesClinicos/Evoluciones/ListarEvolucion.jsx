@@ -53,17 +53,28 @@ const ListaEvoluciones = () => {
           <h3 className="mb-4">Lista de evoluciones</h3>
 
           {evoluciones.map((evolucion, index) => (
-            <div key={index} className="mb-4 border-bottom pb-3">
+            <div key={evolucion.id || index} className="mb-4 border-bottom pb-3">
               <div className="mb-2">
                 <strong>Fecha:</strong>
                 <p className="mb-1">
-                  {new Date(evolucion.fecha).toLocaleString()}
+                  {evolucion.fecha
+                    ? new Date(evolucion.fecha).toLocaleString()
+                    : "Sin fecha"}
                 </p>
               </div>
 
               <div className="mb-2">
                 <strong>Descripción de la evolución:</strong>
                 <p className="mb-1">{evolucion.descripcionEvolucion}</p>
+              </div>
+
+              <div className="d-flex gap-2 mt-2">
+                <Link
+                  to={`/pacientes/${id}/evoluciones/${evolucion.id}/editar`}
+                  className="btn btn-warning btn-sm"
+                >
+                  Editar
+                </Link>
               </div>
             </div>
           ))}
