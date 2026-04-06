@@ -9,6 +9,7 @@ import { ToastContainer } from 'react-toastify'
 import Pacientes from './Pages/Pacientes/Pacientes'
 import DetallePaciente from './Pages/Pacientes/DetallePaciente'
 import Login from './Pages/Usuarios/Login'
+import Mfa from './Pages/Usuarios/Mfa'
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
           
           {/* Ruta públicas */}
           <Route path="/login" element={<Login />} />
-
+          <Route path="/authsecure" element={<Mfa />}/>
           {/* Rutas protegidas */}
           <Route element={<ProtectedRoute />}>
             {/* Layout SOLO para usuarios logueados */}

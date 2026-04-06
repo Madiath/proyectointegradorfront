@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { loginUsuario } from "../../Services/usuarioService";
+import { loginUsuario, primerPasoMfa } from "../../Services/usuarioService";
 import '../../Shared/CSS/style.css' // tu css
-import { useNavigate } from 'react-router';
+import { data, useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 
 const Login = () => {
@@ -28,19 +28,23 @@ const Login = () => {
     console.log(form)
 
     try {
-      const data = await loginUsuario(form)
+      const dataLogin = await loginUsuario(form)
 
-      console.log("Login correcto:", data)
+      console.log("Login correcto:", dataLogin)
 
-      //Guardar token y nombre
-      localStorage.setItem("token", data.token)
-      localStorage.setItem("usuario", data.email)
+      //Guardar nombre
+      localStorage.setItem("usuario", dataLogin.email)
+
+      const dataMfa = await primerPasoMfa({ email: dataLogin.email });
+
+      console.log("MFA paso 1 correcto:", dataMfa)
+
       //Redirigir
-      navigate("/pacientes")
+      navigate("/authsecure")
 
     } catch (error) {
-      console.error("Error:", error.message)
-      toast.error(error.message);
+      const errorMsg = error.response?.data?.mensaje || error.message;
+      toast.error(errorMsg);
     } finally {
       setLoading(false)
     }
@@ -88,11 +92,6 @@ const Login = () => {
               {loading ? "Cargando..." : "Iniciar Sesión"}
             </button>
           </div>
-
-          <div className="link-registrarse">
-            <a href="/registro">¿No tienes cuenta? Crea una</a>
-          </div>
-
         </form>
       </article>
 
