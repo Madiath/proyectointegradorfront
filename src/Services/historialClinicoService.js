@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://localhost:7128/api/HistorialClinico";
+const API_URL = "http://localhost:5237/api/HistorialClinico";
 
 export const getHistorialClinico = async (idPaciente) => {
   const response = await axios.get(`${API_URL}/${idPaciente}`);

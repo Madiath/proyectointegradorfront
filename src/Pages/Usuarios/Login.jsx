@@ -25,16 +25,14 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    console.log(form)
 
     try {
       const data = await loginUsuario(form)
 
-      console.log("Login correcto:", data)
-
       //Guardar token y nombre
       localStorage.setItem("token", data.token)
       localStorage.setItem("usuario", data.email)
+      localStorage.setItem("rol", data.rol)
       //Redirigir
       navigate("/pacientes")
 

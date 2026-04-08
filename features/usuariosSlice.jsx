@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { listarUsuarios, getUsuario, altaUsuario, editarUsuario } from '../src/Services/usuarioService'
+import { listarUsuarios, getUsuario, altaUsuario, editarUsuario, eliminarUsuario } from '../src/Services/usuarioService'
 
 export const fetchUsuarios = createAsyncThunk(
     'usuarios/fetchUsuarios',
@@ -49,12 +49,23 @@ export const actualizarUsuario = createAsyncThunk(
     }
 )
 
+export const deshabilitarUsuario = createAsyncThunk(
+    'usuarios/deshabilitarUsuario',
+    async (id, { rejectWithValue }) => {
+        try {
+            const res = await eliminarUsuario(id)
+            return res.data
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.mensaje || 'Error al eliminar usuario')
+        }
+    }
+)
+
 const usuariosSlice = createSlice({
     name: 'usuarios',
     initialState: {
         lista: [],
         totalBackend: 0,
-        eliminados: JSON.parse(localStorage.getItem('usuarios_eliminados') || '[]'),
         detalle: null,
         cargando: false,
         cargandoDetalle: false,
@@ -65,11 +76,6 @@ const usuariosSlice = createSlice({
     reducers: {
         setPagina(state, action) {
             state.pagina = action.payload
-        },
-        eliminarUsuarioLocal(state, action) {
-            state.eliminados.push(action.payload)
-            localStorage.setItem('usuarios_eliminados', JSON.stringify(state.eliminados))
-            state.lista = state.lista.filter(u => u.id !== action.payload)
         },
         limpiarDetalle(state) {
             state.detalle = null
@@ -84,7 +90,7 @@ const usuariosSlice = createSlice({
             .addCase(fetchUsuarios.fulfilled, (state, action) => {
                 state.cargando = false
                 state.totalBackend = action.payload.length
-                state.lista = action.payload.filter(u => !state.eliminados.includes(u.id))
+                state.lista = action.payload
             })
             .addCase(fetchUsuarios.rejected, (state, action) => {
                 state.cargando = false
@@ -128,5 +134,5 @@ const usuariosSlice = createSlice({
     },
 })
 
-export const { setPagina, eliminarUsuarioLocal, limpiarDetalle } = usuariosSlice.actions
+export const { setPagina, limpiarDetalle } = usuariosSlice.actions
 export default usuariosSlice.reducer

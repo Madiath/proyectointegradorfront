@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchDetalleUsuario, limpiarDetalle, eliminarUsuarioLocal } from '../../../features/usuariosSlice'
+import { fetchDetalleUsuario, limpiarDetalle, deshabilitarUsuario } from '../../../features/usuariosSlice'
 import FormularioEditarUsuario from './FormularioEditarUsuario'
 
 const DetalleUsuario = () => {
@@ -22,9 +22,11 @@ const DetalleUsuario = () => {
         dispatch(fetchDetalleUsuario(id))
     }
 //
-    const handleEliminar = () => {
-        dispatch(eliminarUsuarioLocal(detalle.id))
-        navigate('/usuarios')
+    const handleEliminar = async () => {
+        const resultado = await dispatch(deshabilitarUsuario(detalle.id))
+        if (deshabilitarUsuario.fulfilled.match(resultado)) {
+            navigate('/usuarios')
+        }
     }
 
     if (cargandoDetalle) {

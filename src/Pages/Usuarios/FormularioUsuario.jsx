@@ -64,6 +64,19 @@ const FormularioUsuario = ({ onCerrar, onCreado }) => {
                                     {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
                                 </div>
 
+                                <div className="col-12">
+                                    <label className="form-label">Rol *</label>
+                                    <select
+                                        className={`form-select ${errors.rol ? 'is-invalid' : ''}`}
+                                        {...register('rol', { required: 'El rol es obligatorio' })}
+                                    >
+                                        <option value="">Seleccionar rol...</option>
+                                        <option value="Medico">Médico</option>
+                                        <option value="Admin">Admin</option>
+                                    </select>
+                                    {errors.rol && <div className="invalid-feedback">{errors.rol.message}</div>}
+                                </div>
+
                             </div>
                         </div>
 

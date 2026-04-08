@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://localhost:7128/api/Evolucion";
+const API_URL = "http://localhost:5237/api/Evolucion";
 
 export const getEvolucionesPorPaciente = async (idPaciente) => {
   const response = await axios.get(`${API_URL}/paciente/${idPaciente}`);

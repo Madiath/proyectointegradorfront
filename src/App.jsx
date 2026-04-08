@@ -3,6 +3,7 @@ import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { BrowserRouter, Route, Routes } from 'react-router'
 import ProtectedRoute from './Shared/Components/ProtectedRoute'
+import RutaProtegidaPorRol from './Shared/Components/RutaProtegidaPorRol'
 import Layout from './Shared/Components/Layout'
 import { store } from '../store/store'
 import { ToastContainer } from 'react-toastify'
@@ -47,8 +48,10 @@ function App() {
             <Route element={<Layout />}>
               <Route path="/pacientes" element={<Pacientes />} />
               <Route path="/pacientes/:id" element={<DetallePaciente />} />
-              <Route path="/usuarios" element={<Usuarios />} />
-              <Route path="/usuarios/:id" element={<DetalleUsuario />} />
+              <Route element={<RutaProtegidaPorRol rolesPermitidos={['Admin']} />}>
+                <Route path="/usuarios" element={<Usuarios />} />
+                <Route path="/usuarios/:id" element={<DetalleUsuario />} />
+              </Route>
             </Route>
             
 
