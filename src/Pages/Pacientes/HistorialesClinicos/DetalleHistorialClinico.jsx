@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
-import { getHistorialClinico } from "../../../Services/historialClinicoService";
+import {
+  getHistorialClinico,
+  generarPdfHistorialClinico,
+} from "../../../Services/historialClinicoService";
 
 const DetalleHistorialClinico = () => {
   const { id } = useParams();
@@ -23,6 +26,26 @@ const DetalleHistorialClinico = () => {
 
     cargarHistorial();
   }, [id]);
+
+  const handleExportarPdf = async () => {
+    try {
+      const pdfBlob = await generarPdfHistorialClinico(id);
+
+      const url = window.URL.createObjectURL(
+        new Blob([pdfBlob], { type: "application/pdf" })
+      );
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `HistorialClinico_${id}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err.message || "No se pudo exportar el PDF");
+    }
+  };
 
   if (loading) return <p>Cargando historial clínico...</p>;
 
@@ -86,16 +109,18 @@ const DetalleHistorialClinico = () => {
             <p>{historial.tratamiento}</p>
           </div>
 
-          <div className="mt-3">
-         <Link
-        to={`/pacientes/${id}/evoluciones`}
-         className="btn btn-primary"
-    >
-    Evoluciones
-  </Link>
-</div>
+          <div className="mt-3 d-flex gap-2">
+            <Link
+              to={`/pacientes/${id}/evoluciones`}
+              className="btn btn-primary"
+            >
+              Evoluciones
+            </Link>
 
-        
+            <button onClick={handleExportarPdf} className="btn btn-danger">
+              Exportar PDF
+            </button>
+          </div>
         </div>
       )}
     </div>
