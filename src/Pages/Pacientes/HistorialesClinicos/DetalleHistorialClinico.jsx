@@ -51,6 +51,12 @@ const DetalleHistorialClinico = () => {
 
   return (
     <div className="container mt-4">
+      <div className="d-flex gap-2 mb-3">
+        <Link to={`/pacientes/${id}`} className="btn btn-secondary">
+          Volver al paciente
+        </Link>
+      </div>
+
       <h2>Detalle del Historial Clínico</h2>
 
       {error && <div className="alert alert-warning">{error}</div>}
@@ -58,12 +64,21 @@ const DetalleHistorialClinico = () => {
       {!historial ? (
         <div>
           <p>El paciente no tiene historial clínico registrado.</p>
-          <Link
-            to={`/pacientes/${id}/historial/nuevo`}
-            className="btn btn-primary"
-          >
-            Agregar historial
-          </Link>
+          <div className="d-flex gap-2">
+            <Link
+              to={`/pacientes/${id}`}
+              className="btn btn-secondary"
+            >
+              Volver al paciente
+            </Link>
+
+            <Link
+              to={`/pacientes/${id}/historial/nuevo`}
+              className="btn btn-primary"
+            >
+              Agregar historial
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="card p-4">
@@ -110,6 +125,8 @@ const DetalleHistorialClinico = () => {
           </div>
 
           <div className="mt-3 d-flex gap-2">
+          
+
             <Link
               to={`/pacientes/${id}/evoluciones`}
               className="btn btn-primary"

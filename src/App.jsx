@@ -41,15 +41,18 @@ function App() {
             <Route path="/pacientes/:id/evoluciones" element={<ListarEvolucion />} />
             <Route path="/pacientes/:id/evoluciones/nueva" element={<FormularioEvolucion />} />
             <Route path="/pacientes/:idPaciente/evoluciones/:idEvolucion/editar"element={<FormularioEditarEvolucion />} />
+             <Route path="/pacientes" element={<Pacientes />} />
+              <Route path="/pacientes/:id" element={<DetallePaciente />} />
           {/* Rutas protegidas */}
           <Route element={<ProtectedRoute />}>
             {/* Layout SOLO para usuarios logueados */}
             <Route element={<Layout />}>
-              <Route path="/pacientes" element={<Pacientes />} />
-              <Route path="/pacientes/:id" element={<DetallePaciente />} />
+             
               <Route path="/usuarios" element={<Usuarios />} />
               <Route path="/usuarios/:id" element={<DetalleUsuario />} />
             </Route>
+
+            
             
 
             
