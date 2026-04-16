@@ -20,7 +20,7 @@ export const editarHistorialClinico = async (idPaciente, historial) => {
 
 
 export const generarPdfHistorialClinico = async (id) => {
-  const response = await axios.get(`${API_URL}/${id}/pdf`, {
+  const response = await axios.get(`${BASE_URL}/${id}/pdf`, {
     responseType: "blob",
   });
   return response.data;
