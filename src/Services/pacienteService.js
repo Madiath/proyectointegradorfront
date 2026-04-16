@@ -1,6 +1,7 @@
 import axios from 'axios'
+import API_BASE_URL from './config'
 
-const BASE_URL = 'https://localhost:7128/api/paciente'
+const BASE_URL = `${API_BASE_URL}/api/paciente`
 
 export const listarPacientes = (pagina = 1, tamano = 10, orden = 'nombre') => {
     return axios.get(BASE_URL, {
