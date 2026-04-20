@@ -1,0 +1,35 @@
+.bottom-nav {
+  display: none;
+}
+
+@media (max-width: 576px) {
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #5EBA5A;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 1000;
+    font-family: Arial, sans-serif;
+  }
+
+  .bottom-nav-link {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    padding: 0.6rem 0;
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    font-size: 0.7rem;
+  }
+
+  .bottom-nav-link--active {
+    color: white;
+    font-weight: bold;
+  }
+}

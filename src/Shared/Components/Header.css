@@ -1,0 +1,68 @@
+.header-nav {
+  background-color: #5EBA5A;
+  font-family: Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.6rem 1.2rem;
+}
+
+.header-brand {
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+  white-space: nowrap;
+}
+
+.header-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.header-link {
+  color: white;
+  text-decoration: none;
+  font-size: 0.95rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.header-link--active {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-left: auto;
+}
+
+.header-user-info {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.header-logout-btn {
+  background: transparent;
+  border: 1px solid white;
+  color: white;
+  border-radius: 4px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  white-space: nowrap;
+}
+
+/* En mobile, ocultar los links del header (van en el BottomNav) */
+@media (max-width: 576px) {
+  .header-links {
+    display: none;
+  }
+}
