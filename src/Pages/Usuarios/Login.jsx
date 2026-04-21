@@ -97,7 +97,8 @@ const Login = () => {
 
       localStorage.setItem("usuario", data.email)
       localStorage.setItem("rol", data.rol)
-      if (data.token) localStorage.setItem("token", data.token)
+
+      
 
       navigate("/pacientes")
 
