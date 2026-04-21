@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from 'react-router'
+import logo from '../../assets/logo_clinica.png'
 import './Header.css'
 
 const Header = () => {
@@ -15,7 +16,9 @@ const Header = () => {
 
   return (
     <nav className="header-nav">
-      <span className="header-brand">Mi App</span>
+      <div className="header-brand">
+        <img src={logo} alt="Logo clínica" className="header-logo" />
+      </div>
 
       <div className="header-links">
         <NavLink

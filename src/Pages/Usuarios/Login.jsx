@@ -13,10 +13,10 @@ const s = {
     justifyContent: 'center',
     fontFamily: 'Arial, sans-serif',
     background: `
-      radial-gradient(ellipse at 20% 50%, rgba(26,58,42,0.85) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 20%, rgba(232,245,233,0.08) 0%, transparent 50%),
-      radial-gradient(ellipse at 60% 80%, rgba(26,58,42,0.5) 0%, transparent 55%),
-      linear-gradient(135deg, #0a0a0a 0%, #111a14 50%, #0a0a0a 100%)
+      radial-gradient(ellipse at 20% 50%, rgba(42,122,138,0.85) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(180,230,240,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 80%, rgba(42,122,138,0.5) 0%, transparent 55%),
+      linear-gradient(135deg, #0a0a0a 0%, #0e1e22 50%, #0a0a0a 100%)
     `,
   },
   card: {
@@ -32,7 +32,7 @@ const s = {
     width: '100px',
     height: '100px',
     borderRadius: '50%',
-    background: 'rgba(26,58,42,0.6)',
+    background: 'rgba(42,122,138,0.6)',
     backdropFilter: 'blur(8px)',
     border: '1px solid rgba(232,245,233,0.15)',
     display: 'flex',
@@ -79,7 +79,7 @@ const s = {
     cursor: 'pointer',
   },
   forgotLink: {
-    color: '#a8c8a8',
+    color: '#7ecfdc',
     fontStyle: 'italic',
     textDecoration: 'none',
     cursor: 'pointer',
@@ -87,7 +87,7 @@ const s = {
   button: {
     width: '100%',
     padding: '0.85rem',
-    background: '#1a3a2a',
+    background: '#2a7a8a',
     color: 'white',
     border: 'none',
     borderRadius: '4px',
@@ -176,8 +176,8 @@ const Login = () => {
             type="submit"
             style={s.button}
             disabled={loading}
-            onMouseEnter={e => e.target.style.background = '#2a5a3a'}
-            onMouseLeave={e => e.target.style.background = '#1a3a2a'}
+            onMouseEnter={e => e.target.style.background = '#3a9aaa'}
+            onMouseLeave={e => e.target.style.background = '#2a7a8a'}
           >
             Login
           </button>
