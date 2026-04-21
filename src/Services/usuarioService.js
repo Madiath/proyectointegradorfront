@@ -17,6 +17,45 @@ export const loginUsuario = async (usuario) => {
     })
 
     if (!response.ok) {
+        const text = await response.text()
+
+        let mensaje = "Error en el servidor"
+
+        try {
+            const json = JSON.parse(text)
+            mensaje = json.mensaje || mensaje
+        } catch {
+            mensaje = text
+        }
+
+        throw new Error(mensaje)
+    }
+
+    return response.json()
+}
+export const recuperarContraseña = async (email) => {
+    const response = await fetch(`${BASE_URL}/rec-pass`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+    })
+
+    if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.mensaje)
+    }
+
+    return response.json()
+}
+
+export const restablecerPassword = async ({ token, nuevaPassword }) => {
+    const response = await fetch(`${BASE_URL}/restablecer-pass`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, nuevaPassword })
+    })
+
+    if (!response.ok) {
         const error = await response.json()
         throw new Error(error.mensaje)
     }

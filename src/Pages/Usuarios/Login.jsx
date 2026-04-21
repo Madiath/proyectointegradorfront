@@ -3,6 +3,7 @@ import { loginUsuario } from "../../Services/usuarioService";
 import '../../Shared/CSS/style.css' // tu css
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
+import { Toast } from 'bootstrap';
 
 const Login = () => {
 
@@ -30,15 +31,26 @@ const Login = () => {
       const data = await loginUsuario(form)
 
       //Guardar token y nombre
-      localStorage.setItem("token", data.token)
       localStorage.setItem("usuario", data.email)
       localStorage.setItem("rol", data.rol)
       //Redirigir
+      //Al Mfa y no navigate("/pacientes")
       navigate("/pacientes")
 
     } catch (error) {
-      console.error("Error:", error.message)
-      toast.error(error.message);
+
+      const code = error.message
+
+      if (code === "campos_vacios") {
+        toast.error("Por favor, completa todos los campos.")
+      }
+      else if (code === "informacion_incorrecta") {
+        toast.error("información incorrecta, por favor verifica tu email y contraseña.")
+      }
+      else {
+        console.error("Error:", error.message)
+        toast.error("Ocurrió un error, porfavor intenta de nuevo mas tarde.");
+      }
     } finally {
       setLoading(false)
     }
@@ -88,7 +100,7 @@ const Login = () => {
           </div>
 
           <div className="link-registrarse">
-            <a href="/registro">¿No tienes cuenta? Crea una</a>
+            <a href="/rec-pass">¿No me acuerdo de mi contraseña?</a>
           </div>
 
         </form>

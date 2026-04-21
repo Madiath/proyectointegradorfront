@@ -18,7 +18,8 @@ import DetalleHistorialClinico from "./Pages/Pacientes/HistorialesClinicos/Detal
 import ListarEvolucion from "./Pages/Pacientes/HistorialesClinicos/Evoluciones/ListarEvolucion";
 import FormularioEvolucion from "./Pages/Pacientes/HistorialesClinicos/Evoluciones/FormularioEvolucion";
 import FormularioEditarEvolucion from "./Pages/Pacientes/HistorialesClinicos/Evoluciones/FormularioEditarEvolucion";
-
+import RecuperarPass from './Pages/Usuarios/RecuperarPass'
+import RestablecerPass from './Pages/Usuarios/RestablecerPass'
 
 
 function App() {
@@ -34,6 +35,8 @@ function App() {
           
           {/* Ruta públicas */}
           <Route path="/login" element={<Login />} />
+          <Route path="/rec-pass" element={<RecuperarPass />} />
+          <Route path="/restbl-pass" element={<RestablecerPass />} />
 
             <Route path="/pacientes/:id/historial" element={<DetalleHistorialClinico />} />
             <Route path="/pacientes/:id/historial/nuevo" element={<FormularioHistorialClinico />} />
