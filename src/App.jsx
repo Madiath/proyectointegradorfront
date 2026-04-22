@@ -3,6 +3,7 @@ import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { BrowserRouter, Route, Routes } from 'react-router'
 import ProtectedRoute from './Shared/Components/ProtectedRoute'
+import RutaProtegidaPorRol from './Shared/Components/RutaProtegidaPorRol'
 import Layout from './Shared/Components/Layout'
 import { store } from '../store/store'
 import { ToastContainer } from 'react-toastify'
@@ -17,7 +18,8 @@ import DetalleHistorialClinico from "./Pages/Pacientes/HistorialesClinicos/Detal
 import ListarEvolucion from "./Pages/Pacientes/HistorialesClinicos/Evoluciones/ListarEvolucion";
 import FormularioEvolucion from "./Pages/Pacientes/HistorialesClinicos/Evoluciones/FormularioEvolucion";
 import FormularioEditarEvolucion from "./Pages/Pacientes/HistorialesClinicos/Evoluciones/FormularioEditarEvolucion";
-
+import RecuperarPass from './Pages/Usuarios/RecuperarPass'
+import RestablecerPass from './Pages/Usuarios/RestablecerPass'
 
 
 function App() {
@@ -33,6 +35,8 @@ function App() {
           
           {/* Ruta públicas */}
           <Route path="/login" element={<Login />} />
+          <Route path="/rec-pass" element={<RecuperarPass />} />
+          <Route path="/restbl-pass" element={<RestablecerPass />} />
 
             <Route path="/pacientes/:id/historial" element={<DetalleHistorialClinico />} />
             <Route path="/pacientes/:id/historial/nuevo" element={<FormularioHistorialClinico />} />
@@ -47,9 +51,12 @@ function App() {
           <Route element={<ProtectedRoute />}>
             {/* Layout SOLO para usuarios logueados */}
             <Route element={<Layout />}>
-             
-              <Route path="/usuarios" element={<Usuarios />} />
-              <Route path="/usuarios/:id" element={<DetalleUsuario />} />
+              <Route path="/pacientes" element={<Pacientes />} />
+              <Route path="/pacientes/:id" element={<DetallePaciente />} />
+              <Route element={<RutaProtegidaPorRol rolesPermitidos={['Admin']} />}>
+                <Route path="/usuarios" element={<Usuarios />} />
+                <Route path="/usuarios/:id" element={<DetalleUsuario />} />
+              </Route>
             </Route>
 
             

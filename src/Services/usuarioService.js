@@ -1,19 +1,58 @@
-import axios from 'axios'
+import axiosInstance from './axiosInstance'
 import API_BASE_URL from './config'
 
 const BASE_URL = `${API_BASE_URL}/api/usuario`
 
-export const listarUsuarios = (pagina = 1, tamano = 10) => axios.get(BASE_URL, { params: { pagina, tamano } })
-export const getUsuario = (id) => axios.get(`${BASE_URL}/${id}`)
-export const altaUsuario = (datos) => axios.post(BASE_URL, datos)
-export const editarUsuario = (id, datos) => axios.put(`${BASE_URL}/${id}`, datos)
-export const eliminarUsuario = (id) => axios.delete(`${BASE_URL}/${id}`)
+export const listarUsuarios = (pagina = 1, tamano = 10) => axiosInstance.get(BASE_URL, { params: { pagina, tamano } })
+export const getUsuario = (id) => axiosInstance.get(`${BASE_URL}/${id}`)
+export const altaUsuario = (datos) => axiosInstance.post(BASE_URL, datos)
+export const editarUsuario = (id, datos) => axiosInstance.put(`${BASE_URL}/${id}`, datos)
+export const eliminarUsuario = (id) => axiosInstance.delete(`${BASE_URL}/${id}`)
 
 export const loginUsuario = async (usuario) => {
     const response = await fetch(`${BASE_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(usuario)
+    })
+
+    if (!response.ok) {
+        const text = await response.text()
+
+        let mensaje = "Error en el servidor"
+
+        try {
+            const json = JSON.parse(text)
+            mensaje = json.mensaje || mensaje
+        } catch {
+            mensaje = text
+        }
+
+        throw new Error(mensaje)
+    }
+
+    return response.json()
+}
+export const recuperarContraseña = async (email) => {
+    const response = await fetch(`${BASE_URL}/rec-pass`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+    })
+
+    if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.mensaje)
+    }
+
+    return response.json()
+}
+
+export const restablecerPassword = async ({ token, nuevaPassword }) => {
+    const response = await fetch(`${BASE_URL}/restablecer-pass`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, nuevaPassword })
     })
 
     if (!response.ok) {

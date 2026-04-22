@@ -1,42 +1,47 @@
-import { NavLink } from 'react-router'
+import { NavLink, useNavigate } from 'react-router'
+import logo from '../../assets/logo_clinica.png'
+import './Header.css'
 
 const Header = () => {
+  const rol = localStorage.getItem('rol')
+  const usuario = localStorage.getItem('usuario')
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('usuario')
+    localStorage.removeItem('rol')
+    navigate('/login')
+  }
+
   return (
-    <nav className="navbar navbar-expand-lg px-4" style={{ backgroundColor: '#5EBA5A' }}>
-      <span className="navbar-brand text-white fw-bold">Mi App</span>
+    <nav className="header-nav">
+      <div className="header-brand">
+        <img src={logo} alt="Logo clínica" className="header-logo" />
+      </div>
 
-      <button
-        className="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
-      >
-        <span className="navbar-toggler-icon"></span>
-      </button>
+      <div className="header-links">
+        <NavLink
+          to="/pacientes"
+          className={({ isActive }) => 'header-link' + (isActive ? ' header-link--active' : '')}
+        >
+          Pacientes
+        </NavLink>
+        {rol === 'Admin' && (
+          <NavLink
+            to="/usuarios"
+            className={({ isActive }) => 'header-link' + (isActive ? ' header-link--active' : '')}
+          >
+            Usuarios
+          </NavLink>
+        )}
+      </div>
 
-      <div className="collapse navbar-collapse" id="navbarNav">
-        <ul className="navbar-nav gap-2">
-          <li className="nav-item">
-            <NavLink
-              to="/pacientes"
-              className={({ isActive }) =>
-                'nav-link text-white' + (isActive ? ' fw-bold text-decoration-underline' : '')
-              }
-            >
-              Pacientes
-            </NavLink>
-          </li>
-          <li className="nav-item">
-            <NavLink
-              to="/usuarios"
-              className={({ isActive }) =>
-                'nav-link text-white' + (isActive ? ' fw-bold text-decoration-underline' : '')
-              }
-            >
-              Usuarios
-            </NavLink>
-          </li>
-        </ul>
+      <div className="header-user">
+        <span className="header-user-info">{usuario} — {rol}</span>
+        <button className="header-logout-btn" onClick={handleLogout}>
+          Cerrar sesión
+        </button>
       </div>
     </nav>
   )
