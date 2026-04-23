@@ -15,6 +15,7 @@ const FormularioEditar = ({ paciente, onCerrar }) => {
         defaultValues: {
             nombreCompleto: paciente.nombreCompleto,
             numeroDocumento: paciente.numeroDocumento,
+            usuarioEmail: paciente.usuarioEmail || '',
             fechaNacimiento: fechaDefault,
             telefono: paciente.telefono || '',
             direccion: paciente.direccion || '',
@@ -73,6 +74,20 @@ const FormularioEditar = ({ paciente, onCerrar }) => {
                                     />
                                     {errors.numeroDocumento && (
                                         <div className="invalid-feedback">{errors.numeroDocumento.message}</div>
+                                    )}
+                                </div>
+
+                                <div className="col-md-6">
+                                    <label className="form-label">Email</label>
+                                    <input
+                                        type="email"
+                                        className={`form-control ${errors.usuarioEmail ? 'is-invalid' : ''}`}
+                                        {...register('usuarioEmail', {
+                                            pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Formato de email inválido' },
+                                        })}
+                                    />
+                                    {errors.usuarioEmail && (
+                                        <div className="invalid-feedback">{errors.usuarioEmail.message}</div>
                                     )}
                                 </div>
 
