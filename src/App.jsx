@@ -7,24 +7,30 @@ import RutaProtegidaPorRol from './Shared/Components/RutaProtegidaPorRol'
 import Layout from './Shared/Components/Layout'
 import { store } from '../store/store'
 import { ToastContainer } from 'react-toastify'
+
+// Páginas
 import Pacientes from './Pages/Pacientes/Pacientes'
 import DetallePaciente from './Pages/Pacientes/DetallePaciente'
 import Usuarios from './Pages/Usuarios/Usuarios'
 import DetalleUsuario from './Pages/Usuarios/DetalleUsuario'
 import Login from './Pages/Usuarios/Login'
-<<<<<<< HEAD
+
+// 🔐 MFA
 import Mfa from './Pages/Usuarios/Mfa'
-=======
-import FormularioHistorialClinico from "./Pages/Pacientes/HistorialesClinicos/FormularioHistorialClinico";
-import FormularioEditarHistorialClinico from "./Pages/Pacientes/HistorialesClinicos/FormularioEditarHistorialClinico";
-import DetalleHistorialClinico from "./Pages/Pacientes/HistorialesClinicos/DetalleHistorialClinico";
-import ListarEvolucion from "./Pages/Pacientes/HistorialesClinicos/Evoluciones/ListarEvolucion";
-import FormularioEvolucion from "./Pages/Pacientes/HistorialesClinicos/Evoluciones/FormularioEvolucion";
-import FormularioEditarEvolucion from "./Pages/Pacientes/HistorialesClinicos/Evoluciones/FormularioEditarEvolucion";
+
+// 🔑 Password reset
 import RecuperarPass from './Pages/Usuarios/RecuperarPass'
 import RestablecerPass from './Pages/Usuarios/RestablecerPass'
 
->>>>>>> b39fbba087525cacf692b21b4e752dd29333f72b
+// 📊 Historial clínico
+import FormularioHistorialClinico from "./Pages/Pacientes/HistorialesClinicos/FormularioHistorialClinico"
+import FormularioEditarHistorialClinico from "./Pages/Pacientes/HistorialesClinicos/FormularioEditarHistorialClinico"
+import DetalleHistorialClinico from "./Pages/Pacientes/HistorialesClinicos/DetalleHistorialClinico"
+
+// 📈 Evoluciones
+import ListarEvolucion from "./Pages/Pacientes/HistorialesClinicos/Evoluciones/ListarEvolucion"
+import FormularioEvolucion from "./Pages/Pacientes/HistorialesClinicos/Evoluciones/FormularioEvolucion"
+import FormularioEditarEvolucion from "./Pages/Pacientes/HistorialesClinicos/Evoluciones/FormularioEditarEvolucion"
 
 function App() {
   return (
@@ -35,41 +41,42 @@ function App() {
         <Routes>
 
           {/* Ruta inicial */}
-          <Route path="/" element={<Login/>} />
-          
-          {/* Ruta públicas */}
+          <Route path="/" element={<Login />} />
+
+          {/* Públicas */}
           <Route path="/login" element={<Login />} />
-<<<<<<< HEAD
-          <Route path="/authsecure" element={<Mfa />}/>
-=======
+
+          {/* 🔐 MFA */}
+          <Route path="/authsecure" element={<Mfa/>} />
+
+          {/* 🔑 Recuperar password */}
           <Route path="/rec-pass" element={<RecuperarPass />} />
           <Route path="/restbl-pass" element={<RestablecerPass />} />
 
-            <Route path="/pacientes/:id/historial" element={<DetalleHistorialClinico />} />
-            <Route path="/pacientes/:id/historial/nuevo" element={<FormularioHistorialClinico />} />
-            <Route path="/pacientes/:id/historial/editar" element={<FormularioEditarHistorialClinico />} />
+          {/* 📊 Historial clínico (públicas o mover luego si querés) */}
+          <Route path="/pacientes/:id/historial" element={<DetalleHistorialClinico />} />
+          <Route path="/pacientes/:id/historial/nuevo" element={<FormularioHistorialClinico />} />
+          <Route path="/pacientes/:id/historial/editar" element={<FormularioEditarHistorialClinico />} />
 
-            <Route path="/pacientes/:id/evoluciones" element={<ListarEvolucion />} />
-            <Route path="/pacientes/:id/evoluciones/nueva" element={<FormularioEvolucion />} />
-            <Route path="/pacientes/:idPaciente/evoluciones/:idEvolucion/editar"element={<FormularioEditarEvolucion />} />
->>>>>>> b39fbba087525cacf692b21b4e752dd29333f72b
-          {/* Rutas protegidas */}
+          {/* 📈 Evoluciones */}
+          <Route path="/pacientes/:id/evoluciones" element={<ListarEvolucion />} />
+          <Route path="/pacientes/:id/evoluciones/nueva" element={<FormularioEvolucion />} />
+          <Route path="/pacientes/:idPaciente/evoluciones/:idEvolucion/editar" element={<FormularioEditarEvolucion />} />
+
+          {/* 🔒 Protegidas */}
           <Route element={<ProtectedRoute />}>
-            {/* Layout SOLO para usuarios logueados */}
             <Route element={<Layout />}>
+
               <Route path="/pacientes" element={<Pacientes />} />
               <Route path="/pacientes/:id" element={<DetallePaciente />} />
+
               <Route element={<RutaProtegidaPorRol rolesPermitidos={['Admin']} />}>
                 <Route path="/usuarios" element={<Usuarios />} />
                 <Route path="/usuarios/:id" element={<DetalleUsuario />} />
               </Route>
+
             </Route>
-            
-
-            
-
           </Route>
-        
 
         </Routes>
 
