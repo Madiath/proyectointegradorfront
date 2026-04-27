@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { User, Lock } from 'lucide-react'
-import { loginUsuario } from '../../Services/usuarioService'
+import { loginUsuario, primerPasoMfa } from '../../Services/usuarioService'
 import { useNavigate } from 'react-router'
 import { toast } from 'react-toastify'
 import LoadingScreen from '../../Shared/Components/LoadingScreen'
@@ -57,6 +57,7 @@ const s = {
     borderRadius: '4px',
     border: 'none',
     background: '#f0f0f0',
+    color: '#222',
   },
   row: {
     width: '100%',
@@ -97,8 +98,13 @@ const Login = () => {
 
       localStorage.setItem("usuario", data.email)
       localStorage.setItem("rol", data.rol)
+      //Comentar el token una vez integrado el MFA
+      localStorage.setItem("token", data.token)
 
-      
+      //await  primerPasoMfa({ email: data.email })
+
+      //MFA DESHABILITADO PARA TESTEO
+      //navigate("/authsecure")      
 
       navigate("/pacientes")
 

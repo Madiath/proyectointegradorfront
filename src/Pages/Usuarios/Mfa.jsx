@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { Lock } from 'lucide-react'
-import { useSearchParams, useNavigate } from 'react-router'
+import { Shield } from 'lucide-react'
+import { useNavigate } from 'react-router'
 import { toast } from 'react-toastify'
-import { restablecerPassword } from '../../Services/usuarioService'
+import { segundoPasoMfa } from '../../Services/usuarioService'
 import LoadingScreen from '../../Shared/Components/LoadingScreen'
+import { color } from 'chart.js/helpers'
 
-// 🔁 mismo estilo que login / recuperar
+// mismos estilos base
 const s = {
   page: {
     minHeight: '100vh',
@@ -58,7 +59,10 @@ const s = {
     borderRadius: '4px',
     border: 'none',
     background: '#f0f0f0',
-    color: '#222'
+    textAlign: 'center',
+    fontSize: '1.1rem',
+    letterSpacing: '4px',
+    color: '#222',
   },
   text: {
     color: '#ccc',
@@ -82,18 +86,14 @@ const s = {
   }
 }
 
-const RestablecerPass = () => {
+const Mfa = () => {
 
-  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-
-  const token = searchParams.get("token")
-
   const [loading, setLoading] = useState(false)
 
   const [form, setForm] = useState({
-    password: '',
-    repetirPassword: ''
+    codigo: '',
+    email: localStorage.getItem("usuario") || ''
   })
 
   const handleChange = (e) =>
@@ -102,51 +102,41 @@ const RestablecerPass = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!form.password || !form.repetirPassword) {
-      toast.error("Completá todos los campos")
-      return
-    }
-
-    if (form.password !== form.repetirPassword) {
-      toast.error("Las contraseñas no coinciden")
-      return
-    }
-
-    if (!token) {
-      toast.error("Token inválido o faltante")
+    if (!form.codigo) {
+      toast.error("Ingresá el código")
       return
     }
 
     setLoading(true)
 
     try {
-      await restablecerPassword({
-        token,
-        nuevaPassword: form.password
-      })
+      const dataMfa = await segundoPasoMfa(form)
 
-      toast.success("Contraseña actualizada correctamente")
+      localStorage.setItem("token", dataMfa.token)
 
-      setTimeout(() => {
-        navigate("/login")
-      }, 1500)
+      navigate("/pacientes")
 
     } catch (error) {
 
       const code = error.message
 
-      if (code === "token_expirado") {
-        toast.error("El enlace expiró")
-      }
-      else if (code === "token_invalido") {
-        toast.error("El enlace no es válido")
-      }
-      else if (code === "token_ya_usado") {
-        toast.error("Este enlace ya fue utilizado")
-      }
+      if (code === "codigo_incorrecto") {
+        toast.error("Código incorrecto. Intentá nuevamente.")
+      } 
+      else if (code === "codigo_expirado") {
+        toast.error("El código expiró.")
+        navigate("/login")
+      } 
+      else if (code === "max_intentos") {
+        toast.error("Máximo de intentos alcanzado.")
+        navigate("/login")
+      } 
       else {
-        toast.error("Error al cambiar la contraseña")
+        toast.error("Ocurrió un error inesperado.")
+        navigate("/login")
       }
+
+      setForm({ ...form, codigo: '' })
 
     } finally {
       setLoading(false)
@@ -161,11 +151,12 @@ const RestablecerPass = () => {
 
         {/* Avatar */}
         <div style={s.avatar}>
-          <Lock size={48} />
+          <Shield size={48} />
         </div>
 
+        {/* Texto */}
         <p style={s.text}>
-          Ingresá tu nueva contraseña 🔐
+          🔒 Ingresá el código de verificación que enviamos a tu correo.
         </p>
 
         <form
@@ -173,34 +164,21 @@ const RestablecerPass = () => {
           style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}
         >
 
-          {/* Nueva contraseña */}
+          {/* Código */}
           <div style={s.inputWrapper}>
-            <span style={s.inputIcon}><Lock size={16} /></span>
+            <span style={s.inputIcon}>#</span>
             <input
               style={s.input}
-              type="password"
-              name="password"
-              placeholder="Nueva contraseña"
-              value={form.password}
-              onChange={handleChange}
-            />
-          </div>
-
-          {/* Repetir contraseña */}
-          <div style={s.inputWrapper}>
-            <span style={s.inputIcon}><Lock size={16} /></span>
-            <input
-              style={s.input}
-              type="password"
-              name="repetirPassword"
-              placeholder="Repetir contraseña"
-              value={form.repetirPassword}
+              type="text"
+              name="codigo"
+              placeholder="123456"
+              value={form.codigo}
               onChange={handleChange}
             />
           </div>
 
           <button type="submit" style={s.button}>
-            Cambiar contraseña
+            Verificar
           </button>
 
           <a style={s.link} onClick={() => navigate("/login")}>
@@ -208,10 +186,9 @@ const RestablecerPass = () => {
           </a>
 
         </form>
-
       </div>
     </div>
   )
 }
 
-export default RestablecerPass
+export default Mfa
