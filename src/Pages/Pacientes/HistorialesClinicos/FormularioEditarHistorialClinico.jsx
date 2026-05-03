@@ -96,6 +96,13 @@ const FormularioEditarHistorialClinico = () => {
 
   return (
     <div className="container mt-4">
+      <button
+  type="button"
+  className="btn btn-secondary mb-3"
+  onClick={() => navigate(`/pacientes/${id}`)}
+>
+  Volver al paciente
+</button>
       <h2>Editar Historial Clínico</h2>
 
       {mensaje && <div className="alert alert-success">{mensaje}</div>}

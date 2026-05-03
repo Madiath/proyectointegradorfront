@@ -67,6 +67,13 @@ const FormularioHistorialClinico = () => {
 
   return (
     <div className="container mt-4">
+      <button
+  type="button"
+  className="btn btn-secondary mb-3"
+  onClick={() => navigate(`/pacientes/${id}`)}
+>
+  Volver al paciente
+</button>
       <h2>Agregar Historial Clínico</h2>
 
       {mensaje && <div className="alert alert-success">{mensaje}</div>}
@@ -74,7 +81,7 @@ const FormularioHistorialClinico = () => {
 
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
-          <label className="form-label">Motivo de Consulta</label>
+          <label className="form-label">Motivo de Consulta (*)</label>
           <input
             type="text"
             className={`form-control ${erroresCampos.MotivoDeConsulta ? "is-invalid" : ""}`}
@@ -90,7 +97,7 @@ const FormularioHistorialClinico = () => {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Enfermedad Actual</label>
+          <label className="form-label">Enfermedad Actual (*)</label>
           <textarea
             className={`form-control ${erroresCampos.EnfermedadActual ? "is-invalid" : ""}`}
             name="enfermedadActual"
@@ -105,7 +112,7 @@ const FormularioHistorialClinico = () => {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Antecedentes</label>
+          <label className="form-label">Antecedentes (*)</label>
           <textarea
             className={`form-control ${erroresCampos.Antecedentes ? "is-invalid" : ""}`}
             name="antecedentes"
@@ -120,7 +127,7 @@ const FormularioHistorialClinico = () => {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Hábitos PSB</label>
+          <label className="form-label">Hábitos PSB (*)</label>
           <textarea
             className={`form-control ${erroresCampos.HabitosPSB ? "is-invalid" : ""}`}
             name="habitosPSB"
@@ -135,7 +142,7 @@ const FormularioHistorialClinico = () => {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Examen Físico</label>
+          <label className="form-label">Examen Físico (*)</label>
           <textarea
             className={`form-control ${erroresCampos.ExamenFisico ? "is-invalid" : ""}`}
             name="examenFisico"
@@ -150,7 +157,7 @@ const FormularioHistorialClinico = () => {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Diagnóstico</label>
+          <label className="form-label">Diagnóstico (*)</label>
           <textarea
             className={`form-control ${erroresCampos.Diagnostico ? "is-invalid" : ""}`}
             name="diagnostico"
@@ -165,7 +172,7 @@ const FormularioHistorialClinico = () => {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Examen de Laboratorio</label>
+          <label className="form-label">Examen de Laboratorio (*)</label>
           <textarea
             className={`form-control ${erroresCampos.ExamenLaboratorio ? "is-invalid" : ""}`}
             name="examenLaboratorio"
@@ -180,7 +187,7 @@ const FormularioHistorialClinico = () => {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Tratamiento</label>
+          <label className="form-label">Tratamiento (*)</label>
           <textarea
             className={`form-control ${erroresCampos.Tratamiento ? "is-invalid" : ""}`}
             name="tratamiento"
