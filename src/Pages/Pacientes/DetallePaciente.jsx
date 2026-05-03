@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchDetallePaciente, limpiarDetalle, eliminarPacienteLocal } from '../../../features/pacientesSlice'
+import { fetchDetallePaciente, limpiarDetalle, deshabilitarPaciente } from '../../../features/pacientesSlice'
 import FormularioEditar from './FormularioEditar'
 
 import { getHistorialClinico } from '../../Services/historialClinicoService'
@@ -40,9 +40,11 @@ const DetallePaciente = () => {
         dispatch(fetchDetallePaciente(id))
     }
 
-    const handleEliminar = () => {
-        dispatch(eliminarPacienteLocal(detalle.id))
-        navigate('/pacientes')
+    const handleEliminar = async () => {
+        const resultado = await dispatch(deshabilitarPaciente(detalle.id))
+        if (deshabilitarPaciente.fulfilled.match(resultado)) {
+            navigate('/pacientes')
+        }
     }
 
     if (cargandoDetalle) {

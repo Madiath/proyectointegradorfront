@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { listarPacientes, buscarPacientes, altaPaciente, editarPaciente, getPaciente } from '../src/Services/pacienteService'
+import { listarPacientes, buscarPacientes, altaPaciente, editarPaciente, getPaciente, eliminarPaciente } from '../src/Services/pacienteService'
 
 export const fetchPacientes = createAsyncThunk(
     'pacientes/fetchPacientes',
@@ -61,12 +61,23 @@ export const actualizarPaciente = createAsyncThunk(
     }
 )
 
+export const deshabilitarPaciente = createAsyncThunk(
+    'pacientes/deshabilitarPaciente',
+    async (id, { rejectWithValue }) => {
+        try {
+            await eliminarPaciente(id)
+            return id
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.mensaje || 'Error al eliminar paciente')
+        }
+    }
+)
+
 const pacientesSlice = createSlice({
     name: 'pacientes',
     initialState: {
         lista: [],
         totalBackend: 0,
-        eliminados: JSON.parse(localStorage.getItem('pacientes_eliminados') || '[]'),
         detalle: null,
         cargando: false,
         cargandoDetalle: false,
@@ -89,11 +100,6 @@ const pacientesSlice = createSlice({
         limpiarDetalle(state) {
             state.detalle = null
         },
-        eliminarPacienteLocal(state, action) {
-            state.eliminados.push(action.payload)
-            localStorage.setItem('pacientes_eliminados', JSON.stringify(state.eliminados))
-            state.lista = state.lista.filter(p => p.id !== action.payload)
-        },
     },
     extraReducers: (builder) => {
         builder
@@ -104,7 +110,7 @@ const pacientesSlice = createSlice({
             .addCase(fetchPacientes.fulfilled, (state, action) => {
                 state.cargando = false
                 state.totalBackend = action.payload.length
-                state.lista = action.payload.filter(p => !state.eliminados.includes(p.id))
+                state.lista = action.payload
             })
             .addCase(fetchPacientes.rejected, (state, action) => {
                 state.cargando = false
@@ -116,7 +122,7 @@ const pacientesSlice = createSlice({
             })
             .addCase(fetchBuscarPacientes.fulfilled, (state, action) => {
                 state.cargando = false
-                state.lista = action.payload.filter(p => !state.eliminados.includes(p.id))
+                state.lista = action.payload
             })
             .addCase(fetchBuscarPacientes.rejected, (state, action) => {
                 state.cargando = false
@@ -157,8 +163,11 @@ const pacientesSlice = createSlice({
                 state.cargando = false
                 state.error = action.payload
             })
+            .addCase(deshabilitarPaciente.fulfilled, (state, action) => {
+                state.lista = state.lista.filter(p => p.id !== action.payload)
+            })
     },
 })
 
-export const { setPagina, setOrden, limpiarError, limpiarDetalle, eliminarPacienteLocal } = pacientesSlice.actions
+export const { setPagina, setOrden, limpiarError, limpiarDetalle } = pacientesSlice.actions
 export default pacientesSlice.reducer
