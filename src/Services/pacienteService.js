@@ -26,3 +26,7 @@ export const editarPaciente = (id, datos) => {
 export const getPaciente = (id) => {
     return axiosInstance.get(`${BASE_URL}/${id}`)
 }
+
+export const eliminarPaciente = (id) => {
+    return axiosInstance.delete(`${BASE_URL}/${id}`)
+}
