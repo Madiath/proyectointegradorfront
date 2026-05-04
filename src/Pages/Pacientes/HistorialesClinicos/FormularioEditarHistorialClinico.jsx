@@ -10,6 +10,7 @@ const FormularioEditarHistorialClinico = () => {
   const { id } = useParams();
 
   const [formData, setFormData] = useState({
+    pacienteId: Number(id),
     motivoDeConsulta: "",
     enfermedadActual: "",
     antecedentes: "",
@@ -31,6 +32,7 @@ const FormularioEditarHistorialClinico = () => {
         const data = await getHistorialClinico(id);
 
         setFormData({
+          pacienteId: Number(id),
           motivoDeConsulta: data.motivoDeConsulta || "",
           enfermedadActual: data.enfermedadActual || "",
           antecedentes: data.antecedentes || "",

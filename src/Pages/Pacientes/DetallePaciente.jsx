@@ -14,7 +14,7 @@ const DetallePaciente = () => {
     const [mostrarEditar, setMostrarEditar] = useState(false)
     const [mostrarConfirmarEliminar, setMostrarConfirmarEliminar] = useState(false)
 
-    const [tieneHistorial, setTieneHistorial] = useState(false)
+    const [tieneHistorial, setTieneHistorial] = useState(null)
 
     useEffect(() => {
         dispatch(fetchDetallePaciente(id))
@@ -24,6 +24,7 @@ const DetallePaciente = () => {
 
     useEffect(() => {
     const cargarHistorial = async () => {
+        setTieneHistorial(null)
         try {
             const data = await getHistorialClinico(id)
             setTieneHistorial(!!data)
@@ -171,7 +172,9 @@ const DetallePaciente = () => {
     <div className="card-body">
        
 
-      {tieneHistorial ? (
+      {tieneHistorial === null ? (
+    <div className="spinner-border spinner-border-sm text-success" role="status" />
+) : tieneHistorial ? (
     <div className="d-flex gap-2">
         <button
             className="btn btn-secondary"

@@ -37,7 +37,7 @@ const DetalleHistorialClinico = () => {
 
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `HistorialClinico_${id}.pdf`);
+      link.setAttribute("download", `HistorialClinico_Paciente_${id}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();

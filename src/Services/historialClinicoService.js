@@ -4,7 +4,7 @@ import API_BASE_URL from './config'
 const BASE_URL = `${API_BASE_URL}/api/HistorialClinico`
 
 export const getHistorialClinico = async (idPaciente) => {
-    const response = await axios.get(`${BASE_URL}/${idPaciente}`)
+    const response = await axios.get(`${BASE_URL}/paciente/${idPaciente}`)
     return response.data
 }
 
@@ -14,13 +14,13 @@ export const altaHistorialClinico = async (historial) => {
 }
 
 export const editarHistorialClinico = async (idPaciente, historial) => {
-    const response = await axios.put(`${BASE_URL}/${idPaciente}`, historial)
+    const response = await axios.put(`${BASE_URL}/paciente/${idPaciente}`, historial)
     return response.data
 }
 
 
-export const generarPdfHistorialClinico = async (id) => {
-  const response = await axios.get(`${BASE_URL}/${id}/pdf`, {
+export const generarPdfHistorialClinico = async (idPaciente) => {
+  const response = await axios.get(`${BASE_URL}/paciente/${idPaciente}/pdf`, {
     responseType: "blob",
   });
   return response.data;
