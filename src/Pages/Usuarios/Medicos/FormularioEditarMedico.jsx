@@ -37,13 +37,16 @@ const FormularioEditarMedico = ({ medico, onCerrar, onEditado }) => {
     const onSubmit = async (data) => {
         setErrorServidor(null)
         const payload = {
-            ...data,
+            nombre: data.nombre,
+            email: data.email,
+            especialidad: data.especialidad,
             horarios: data.horarios.map(h => ({
                 diaSemana: Number(h.diaSemana),
                 horaDesde: h.horaDesde,
                 horaHasta: h.horaHasta,
             }))
         }
+        if (data.password) payload.password = data.password
         const resultado = await dispatch(actualizarMedico({ id: medico.id, datos: payload }))
         if (actualizarMedico.fulfilled.match(resultado)) {
             onEditado()
