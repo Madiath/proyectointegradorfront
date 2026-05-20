@@ -13,6 +13,7 @@ import Pacientes from './Pages/Pacientes/Pacientes'
 import DetallePaciente from './Pages/Pacientes/DetallePaciente'
 import Usuarios from './Pages/Usuarios/Usuarios'
 import DetalleUsuario from './Pages/Usuarios/DetalleUsuario'
+import DetalleMedico from './Pages/Usuarios/Medicos/DetalleMedico'
 import Login from './Pages/Usuarios/Login'
 
 // 🔐 MFA
@@ -73,6 +74,7 @@ function App() {
               <Route element={<RutaProtegidaPorRol rolesPermitidos={['Admin']} />}>
                 <Route path="/usuarios" element={<Usuarios />} />
                 <Route path="/usuarios/:id" element={<DetalleUsuario />} />
+                <Route path="/medicos/:id" element={<DetalleMedico />} />
               </Route>
 
             </Route>

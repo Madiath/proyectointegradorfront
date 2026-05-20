@@ -15,10 +15,10 @@ const FormularioUsuario = ({ onCerrar, onCreado }) => {
         setErrorServidor(null)
         const resultado = await dispatch(crearUsuario(data))
         if (crearUsuario.fulfilled.match(resultado)) {
-            toast.success('Usuario registrado correctamente')
+            toast.success('Administrador registrado correctamente')
             onCreado()
         } else {
-            setErrorServidor(resultado.payload || 'Error al registrar usuario')
+            setErrorServidor(resultado.payload || 'Error al registrar administrador')
         }
     }
 
@@ -27,7 +27,7 @@ const FormularioUsuario = ({ onCerrar, onCreado }) => {
             <div className="modal-dialog">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h5 className="modal-title">Agregar usuario</h5>
+                        <h5 className="modal-title">Agregar administrador</h5>
                         <button type="button" className="btn-close" onClick={onCerrar} />
                     </div>
 
@@ -37,6 +37,16 @@ const FormularioUsuario = ({ onCerrar, onCreado }) => {
                                 <div className="alert alert-danger">{errorServidor}</div>
                             )}
                             <div className="row g-3">
+
+                                <div className="col-12">
+                                    <label className="form-label">Nombre *</label>
+                                    <input
+                                        type="text"
+                                        className={`form-control ${errors.nombre ? 'is-invalid' : ''}`}
+                                        {...register('nombre', { required: 'El nombre es obligatorio' })}
+                                    />
+                                    {errors.nombre && <div className="invalid-feedback">{errors.nombre.message}</div>}
+                                </div>
 
                                 <div className="col-12">
                                     <label className="form-label">Email *</label>
@@ -62,19 +72,6 @@ const FormularioUsuario = ({ onCerrar, onCreado }) => {
                                         })}
                                     />
                                     {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
-                                </div>
-
-                                <div className="col-12">
-                                    <label className="form-label">Rol *</label>
-                                    <select
-                                        className={`form-select ${errors.rol ? 'is-invalid' : ''}`}
-                                        {...register('rol', { required: 'El rol es obligatorio' })}
-                                    >
-                                        <option value="">Seleccionar rol...</option>
-                                        <option value="Medico">Médico</option>
-                                        <option value="Admin">Admin</option>
-                                    </select>
-                                    {errors.rol && <div className="invalid-feedback">{errors.rol.message}</div>}
                                 </div>
 
                             </div>

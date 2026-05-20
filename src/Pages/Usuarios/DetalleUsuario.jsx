@@ -21,7 +21,7 @@ const DetalleUsuario = () => {
         setMostrarEditar(false)
         dispatch(fetchDetalleUsuario(id))
     }
-//
+
     const handleEliminar = async () => {
         const resultado = await dispatch(deshabilitarUsuario(detalle.id))
         if (deshabilitarUsuario.fulfilled.match(resultado)) {
@@ -32,13 +32,17 @@ const DetalleUsuario = () => {
     if (cargandoDetalle) {
         return (
             <div className="text-center py-5">
-                <div className="spinner-border text-success" role="status" />
+                <div className="spinner-border text-primary" role="status" />
             </div>
         )
     }
 
     if (error) return <div className="alert alert-danger">{error}</div>
     if (!detalle) return null
+
+    const inicial = detalle.nombre
+        ? detalle.nombre.charAt(0).toUpperCase()
+        : detalle.email.charAt(0).toUpperCase()
 
     return (
         <>
@@ -52,7 +56,7 @@ const DetalleUsuario = () => {
                         <div className="modal-content">
                             <div className="modal-body text-center py-4">
                                 <p className="fs-5 fw-semibold mb-1">¿Seguro que quiere eliminar?</p>
-                                <p className="text-muted mb-0">{detalle.email}</p>
+                                <p className="text-muted mb-0">{detalle.nombre || detalle.email}</p>
                             </div>
                             <div className="modal-footer justify-content-center border-0 pt-0">
                                 <button className="btn btn-secondary" onClick={() => setMostrarConfirmarEliminar(false)}>
@@ -78,12 +82,18 @@ const DetalleUsuario = () => {
                 <div className="card-body d-flex align-items-center gap-4 py-4">
                     <div
                         className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold fs-2"
-                        style={{ width: 80, height: 80, backgroundColor: '#5EBA5A', flexShrink: 0 }}
+                        style={{ width: 80, height: 80, backgroundColor: '#2a7a8a', flexShrink: 0 }}
                     >
-                        {detalle.email.charAt(0).toUpperCase()}
+                        {inicial}
                     </div>
                     <div className="flex-grow-1">
-                        <h4 className="mb-0">{detalle.email}</h4>
+                        <h4 className="mb-1">{detalle.nombre || '—'}</h4>
+                        <span className="text-muted" style={{ fontSize: '0.9rem' }}>{detalle.email}</span>
+                        <div className="mt-1">
+                            <span className={`badge ${detalle.rol === 'Admin' ? 'bg-danger' : 'bg-primary'}`}>
+                                {detalle.rol}
+                            </span>
+                        </div>
                     </div>
                     <div className="d-flex gap-2">
                         <button className="btn btn-outline-primary" onClick={() => setMostrarEditar(true)}>
@@ -104,13 +114,23 @@ const DetalleUsuario = () => {
                 <div className="card-body">
                     <div className="row g-3">
                         <div className="col-md-6">
-                            <p className="text-muted mb-0" style={{ fontSize: '0.8rem' }}>ID</p>
-                            <p className="mb-0 fw-medium">{detalle.id}</p>
+                            <p className="text-muted mb-0" style={{ fontSize: '0.8rem' }}>Nombre</p>
+                            <p className="mb-0 fw-medium">{detalle.nombre || '—'}</p>
                         </div>
                         <div className="col-md-6">
                             <p className="text-muted mb-0" style={{ fontSize: '0.8rem' }}>Email</p>
                             <p className="mb-0 fw-medium">{detalle.email}</p>
                         </div>
+                        <div className="col-md-6">
+                            <p className="text-muted mb-0" style={{ fontSize: '0.8rem' }}>Rol</p>
+                            <p className="mb-0 fw-medium">{detalle.rol}</p>
+                        </div>
+                        {detalle.especialidad && (
+                            <div className="col-md-6">
+                                <p className="text-muted mb-0" style={{ fontSize: '0.8rem' }}>Especialidad</p>
+                                <p className="mb-0 fw-medium">{detalle.especialidad}</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
