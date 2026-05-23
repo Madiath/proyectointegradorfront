@@ -11,6 +11,7 @@ import { ToastContainer } from 'react-toastify'
 // Páginas
 import Pacientes from './Pages/Pacientes/Pacientes'
 import DetallePaciente from './Pages/Pacientes/DetallePaciente'
+import ExamenesPaciente from './Pages/Pacientes/ExamenesPaciente'
 import Usuarios from './Pages/Usuarios/Usuarios'
 import DetalleUsuario from './Pages/Usuarios/DetalleUsuario'
 import Login from './Pages/Usuarios/Login'
@@ -69,6 +70,7 @@ function App() {
 
               <Route path="/pacientes" element={<Pacientes />} />
               <Route path="/pacientes/:id" element={<DetallePaciente />} />
+              <Route path="/pacientes/:id/examenes" element={<ExamenesPaciente />} />
 
               <Route element={<RutaProtegidaPorRol rolesPermitidos={['Admin']} />}>
                 <Route path="/usuarios" element={<Usuarios />} />
