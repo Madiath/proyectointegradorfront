@@ -175,7 +175,7 @@ const DetallePaciente = () => {
       {tieneHistorial === null ? (
     <div className="spinner-border spinner-border-sm text-success" role="status" />
 ) : tieneHistorial ? (
-    <div className="d-flex gap-2">
+    <div className="d-flex gap-2 flex-wrap">
         <button
             className="btn btn-secondary"
             onClick={() => navigate(`/pacientes/${id}/historial`)}
@@ -189,14 +189,28 @@ const DetallePaciente = () => {
         >
             Editar historial
         </button>
+        <button
+            className="btn btn-info text-white"
+            onClick={() => navigate(`/pacientes/${id}/examenes`)}
+        >
+            Exámenes
+        </button>
     </div>
 ) : (
-    <button
-        className="btn btn-primary"
-        onClick={() => navigate(`/pacientes/${id}/historial/nuevo`)}
-    >
-        Agregar historial
-    </button>
+    <div className="d-flex gap-2 flex-wrap">
+        <button
+            className="btn btn-primary"
+            onClick={() => navigate(`/pacientes/${id}/historial/nuevo`)}
+        >
+            Agregar historial
+        </button>
+        <button
+            className="btn btn-info text-white"
+            onClick={() => navigate(`/pacientes/${id}/examenes`)}
+        >
+            Exámenes
+        </button>
+    </div>
 )}
     </div>
 </div>
