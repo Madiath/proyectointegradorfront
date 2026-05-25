@@ -108,32 +108,55 @@ const DetallePaciente = () => {
 
             {/* Encabezado perfil */}
             <div className="card shadow-sm mb-4">
-                <div className="card-body d-flex align-items-center gap-4 py-4">
-                    <div
-                        className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold fs-2"
-                        style={{ width: 80, height: 80, backgroundColor: '#5EBA5A', flexShrink: 0 }}
-                    >
-                        {detalle.nombreCompleto.charAt(0).toUpperCase()}
+                <div className="card-body py-4">
+
+                    {/* Avatar + datos + botones (desktop: todo en fila) */}
+                    <div className="d-flex align-items-center gap-4">
+                        <div
+                            className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold fs-2"
+                            style={{ width: 80, height: 80, backgroundColor: '#5EBA5A', flexShrink: 0 }}
+                        >
+                            {detalle.nombreCompleto.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="flex-grow-1">
+                            <h3 className="mb-1">{detalle.nombreCompleto}</h3>
+                            <span className="text-muted">Doc: {detalle.numeroDocumento}</span>
+                            <span className="ms-3 badge bg-success">{detalle.edad} años</span>
+                        </div>
+
+                        {/* Botones a la derecha — solo desktop */}
+                        <div className="d-none d-sm-flex gap-2">
+                            <button
+                                className="btn btn-outline-primary"
+                                onClick={() => setMostrarEditar(true)}
+                            >
+                                Editar
+                            </button>
+                            <button
+                                className="btn btn-outline-danger"
+                                onClick={() => setMostrarConfirmarEliminar(true)}
+                            >
+                                Eliminar
+                            </button>
+                        </div>
                     </div>
-                    <div className="flex-grow-1">
-                        <h3 className="mb-1">{detalle.nombreCompleto}</h3>
-                        <span className="text-muted">Doc: {detalle.numeroDocumento}</span>
-                        <span className="ms-3 badge bg-success">{detalle.edad} años</span>
-                    </div>
-                    <div className="d-flex gap-2">
+
+                    {/* Botones abajo — solo mobile */}
+                    <div className="d-flex d-sm-none gap-2 mt-3">
                         <button
-                            className="btn btn-outline-primary"
+                            className="btn btn-outline-primary flex-grow-1"
                             onClick={() => setMostrarEditar(true)}
                         >
                             Editar
                         </button>
                         <button
-                            className="btn btn-outline-danger"
+                            className="btn btn-outline-danger flex-grow-1"
                             onClick={() => setMostrarConfirmarEliminar(true)}
                         >
                             Eliminar
                         </button>
                     </div>
+
                 </div>
             </div>
 

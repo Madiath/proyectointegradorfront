@@ -18,6 +18,7 @@ const Header = () => {
     <nav className="header-nav">
       <div className="header-brand">
         <img src={logo} alt="Logo clínica" className="header-logo" />
+        <span className="header-clinic-name">Clínica Especialidades</span>
       </div>
 
       <div className="header-links">

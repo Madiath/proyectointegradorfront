@@ -57,6 +57,7 @@ const Usuarios = () => {
 
             <h2 className="mb-3">Usuarios</h2>
 
+            {/* Tabs */}
             <ul className="nav nav-tabs mb-4">
                 <li className="nav-item">
                     <button
@@ -76,12 +77,13 @@ const Usuarios = () => {
                 </li>
             </ul>
 
+            {/* ── TAB MÉDICOS ── */}
             {tabActivo === 'medicos' && (
                 <div>
                     <div className="d-flex justify-content-between align-items-center mb-3">
                         <h5 className="mb-0">Médicos</h5>
                         <button className="btn btn-success btn-sm" onClick={() => setMostrarFormularioMedico(true)}>
-                            + Agregar médico
+                            + Agregar
                         </button>
                     </div>
 
@@ -91,33 +93,28 @@ const Usuarios = () => {
                         <div className="text-center py-5">
                             <div className="spinner-border text-success" role="status" />
                         </div>
+                    ) : listaMedicos.length === 0 ? (
+                        <p className="text-center text-muted py-4">No se encontraron médicos.</p>
                     ) : (
                         <>
-                            <table className="table table-hover table-bordered align-middle">
-                                <thead className="table-dark">
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Nombre</th>
-                                        <th>Email</th>
-                                        <th>Especialidad</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {listaMedicos.length === 0 ? (
+                            {/* Tabla — solo desktop */}
+                            <div className="d-none d-sm-block table-responsive">
+                                <table className="table table-hover table-bordered align-middle">
+                                    <thead className="table-dark">
                                         <tr>
-                                            <td colSpan={5} className="text-center text-muted py-4">
-                                                No se encontraron médicos.
-                                            </td>
+                                            <th>Nombre</th>
+                                            <th>Email</th>
+                                            <th>Especialidad</th>
+                                            <th></th>
                                         </tr>
-                                    ) : (
-                                        listaMedicos.map(m => (
+                                    </thead>
+                                    <tbody>
+                                        {listaMedicos.map(m => (
                                             <tr
                                                 key={m.id}
                                                 onClick={() => navigate(`/medicos/${m.id}`)}
                                                 style={{ cursor: 'pointer' }}
                                             >
-                                                <td>{m.id}</td>
                                                 <td>{m.nombre}</td>
                                                 <td>{m.email}</td>
                                                 <td>{m.especialidad}</td>
@@ -130,13 +127,37 @@ const Usuarios = () => {
                                                     </button>
                                                 </td>
                                             </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
 
-                            <div className="d-flex justify-content-between align-items-center">
-                                <span className="text-muted">Página {paginaMedicos}</span>
+                            {/* Tarjetas — solo mobile */}
+                            <div className="d-sm-none">
+                                {listaMedicos.map(m => (
+                                    <div key={m.id} className="card mb-2">
+                                        <div className="card-body py-2 px-3 d-flex justify-content-between align-items-center">
+                                            <div
+                                                onClick={() => navigate(`/medicos/${m.id}`)}
+                                                style={{ cursor: 'pointer', flex: 1 }}
+                                            >
+                                                <div className="fw-semibold">{m.nombre}</div>
+                                                <div className="text-muted small">{m.especialidad}</div>
+                                            </div>
+                                            <button
+                                                className="btn btn-outline-danger btn-sm ms-2"
+                                                onClick={(e) => handleEliminarMedico(e, m.id)}
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Paginación */}
+                            <div className="d-flex justify-content-between align-items-center mt-2">
+                                <span className="text-muted small">Página {paginaMedicos}</span>
                                 <div>
                                     <button
                                         className="btn btn-outline-secondary btn-sm me-2"
@@ -159,12 +180,13 @@ const Usuarios = () => {
                 </div>
             )}
 
+            {/* ── TAB ADMINS ── */}
             {tabActivo === 'admins' && (
                 <div>
                     <div className="d-flex justify-content-between align-items-center mb-3">
                         <h5 className="mb-0">Administradores</h5>
                         <button className="btn btn-success btn-sm" onClick={() => setMostrarFormularioAdmin(true)}>
-                            + Agregar administrador
+                            + Agregar
                         </button>
                     </div>
 
@@ -174,41 +196,54 @@ const Usuarios = () => {
                         <div className="text-center py-5">
                             <div className="spinner-border text-success" role="status" />
                         </div>
+                    ) : listaAdmins.length === 0 ? (
+                        <p className="text-center text-muted py-4">No se encontraron administradores.</p>
                     ) : (
                         <>
-                            <table className="table table-hover table-bordered align-middle">
-                                <thead className="table-dark">
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Nombre</th>
-                                        <th>Email</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {listaAdmins.length === 0 ? (
+                            {/* Tabla — solo desktop */}
+                            <div className="d-none d-sm-block table-responsive">
+                                <table className="table table-hover table-bordered align-middle">
+                                    <thead className="table-dark">
                                         <tr>
-                                            <td colSpan={3} className="text-center text-muted py-4">
-                                                No se encontraron administradores.
-                                            </td>
+                                            <th>Nombre</th>
+                                            <th>Email</th>
                                         </tr>
-                                    ) : (
-                                        listaAdmins.map(u => (
+                                    </thead>
+                                    <tbody>
+                                        {listaAdmins.map(u => (
                                             <tr
                                                 key={u.id}
                                                 onClick={() => navigate(`/usuarios/${u.id}`)}
                                                 style={{ cursor: 'pointer' }}
                                             >
-                                                <td>{u.id}</td>
                                                 <td>{u.nombre}</td>
                                                 <td>{u.email}</td>
                                             </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
 
-                            <div className="d-flex justify-content-between align-items-center">
-                                <span className="text-muted">Página {paginaAdmins}</span>
+                            {/* Tarjetas — solo mobile */}
+                            <div className="d-sm-none">
+                                {listaAdmins.map(u => (
+                                    <div
+                                        key={u.id}
+                                        className="card mb-2"
+                                        onClick={() => navigate(`/usuarios/${u.id}`)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        <div className="card-body py-2 px-3">
+                                            <div className="fw-semibold">{u.nombre}</div>
+                                            <div className="text-muted small">{u.email}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Paginación */}
+                            <div className="d-flex justify-content-between align-items-center mt-2">
+                                <span className="text-muted small">Página {paginaAdmins}</span>
                                 <div>
                                     <button
                                         className="btn btn-outline-secondary btn-sm me-2"

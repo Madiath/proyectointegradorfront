@@ -57,16 +57,17 @@ const Pacientes = () => {
                 <FormularioPaciente onCerrar={() => setMostrarFormulario(false)} />
             )}
 
+            {/* Título + botón */}
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <h2 className="mb-0">Pacientes</h2>
-                <button className="btn btn-success" onClick={() => setMostrarFormulario(true)}>
-                    + Agregar paciente
+                <button className="btn btn-success btn-sm" onClick={() => setMostrarFormulario(true)}>
+                    + Agregar
                 </button>
             </div>
 
-            {/* Buscador */}
+            {/* Buscador — apila en mobile, inline en desktop */}
             <form className="row g-2 mb-3" onSubmit={handleBuscar}>
-                <div className="col-auto">
+                <div className="col-12 col-sm-auto">
                     <input
                         type="text"
                         className="form-control"
@@ -75,7 +76,7 @@ const Pacientes = () => {
                         onChange={e => setBusNombre(e.target.value)}
                     />
                 </div>
-                <div className="col-auto">
+                <div className="col-12 col-sm-auto">
                     <input
                         type="text"
                         className="form-control"
@@ -84,12 +85,12 @@ const Pacientes = () => {
                         onChange={e => setBusDocumento(e.target.value)}
                     />
                 </div>
-                <div className="col-auto">
-                    <button type="submit" className="btn btn-primary">Buscar</button>
+                <div className="col-6 col-sm-auto">
+                    <button type="submit" className="btn btn-primary w-100">Buscar</button>
                 </div>
                 {buscando && (
-                    <div className="col-auto">
-                        <button type="button" className="btn btn-secondary" onClick={handleLimpiar}>
+                    <div className="col-6 col-sm-auto">
+                        <button type="button" className="btn btn-secondary w-100" onClick={handleLimpiar}>
                             Limpiar
                         </button>
                     </div>
@@ -98,12 +99,12 @@ const Pacientes = () => {
 
             {/* Ordenamiento */}
             {!buscando && (
-                <div className="mb-3">
-                    <span className="me-2 text-muted">Ordenar por:</span>
+                <div className="mb-3 d-flex flex-wrap gap-1 align-items-center">
+                    <span className="text-muted me-1">Ordenar:</span>
                     {['nombre', 'edad', 'registro'].map(op => (
                         <button
                             key={op}
-                            className={`btn btn-sm me-1 ${orden === op ? 'btn-dark' : 'btn-outline-secondary'}`}
+                            className={`btn btn-sm ${orden === op ? 'btn-dark' : 'btn-outline-secondary'}`}
                             onClick={() => handleOrden(op)}
                         >
                             {op.charAt(0).toUpperCase() + op.slice(1)}
@@ -112,55 +113,65 @@ const Pacientes = () => {
                 </div>
             )}
 
-            {/* Errores */}
-            {error && (
-                <div className="alert alert-danger">{error}</div>
-            )}
+            {error && <div className="alert alert-danger">{error}</div>}
 
-            {/* Tabla */}
             {cargando ? (
                 <div className="text-center py-5">
                     <div className="spinner-border text-success" role="status" />
                 </div>
+            ) : lista.length === 0 ? (
+                <p className="text-center text-muted py-4">No se encontraron pacientes.</p>
             ) : (
                 <>
-                    <table className="table table-hover table-bordered align-middle">
-                        <thead className="table-dark">
-                            <tr>
-                                <th>#</th>
-                                <th>Nombre completo</th>
-                                <th>N° Documento</th>
-                                <th>Edad</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {lista.length === 0 ? (
+                    {/* Tabla — solo desktop */}
+                    <div className="d-none d-sm-block table-responsive">
+                        <table className="table table-hover table-bordered align-middle">
+                            <thead className="table-dark">
                                 <tr>
-                                    <td colSpan={4} className="text-center text-muted py-4">
-                                        No se encontraron pacientes.
-                                    </td>
+                                    <th>Nombre completo</th>
+                                    <th>N° Documento</th>
+                                    <th>Edad</th>
                                 </tr>
-                            ) : (
-                                lista.map(p => (
+                            </thead>
+                            <tbody>
+                                {lista.map(p => (
                                     <tr
                                         key={p.id}
                                         onClick={() => navigate(`/pacientes/${p.id}`)}
                                         style={{ cursor: 'pointer' }}
                                     >
-                                        <td>{p.id}</td>
                                         <td>{p.nombreCompleto}</td>
                                         <td>{p.numeroDocumento}</td>
                                         <td>{p.edad}</td>
                                     </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Tarjetas — solo mobile */}
+                    <div className="d-sm-none">
+                        {lista.map(p => (
+                            <div
+                                key={p.id}
+                                className="card mb-2"
+                                onClick={() => navigate(`/pacientes/${p.id}`)}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                <div className="card-body py-2 px-3">
+                                    <div className="fw-semibold">{p.nombreCompleto}</div>
+                                    <div className="text-muted small">
+                                        Doc: {p.numeroDocumento} &nbsp;·&nbsp; {p.edad} años
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
 
                     {/* Paginación */}
                     {!buscando && (
-                        <div className="d-flex justify-content-between align-items-center">
-                            <span className="text-muted">Página {pagina}</span>
+                        <div className="d-flex justify-content-between align-items-center mt-2">
+                            <span className="text-muted small">Página {pagina}</span>
                             <div>
                                 <button
                                     className="btn btn-outline-secondary btn-sm me-2"
