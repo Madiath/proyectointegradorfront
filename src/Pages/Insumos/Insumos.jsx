@@ -22,6 +22,7 @@ const Insumos = () => {
     const [deshabilitando, setDeshabilitando] = useState(false)
     const [modalMovimiento, setModalMovimiento] = useState(null) // null | 'ENTRADA' | 'SALIDA'
     const [busqueda, setBusqueda] = useState('')
+    const [filtroEstado, setFiltroEstado] = useState('')
 
     useEffect(() => {
         dispatch(fetchInsumos({ pagina, tamano }))
@@ -40,10 +41,13 @@ const Insumos = () => {
         }
     }
 
-    const insumosFiltrados = lista.filter(i =>
-        i.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-        i.categoria.toLowerCase().includes(busqueda.toLowerCase())
-    )
+    const insumosFiltrados = lista.filter(i => {
+        const coincideTexto =
+            i.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+            i.categoria.toLowerCase().includes(busqueda.toLowerCase())
+        const coincideEstado = filtroEstado === '' || i.estadoStock === filtroEstado
+        return coincideTexto && coincideEstado
+    })
 
     return (
         <div>
@@ -117,16 +121,30 @@ const Insumos = () => {
                 </div>
             </div>
 
-            <div className="mb-3">
+            <div className="d-flex gap-2 mb-3">
                 <input
                     className="form-control"
-                    placeholder="Buscar por nombre o categoría..."
+                    style={{ maxWidth: '220px' }}
+                    placeholder="Buscar..."
                     value={busqueda}
                     onChange={e => {
                         setBusqueda(e.target.value)
                         dispatch(setPaginaInsumos(1))
                     }}
                 />
+                <select
+                    className="form-select w-auto"
+                    value={filtroEstado}
+                    onChange={e => {
+                        setFiltroEstado(e.target.value)
+                        dispatch(setPaginaInsumos(1))
+                    }}
+                >
+                    <option value="">Todos</option>
+                    <option value="OK">OK</option>
+                    <option value="MINIMO">Mínimo</option>
+                    <option value="BAJO">Bajo</option>
+                </select>
             </div>
 
             {error && <div className="alert alert-danger">{error}</div>}
