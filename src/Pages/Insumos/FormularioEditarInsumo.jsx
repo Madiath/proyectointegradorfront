@@ -1,30 +1,35 @@
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { crearInsumo, fetchInsumos } from '../../../features/insumosSlice'
+import { actualizarInsumo, fetchInsumos } from '../../../features/insumosSlice'
 import { toast } from 'react-toastify'
 
-const FormularioInsumo = ({ onCerrar }) => {
+const FormularioEditarInsumo = ({ insumo, onCerrar }) => {
     const dispatch = useDispatch()
     const { pagina, tamano } = useSelector(state => state.insumos)
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm()
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+        defaultValues: {
+            nombre: insumo.nombre,
+            categoria: insumo.categoria,
+            unidadMedida: insumo.unidadMedida,
+            stockMinimo: insumo.stockMinimo,
+        }
+    })
 
     const onSubmit = async (data) => {
         const payload = {
             nombre: data.nombre,
-            descripcion: data.descripcion || '',
             categoria: data.categoria,
             unidadMedida: data.unidadMedida,
-            stockInicial: Number(data.stockInicial) || 0,
-            stockMinimo: Number(data.stockMinimo) || 0,
+            stockMinimo: Number(data.stockMinimo),
         }
 
-        const res = await dispatch(crearInsumo(payload))
-        if (crearInsumo.fulfilled.match(res)) {
-            toast.success('Insumo registrado correctamente')
-            dispatch(fetchInsumos({ pagina: 1, tamano }))
+        const res = await dispatch(actualizarInsumo({ id: insumo.id, datos: payload }))
+        if (actualizarInsumo.fulfilled.match(res)) {
+            toast.success('Insumo actualizado correctamente')
+            dispatch(fetchInsumos({ pagina, tamano }))
             onCerrar()
         } else {
-            toast.error(res.payload || 'Error al registrar insumo')
+            toast.error(res.payload || 'Error al actualizar insumo')
         }
     }
 
@@ -33,7 +38,7 @@ const FormularioInsumo = ({ onCerrar }) => {
             <div className="modal-dialog modal-dialog-centered">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h5 className="modal-title">Agregar Insumo</h5>
+                        <h5 className="modal-title">Editar Insumo</h5>
                         <button type="button" className="btn-close" onClick={onCerrar} />
                     </div>
                     <form onSubmit={handleSubmit(onSubmit)}>
@@ -48,15 +53,9 @@ const FormularioInsumo = ({ onCerrar }) => {
                             </div>
 
                             <div className="mb-3">
-                                <label className="form-label">Descripción</label>
-                                <input className="form-control" {...register('descripcion')} />
-                            </div>
-
-                            <div className="mb-3">
                                 <label className="form-label">Categoría *</label>
                                 <input
                                     className={`form-control ${errors.categoria ? 'is-invalid' : ''}`}
-                                    placeholder="Ej: Pastillas, Jeringas, Cremas..."
                                     {...register('categoria', { required: 'La categoría es obligatoria' })}
                                 />
                                 {errors.categoria && <div className="invalid-feedback">{errors.categoria.message}</div>}
@@ -66,42 +65,26 @@ const FormularioInsumo = ({ onCerrar }) => {
                                 <label className="form-label">Unidad de medida *</label>
                                 <input
                                     className={`form-control ${errors.unidadMedida ? 'is-invalid' : ''}`}
-                                    placeholder="Ej: Unidades, ml, mg, Cajas..."
                                     {...register('unidadMedida', { required: 'La unidad de medida es obligatoria' })}
                                 />
                                 {errors.unidadMedida && <div className="invalid-feedback">{errors.unidadMedida.message}</div>}
                             </div>
 
-                            <div className="row">
-                                <div className="col-6 mb-3">
-                                    <label className="form-label">Stock inicial</label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        className={`form-control ${errors.stockInicial ? 'is-invalid' : ''}`}
-                                        defaultValue={0}
-                                        {...register('stockInicial', { min: { value: 0, message: 'No puede ser negativo' } })}
-                                    />
-                                    {errors.stockInicial && <div className="invalid-feedback">{errors.stockInicial.message}</div>}
-                                </div>
-
-                                <div className="col-6 mb-3">
-                                    <label className="form-label">Stock mínimo</label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        className={`form-control ${errors.stockMinimo ? 'is-invalid' : ''}`}
-                                        defaultValue={0}
-                                        {...register('stockMinimo', { min: { value: 0, message: 'No puede ser negativo' } })}
-                                    />
-                                    {errors.stockMinimo && <div className="invalid-feedback">{errors.stockMinimo.message}</div>}
-                                </div>
+                            <div className="mb-3">
+                                <label className="form-label">Stock mínimo</label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    className={`form-control ${errors.stockMinimo ? 'is-invalid' : ''}`}
+                                    {...register('stockMinimo', { min: { value: 0, message: 'No puede ser negativo' } })}
+                                />
+                                {errors.stockMinimo && <div className="invalid-feedback">{errors.stockMinimo.message}</div>}
                             </div>
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" onClick={onCerrar}>Cancelar</button>
-                            <button type="submit" className="btn btn-success" disabled={isSubmitting}>
-                                {isSubmitting ? 'Guardando...' : 'Guardar'}
+                            <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                                {isSubmitting ? 'Guardando...' : 'Guardar cambios'}
                             </button>
                         </div>
                     </form>
@@ -111,4 +94,4 @@ const FormularioInsumo = ({ onCerrar }) => {
     )
 }
 
-export default FormularioInsumo
+export default FormularioEditarInsumo

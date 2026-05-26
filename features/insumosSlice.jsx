@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { listarInsumos, altaInsumo, registrarMovimiento } from '../src/Services/insumoService'
+import { listarInsumos, altaInsumo, editarInsumo, eliminarInsumo, registrarMovimiento } from '../src/Services/insumoService'
 
 export const fetchInsumos = createAsyncThunk(
     'insumos/fetchInsumos',
-    async (_, { rejectWithValue }) => {
+    async ({ pagina, tamano }, { rejectWithValue }) => {
         try {
-            const res = await listarInsumos()
+            const res = await listarInsumos(pagina, tamano)
             return res.data
         } catch (err) {
             return rejectWithValue(err.response?.data?.mensaje || 'Error al cargar insumos')
@@ -21,6 +21,30 @@ export const crearInsumo = createAsyncThunk(
             return res.data
         } catch (err) {
             return rejectWithValue(err.response?.data?.mensaje || 'Error al registrar insumo')
+        }
+    }
+)
+
+export const actualizarInsumo = createAsyncThunk(
+    'insumos/actualizarInsumo',
+    async ({ id, datos }, { rejectWithValue }) => {
+        try {
+            const res = await editarInsumo(id, datos)
+            return res.data
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.mensaje || 'Error al actualizar insumo')
+        }
+    }
+)
+
+export const deshabilitarInsumo = createAsyncThunk(
+    'insumos/deshabilitarInsumo',
+    async (id, { rejectWithValue }) => {
+        try {
+            await eliminarInsumo(id)
+            return id
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.mensaje || 'Error al deshabilitar insumo')
         }
     }
 )
@@ -41,10 +65,17 @@ const insumosSlice = createSlice({
     name: 'insumos',
     initialState: {
         lista: [],
+        totalBackend: 0,
         cargando: false,
         error: null,
+        pagina: 1,
+        tamano: 10,
     },
-    reducers: {},
+    reducers: {
+        setPaginaInsumos(state, action) {
+            state.pagina = action.payload
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchInsumos.pending, (state) => {
@@ -54,6 +85,7 @@ const insumosSlice = createSlice({
             .addCase(fetchInsumos.fulfilled, (state, action) => {
                 state.cargando = false
                 state.lista = action.payload
+                state.totalBackend = action.payload.length
             })
             .addCase(fetchInsumos.rejected, (state, action) => {
                 state.cargando = false
@@ -70,6 +102,20 @@ const insumosSlice = createSlice({
                 state.cargando = false
                 state.error = action.payload
             })
+            .addCase(actualizarInsumo.pending, (state) => {
+                state.cargando = true
+                state.error = null
+            })
+            .addCase(actualizarInsumo.fulfilled, (state) => {
+                state.cargando = false
+            })
+            .addCase(actualizarInsumo.rejected, (state, action) => {
+                state.cargando = false
+                state.error = action.payload
+            })
+            .addCase(deshabilitarInsumo.fulfilled, (state, action) => {
+                state.lista = state.lista.filter(i => i.id !== action.payload)
+            })
             .addCase(crearMovimiento.pending, (state) => {
                 state.cargando = true
                 state.error = null
@@ -84,4 +130,5 @@ const insumosSlice = createSlice({
     },
 })
 
+export const { setPaginaInsumos } = insumosSlice.actions
 export default insumosSlice.reducer

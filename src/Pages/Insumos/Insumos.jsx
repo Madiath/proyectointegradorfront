@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchInsumos } from '../../../features/insumosSlice'
+import { fetchInsumos, deshabilitarInsumo, setPaginaInsumos } from '../../../features/insumosSlice'
 import FormularioInsumo from './FormularioInsumo'
+import FormularioEditarInsumo from './FormularioEditarInsumo'
 import FormularioMovimiento from './FormularioMovimiento'
+import { toast } from 'react-toastify'
 
 const estadoConfig = {
     OK: { clase: '', badge: null },
@@ -12,15 +14,31 @@ const estadoConfig = {
 
 const Insumos = () => {
     const dispatch = useDispatch()
-    const { lista, cargando, error } = useSelector(state => state.insumos)
+    const { lista, totalBackend, cargando, error, pagina, tamano } = useSelector(state => state.insumos)
 
     const [mostrarFormInsumo, setMostrarFormInsumo] = useState(false)
+    const [insumoEditar, setInsumoEditar] = useState(null)
+    const [insumoADeshabilitar, setInsumoADeshabilitar] = useState(null) // insumo a confirmar o null
+    const [deshabilitando, setDeshabilitando] = useState(false)
     const [modalMovimiento, setModalMovimiento] = useState(null) // null | 'ENTRADA' | 'SALIDA'
     const [busqueda, setBusqueda] = useState('')
 
     useEffect(() => {
-        dispatch(fetchInsumos())
-    }, [])
+        dispatch(fetchInsumos({ pagina, tamano }))
+    }, [pagina])
+
+    const handleConfirmarDeshabilitar = async () => {
+        setDeshabilitando(true)
+        const res = await dispatch(deshabilitarInsumo(insumoADeshabilitar.id))
+        setDeshabilitando(false)
+        if (deshabilitarInsumo.fulfilled.match(res)) {
+            toast.success('Insumo deshabilitado')
+            setInsumoADeshabilitar(null)
+            dispatch(fetchInsumos({ pagina, tamano }))
+        } else {
+            toast.error(res.payload || 'Error al deshabilitar')
+        }
+    }
 
     const insumosFiltrados = lista.filter(i =>
         i.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -31,6 +49,50 @@ const Insumos = () => {
         <div>
             {mostrarFormInsumo && (
                 <FormularioInsumo onCerrar={() => setMostrarFormInsumo(false)} />
+            )}
+            {insumoEditar && (
+                <FormularioEditarInsumo insumo={insumoEditar} onCerrar={() => setInsumoEditar(null)} />
+            )}
+            {insumoADeshabilitar && (
+                <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-header border-0 pb-0">
+                                <h5 className="modal-title">Deshabilitar insumo</h5>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    onClick={() => setInsumoADeshabilitar(null)}
+                                    disabled={deshabilitando}
+                                />
+                            </div>
+                            <div className="modal-body text-center py-3">
+                                <p className="mb-1">
+                                    ¿Querés deshabilitar <strong>{insumoADeshabilitar.nombre}</strong>?
+                                </p>
+                                <p className="text-muted small mb-0">
+                                    El insumo dejará de aparecer en el listado.
+                                </p>
+                            </div>
+                            <div className="modal-footer justify-content-center border-0 pt-0">
+                                <button
+                                    className="btn btn-secondary"
+                                    onClick={() => setInsumoADeshabilitar(null)}
+                                    disabled={deshabilitando}
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    className="btn btn-danger"
+                                    onClick={handleConfirmarDeshabilitar}
+                                    disabled={deshabilitando}
+                                >
+                                    {deshabilitando ? 'Deshabilitando...' : 'Deshabilitar'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
             {modalMovimiento && (
                 <FormularioMovimiento
@@ -60,7 +122,10 @@ const Insumos = () => {
                     className="form-control"
                     placeholder="Buscar por nombre o categoría..."
                     value={busqueda}
-                    onChange={e => setBusqueda(e.target.value)}
+                    onChange={e => {
+                        setBusqueda(e.target.value)
+                        dispatch(setPaginaInsumos(1))
+                    }}
                 />
             </div>
 
@@ -87,6 +152,7 @@ const Insumos = () => {
                                     <th className="text-center">Stock actual</th>
                                     <th className="text-center">Stock mínimo</th>
                                     <th className="text-center">Estado</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -104,6 +170,22 @@ const Insumos = () => {
                                             <td className="text-center">{i.stockMinimo}</td>
                                             <td className="text-center">
                                                 {config.badge ?? <span className="badge bg-success">OK</span>}
+                                            </td>
+                                            <td onClick={e => e.stopPropagation()}>
+                                                <div className="d-flex gap-1">
+                                                    <button
+                                                        className="btn btn-outline-primary btn-sm"
+                                                        onClick={() => setInsumoEditar(i)}
+                                                    >
+                                                        Editar
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-outline-danger btn-sm"
+                                                        onClick={() => setInsumoADeshabilitar(i)}
+                                                    >
+                                                        Deshabilitar
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     )
@@ -135,10 +217,45 @@ const Insumos = () => {
                                                 <div className="text-muted" style={{ fontSize: '0.7rem' }}>actual / mínimo</div>
                                             </div>
                                         </div>
+                                        <div className="d-flex gap-2 mt-2">
+                                            <button
+                                                className="btn btn-outline-primary btn-sm flex-grow-1"
+                                                onClick={() => setInsumoEditar(i)}
+                                            >
+                                                Editar
+                                            </button>
+                                            <button
+                                                className="btn btn-outline-danger btn-sm flex-grow-1"
+                                                onClick={() => setInsumoADeshabilitar(i)}
+                                            >
+                                                Deshabilitar
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             )
                         })}
+                    </div>
+
+                    {/* Paginación */}
+                    <div className="d-flex justify-content-between align-items-center mt-2">
+                        <span className="text-muted small">Página {pagina}</span>
+                        <div>
+                            <button
+                                className="btn btn-outline-secondary btn-sm me-2"
+                                onClick={() => dispatch(setPaginaInsumos(pagina - 1))}
+                                disabled={pagina === 1}
+                            >
+                                Anterior
+                            </button>
+                            <button
+                                className="btn btn-outline-secondary btn-sm"
+                                onClick={() => dispatch(setPaginaInsumos(pagina + 1))}
+                                disabled={totalBackend < tamano}
+                            >
+                                Siguiente
+                            </button>
+                        </div>
                     </div>
                 </>
             )}

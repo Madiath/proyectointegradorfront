@@ -1,10 +1,11 @@
 import { useForm } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { crearMovimiento, fetchInsumos } from '../../../features/insumosSlice'
 import { toast } from 'react-toastify'
 
 const FormularioMovimiento = ({ tipo, insumos, insumoIdInicial, onCerrar }) => {
     const dispatch = useDispatch()
+    const { pagina, tamano } = useSelector(state => state.insumos)
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         defaultValues: { insumoId: insumoIdInicial ?? '' }
     })
@@ -24,7 +25,7 @@ const FormularioMovimiento = ({ tipo, insumos, insumoIdInicial, onCerrar }) => {
         const res = await dispatch(crearMovimiento(payload))
         if (crearMovimiento.fulfilled.match(res)) {
             toast.success(`${tipo === 'ENTRADA' ? 'Entrada' : 'Salida'} registrada correctamente`)
-            dispatch(fetchInsumos())
+            dispatch(fetchInsumos({ pagina, tamano }))
             onCerrar()
         } else {
             toast.error(res.payload || 'Error al registrar movimiento')
