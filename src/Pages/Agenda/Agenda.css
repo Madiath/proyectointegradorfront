@@ -1,12 +1,14 @@
 .agenda-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    border: 2px solid #000;
+    border-radius: 4px;
 }
 
 .agenda-table {
-    border-collapse: separate;
-    border-spacing: 0;
+    border-collapse: collapse;
     min-width: 700px;
+    width: 100%;
 }
 
 /* Encabezado días */
@@ -20,6 +22,7 @@
     position: sticky;
     top: 0;
     z-index: 2;
+    border: 2px solid #000;
 }
 
 /* Columna de hora — sticky */
@@ -27,15 +30,15 @@
     position: sticky;
     left: 0;
     z-index: 1;
-    background-color: #f8f9fa;
-    font-weight: 600;
+    background-color: #f0f0f0;
+    font-weight: 700;
     font-size: 0.8rem;
-    color: #495057;
+    color: #212529;
     text-align: center;
     white-space: nowrap;
     padding: 6px 10px;
-    border-right: 2px solid #dee2e6;
-    min-width: 58px;
+    min-width: 62px;
+    border: 2px solid #000;
 }
 
 /* Celda de cada slot */
@@ -45,10 +48,11 @@
     min-width: 110px;
     min-height: 36px;
     background-color: #fff;
+    border: 1px solid #000;
 }
 
 .agenda-table tr:nth-child(even) td.slot {
-    background-color: #fafafa;
+    background-color: #f8f8f8;
 }
 
 /* Badge del médico dentro del slot */
@@ -74,7 +78,7 @@
 
 /* Sin horario — celda vacía */
 .slot-vacio {
-    color: #dee2e6;
+    color: #adb5bd;
     font-size: 0.7rem;
     text-align: center;
     padding-top: 6px;

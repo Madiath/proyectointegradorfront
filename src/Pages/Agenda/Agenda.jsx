@@ -120,7 +120,8 @@ const Agenda = () => {
 
     const handleBadgeClick = (m, diaNum, hora) => {
         const fechaHora = buildCellDate(weekStart, diaNum, hora)
-        setTurnoModal({ medico: m, fechaHora })
+        const turnoExistente = turnoEnSlot(diaNum, hora, m.id) ?? null
+        setTurnoModal({ medico: m, fechaHora, turnoExistente })
     }
 
     if (cargando) {
@@ -177,7 +178,7 @@ const Agenda = () => {
 
                     {/* Grilla */}
                     <div className="agenda-wrapper">
-                        <table className="agenda-table table table-bordered mb-0">
+                        <table className="agenda-table table mb-0">
                             <thead>
                                 <tr>
                                     <th style={{ position: 'sticky', left: 0, zIndex: 3, background: '#212529', minWidth: 58 }}>
@@ -243,6 +244,7 @@ const Agenda = () => {
                     medico={turnoModal.medico}
                     fechaHora={turnoModal.fechaHora}
                     weekStartStr={toDateStr(weekStart)}
+                    turnoExistente={turnoModal.turnoExistente}
                     onClose={() => setTurnoModal(null)}
                 />
             )}

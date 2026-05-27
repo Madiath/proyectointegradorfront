@@ -9,3 +9,5 @@ export const getTurnosSemana = (weekStart) =>
     axiosInstance.get(`${BASE_URL}/turnos`, { params: { weekStart } })
 
 export const crearTurno = (datos) => axiosInstance.post(`${BASE_URL}/turnos`, datos)
+
+export const editarTurno = (id, datos) => axiosInstance.put(`${BASE_URL}/turnos/${id}`, datos)

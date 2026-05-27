@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { crearTurno, fetchTurnos } from '../../../features/agendaSlice'
+import { crearTurno, editarTurno } from '../../../features/agendaSlice'
 import { fetchPacientes } from '../../../features/pacientesSlice'
 
 // Formatea la fecha como ISO local (sin conversión UTC) para evitar desfase de zona horaria
@@ -9,15 +9,23 @@ const toLocalISO = (date) => {
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:00:00`
 }
 
-const FormularioTurno = ({ medico, fechaHora, weekStartStr, onClose }) => {
+/**
+ * turnoExistente: objeto { id, pacienteId, pacienteNombre, ... } si hay un turno en ese slot.
+ *                null si es un slot vacío (crear nuevo turno).
+ */
+const FormularioTurno = ({ medico, fechaHora, weekStartStr, turnoExistente, onClose }) => {
     const dispatch = useDispatch()
     const pacientes = useSelector(state => state.pacientes.lista)
-    const [pacienteId, setPacienteId] = useState('')
+
+    const modoEdicion = turnoExistente !== null
+
+    const [pacienteId, setPacienteId] = useState(
+        turnoExistente?.pacienteId ? String(turnoExistente.pacienteId) : ''
+    )
     const [enviando, setEnviando] = useState(false)
     const [error, setError] = useState(null)
 
     useEffect(() => {
-        // Cargar todos los pacientes si no están cargados
         dispatch(fetchPacientes({ pagina: 1, tamano: 1000, orden: 'nombre' }))
     }, [])
 
@@ -36,16 +44,25 @@ const FormularioTurno = ({ medico, fechaHora, weekStartStr, onClose }) => {
         e.preventDefault()
         setEnviando(true)
         setError(null)
+
         try {
-            await dispatch(crearTurno({
-                medicoId: medico.id,
-                pacienteId: pacienteId ? parseInt(pacienteId) : null,
-                fechaHora: toLocalISO(fechaHora),
-            })).unwrap()
-            dispatch(fetchTurnos(weekStartStr))
+            if (modoEdicion) {
+                // Editar: pacienteId null → backend elimina el turno
+                await dispatch(editarTurno({
+                    id: turnoExistente.id,
+                    pacienteId: pacienteId ? parseInt(pacienteId) : null,
+                })).unwrap()
+            } else {
+                // Crear nuevo turno
+                await dispatch(crearTurno({
+                    medicoId: medico.id,
+                    pacienteId: pacienteId ? parseInt(pacienteId) : null,
+                    fechaHora: toLocalISO(fechaHora),
+                })).unwrap()
+            }
             onClose()
         } catch (err) {
-            setError(typeof err === 'string' ? err : 'Error al crear el turno')
+            setError(typeof err === 'string' ? err : 'Error al guardar el turno')
             setEnviando(false)
         }
     }
@@ -55,22 +72,31 @@ const FormularioTurno = ({ medico, fechaHora, weekStartStr, onClose }) => {
             <div className="modal-dialog modal-dialog-centered">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h5 className="modal-title">Nuevo Turno</h5>
+                        <h5 className="modal-title">
+                            {modoEdicion ? 'Editar Turno' : 'Nuevo Turno'}
+                        </h5>
                         <button type="button" className="btn-close" onClick={onClose} />
                     </div>
+
                     <form onSubmit={handleSubmit}>
                         <div className="modal-body">
                             {error && (
                                 <div className="alert alert-danger py-2">{error}</div>
                             )}
+
                             <div className="mb-3">
                                 <span className="fw-bold">Médico: </span>
-                                <span>{medico.nombre}{medico.especialidad ? ` — ${medico.especialidad}` : ''}</span>
+                                <span>
+                                    {medico.nombre}
+                                    {medico.especialidad ? ` — ${medico.especialidad}` : ''}
+                                </span>
                             </div>
+
                             <div className="mb-3">
                                 <span className="fw-bold">Fecha y hora: </span>
                                 <span className="text-capitalize">{formatFechaHora(fechaHora)}</span>
                             </div>
+
                             <div className="mb-3">
                                 <label className="form-label fw-bold">Paciente</label>
                                 <select
@@ -78,15 +104,23 @@ const FormularioTurno = ({ medico, fechaHora, weekStartStr, onClose }) => {
                                     value={pacienteId}
                                     onChange={e => setPacienteId(e.target.value)}
                                 >
-                                    <option value="">Sin paciente asignado</option>
+                                    <option value="">
+                                        {modoEdicion ? 'Sin paciente asignado (elimina el turno)' : 'Sin paciente asignado'}
+                                    </option>
                                     {pacientes.map(p => (
                                         <option key={p.id} value={p.id}>
                                             {p.nombreCompleto}
                                         </option>
                                     ))}
                                 </select>
+                                {modoEdicion && pacienteId === '' && (
+                                    <div className="form-text text-danger">
+                                        Al guardar sin paciente, el turno será eliminado.
+                                    </div>
+                                )}
                             </div>
                         </div>
+
                         <div className="modal-footer">
                             <button
                                 type="button"
@@ -101,7 +135,10 @@ const FormularioTurno = ({ medico, fechaHora, weekStartStr, onClose }) => {
                                 className="btn btn-success"
                                 disabled={enviando}
                             >
-                                {enviando ? 'Guardando…' : 'Crear turno'}
+                                {enviando
+                                    ? 'Guardando…'
+                                    : modoEdicion ? 'Guardar cambios' : 'Crear turno'
+                                }
                             </button>
                         </div>
                     </form>
