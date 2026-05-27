@@ -1,0 +1,81 @@
+.agenda-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.agenda-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 700px;
+}
+
+/* Encabezado días */
+.agenda-table thead th {
+    background-color: #212529;
+    color: #fff;
+    text-align: center;
+    padding: 8px 6px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+/* Columna de hora — sticky */
+.agenda-table .col-hora {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background-color: #f8f9fa;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #495057;
+    text-align: center;
+    white-space: nowrap;
+    padding: 6px 10px;
+    border-right: 2px solid #dee2e6;
+    min-width: 58px;
+}
+
+/* Celda de cada slot */
+.agenda-table td.slot {
+    vertical-align: top;
+    padding: 4px 5px;
+    min-width: 110px;
+    min-height: 36px;
+    background-color: #fff;
+}
+
+.agenda-table tr:nth-child(even) td.slot {
+    background-color: #fafafa;
+}
+
+/* Badge del médico dentro del slot */
+.agenda-badge {
+    display: block;
+    font-size: 0.72rem;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-bottom: 3px;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+}
+
+/* Nombre del paciente dentro del badge */
+.agenda-badge-paciente {
+    font-weight: normal;
+    opacity: 0.9;
+    font-style: italic;
+}
+
+/* Sin horario — celda vacía */
+.slot-vacio {
+    color: #dee2e6;
+    font-size: 0.7rem;
+    text-align: center;
+    padding-top: 6px;
+}

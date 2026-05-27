@@ -9,6 +9,7 @@ import { store } from '../store/store'
 import { ToastContainer } from 'react-toastify'
 
 // Páginas
+import Agenda from './Pages/Agenda/Agenda'
 import Insumos from './Pages/Insumos/Insumos'
 import Pacientes from './Pages/Pacientes/Pacientes'
 import DetallePaciente from './Pages/Pacientes/DetallePaciente'
@@ -79,6 +80,7 @@ function App() {
                 <Route path="/usuarios/:id" element={<DetalleUsuario />} />
                 <Route path="/medicos/:id" element={<DetalleMedico />} />
                 <Route path="/insumos" element={<Insumos />} />
+                <Route path="/agenda" element={<Agenda />} />
               </Route>
 
             </Route>

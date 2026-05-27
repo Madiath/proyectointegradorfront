@@ -5,6 +5,7 @@ import medicosReducer from "../features/medicosSlice";
 import historialClinicoReducer from "../features/historialClinicoSlice";
 import evolucionReducer from "../features/evolucionSlice";
 import insumosReducer from "../features/insumosSlice";
+import agendaReducer from "../features/agendaSlice";
 
 export const store = configureStore({
     reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
         historialClinico: historialClinicoReducer,
         evolucion: evolucionReducer,
         insumos: insumosReducer,
+        agenda: agendaReducer,
     }
 })
