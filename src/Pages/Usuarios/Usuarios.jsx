@@ -13,6 +13,8 @@ const Usuarios = () => {
     const [tabActivo, setTabActivo] = useState('medicos')
     const [mostrarFormularioAdmin, setMostrarFormularioAdmin] = useState(false)
     const [mostrarFormularioMedico, setMostrarFormularioMedico] = useState(false)
+    const [medicoADeshabilitar, setMedicoADeshabilitar] = useState(null)
+    const [deshabilitando, setDeshabilitando] = useState(false)
 
     const { lista: listaAdmins, totalBackend: totalAdmins, cargando: cargandoAdmins, error: errorAdmins, pagina: paginaAdmins, tamano: tamanoAdmins } = useSelector(state => state.usuarios)
     const { lista: listaMedicos, totalBackend: totalMedicos, cargando: cargandoMedicos, error: errorMedicos, pagina: paginaMedicos, tamano: tamanoMedicos } = useSelector(state => state.medicos)
@@ -35,10 +37,12 @@ const Usuarios = () => {
         dispatch(fetchMedicos({ pagina: paginaMedicos, tamano: tamanoMedicos }))
     }
 
-    const handleEliminarMedico = async (e, id) => {
-        e.stopPropagation()
-        if (!window.confirm('¿Deshabilitar este médico?')) return
-        const res = await dispatch(deshabilitarMedico(id))
+    const handleConfirmarDeshabilitar = async () => {
+        if (!medicoADeshabilitar) return
+        setDeshabilitando(true)
+        const res = await dispatch(deshabilitarMedico(medicoADeshabilitar.id))
+        setDeshabilitando(false)
+        setMedicoADeshabilitar(null)
         if (deshabilitarMedico.fulfilled.match(res)) {
             toast.success('Médico deshabilitado')
         } else {
@@ -53,6 +57,39 @@ const Usuarios = () => {
             )}
             {mostrarFormularioMedico && (
                 <FormularioMedico onCerrar={() => setMostrarFormularioMedico(false)} onCreado={handleMedicoCreado} />
+            )}
+
+            {/* Modal confirmación deshabilitar médico */}
+            {medicoADeshabilitar && (
+                <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-body text-center py-4">
+                                <p className="mb-1 fs-5 fw-semibold">¿Deshabilitar médico?</p>
+                                <p className="text-muted mb-0">
+                                    Se deshabilitará a <strong>{medicoADeshabilitar.nombre}</strong>.
+                                    Esta acción se puede revertir.
+                                </p>
+                            </div>
+                            <div className="modal-footer justify-content-center border-0 pt-0">
+                                <button
+                                    className="btn btn-secondary"
+                                    onClick={() => setMedicoADeshabilitar(null)}
+                                    disabled={deshabilitando}
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    className="btn btn-danger"
+                                    onClick={handleConfirmarDeshabilitar}
+                                    disabled={deshabilitando}
+                                >
+                                    {deshabilitando ? 'Deshabilitando…' : 'Deshabilitar'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
 
             <h2 className="mb-3">Usuarios</h2>
@@ -121,7 +158,10 @@ const Usuarios = () => {
                                                 <td onClick={e => e.stopPropagation()}>
                                                     <button
                                                         className="btn btn-outline-danger btn-sm"
-                                                        onClick={(e) => handleEliminarMedico(e, m.id)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            setMedicoADeshabilitar(m)
+                                                        }}
                                                     >
                                                         Deshabilitar
                                                     </button>
@@ -146,7 +186,10 @@ const Usuarios = () => {
                                             </div>
                                             <button
                                                 className="btn btn-outline-danger btn-sm ms-2"
-                                                onClick={(e) => handleEliminarMedico(e, m.id)}
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    setMedicoADeshabilitar(m)
+                                                }}
                                             >
                                                 ✕
                                             </button>
