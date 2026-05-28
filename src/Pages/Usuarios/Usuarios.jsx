@@ -16,25 +16,25 @@ const Usuarios = () => {
     const [medicoADeshabilitar, setMedicoADeshabilitar] = useState(null)
     const [deshabilitando, setDeshabilitando] = useState(false)
 
-    const { lista: listaAdmins, totalBackend: totalAdmins, cargando: cargandoAdmins, error: errorAdmins, pagina: paginaAdmins, tamano: tamanoAdmins } = useSelector(state => state.usuarios)
-    const { lista: listaMedicos, totalBackend: totalMedicos, cargando: cargandoMedicos, error: errorMedicos, pagina: paginaMedicos, tamano: tamanoMedicos } = useSelector(state => state.medicos)
+    const { lista: listaAdmins, hayMas: hayMasAdmins, cargando: cargandoAdmins, error: errorAdmins, pagina: paginaAdmins } = useSelector(state => state.usuarios)
+    const { lista: listaMedicos, hayMas: hayMasMedicos, cargando: cargandoMedicos, error: errorMedicos, pagina: paginaMedicos } = useSelector(state => state.medicos)
 
     useEffect(() => {
-        dispatch(fetchUsuarios({ pagina: paginaAdmins, tamano: tamanoAdmins }))
+        dispatch(fetchUsuarios({ pagina: paginaAdmins, tamano: 10 }))
     }, [paginaAdmins])
 
     useEffect(() => {
-        dispatch(fetchMedicos({ pagina: paginaMedicos, tamano: tamanoMedicos }))
+        dispatch(fetchMedicos({ pagina: paginaMedicos, tamano: 10 }))
     }, [paginaMedicos])
 
     const handleAdminCreado = () => {
         setMostrarFormularioAdmin(false)
-        dispatch(fetchUsuarios({ pagina: paginaAdmins, tamano: tamanoAdmins }))
+        dispatch(fetchUsuarios({ pagina: paginaAdmins, tamano: 10 }))
     }
 
     const handleMedicoCreado = () => {
         setMostrarFormularioMedico(false)
-        dispatch(fetchMedicos({ pagina: paginaMedicos, tamano: tamanoMedicos }))
+        dispatch(fetchMedicos({ pagina: paginaMedicos, tamano: 10 }))
     }
 
     const handleConfirmarDeshabilitar = async () => {
@@ -212,7 +212,7 @@ const Usuarios = () => {
                                     <button
                                         className="btn btn-outline-secondary btn-sm"
                                         onClick={() => dispatch(setPaginaMedicos(paginaMedicos + 1))}
-                                        disabled={totalMedicos < tamanoMedicos}
+                                        disabled={!hayMasMedicos}
                                     >
                                         Siguiente
                                     </button>
@@ -298,7 +298,7 @@ const Usuarios = () => {
                                     <button
                                         className="btn btn-outline-secondary btn-sm"
                                         onClick={() => dispatch(setPagina(paginaAdmins + 1))}
-                                        disabled={totalAdmins < tamanoAdmins}
+                                        disabled={!hayMasAdmins}
                                     >
                                         Siguiente
                                     </button>

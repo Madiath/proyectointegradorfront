@@ -65,7 +65,7 @@ const insumosSlice = createSlice({
     name: 'insumos',
     initialState: {
         lista: [],
-        totalBackend: 0,
+        hayMas: false,
         cargando: false,
         error: null,
         pagina: 1,
@@ -84,8 +84,8 @@ const insumosSlice = createSlice({
             })
             .addCase(fetchInsumos.fulfilled, (state, action) => {
                 state.cargando = false
-                state.lista = action.payload
-                state.totalBackend = action.payload.length
+                state.hayMas = action.payload.length > state.tamano
+                state.lista = action.payload.slice(0, state.tamano)
             })
             .addCase(fetchInsumos.rejected, (state, action) => {
                 state.cargando = false

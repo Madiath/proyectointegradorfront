@@ -14,7 +14,7 @@ const estadoConfig = {
 
 const Insumos = () => {
     const dispatch = useDispatch()
-    const { lista, totalBackend, cargando, error, pagina, tamano } = useSelector(state => state.insumos)
+    const { lista, hayMas, cargando, error, pagina, tamano } = useSelector(state => state.insumos)
 
     const [mostrarFormInsumo, setMostrarFormInsumo] = useState(false)
     const [insumoEditar, setInsumoEditar] = useState(null)
@@ -269,7 +269,7 @@ const Insumos = () => {
                             <button
                                 className="btn btn-outline-secondary btn-sm"
                                 onClick={() => dispatch(setPaginaInsumos(pagina + 1))}
-                                disabled={totalBackend < tamano}
+                                disabled={!hayMas}
                             >
                                 Siguiente
                             </button>
