@@ -52,6 +52,14 @@ const Header = () => {
             Agenda
           </NavLink>
         )}
+        {rol === 'Admin' && (
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) => 'header-link' + (isActive ? ' header-link--active' : '')}
+          >
+            Dashboard
+          </NavLink>
+        )}
       </div>
 
       <div className="header-user">
