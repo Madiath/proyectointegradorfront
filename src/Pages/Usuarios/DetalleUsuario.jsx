@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchDetalleUsuario, limpiarDetalle, deshabilitarUsuario } from '../../../features/usuariosSlice'
+import { fetchDetalleUsuario, limpiarDetalle, deshabilitarUsuario, setPagina } from '../../../features/usuariosSlice'
 import FormularioEditarUsuario from './FormularioEditarUsuario'
 
 const DetalleUsuario = () => {
@@ -25,7 +25,8 @@ const DetalleUsuario = () => {
     const handleEliminar = async () => {
         const resultado = await dispatch(deshabilitarUsuario(detalle.id))
         if (deshabilitarUsuario.fulfilled.match(resultado)) {
-            navigate('/usuarios')
+            dispatch(setPagina(1))
+            navigate('/usuarios', { state: { tab: 'admins' } })
         }
     }
 

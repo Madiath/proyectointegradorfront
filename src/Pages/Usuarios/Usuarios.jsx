@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
+import { useNavigate, useLocation } from 'react-router'
 import { fetchUsuarios, setPagina } from '../../../features/usuariosSlice'
 import { fetchMedicos, setPaginaMedicos, deshabilitarMedico } from '../../../features/medicosSlice'
 import FormularioUsuario from './FormularioUsuario'
@@ -10,7 +10,8 @@ import { toast } from 'react-toastify'
 const Usuarios = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const [tabActivo, setTabActivo] = useState('medicos')
+    const location = useLocation()
+    const [tabActivo, setTabActivo] = useState(location.state?.tab ?? 'medicos')
     const [mostrarFormularioAdmin, setMostrarFormularioAdmin] = useState(false)
     const [mostrarFormularioMedico, setMostrarFormularioMedico] = useState(false)
     const [medicoADeshabilitar, setMedicoADeshabilitar] = useState(null)
@@ -45,6 +46,8 @@ const Usuarios = () => {
         setMedicoADeshabilitar(null)
         if (deshabilitarMedico.fulfilled.match(res)) {
             toast.success('Médico deshabilitado')
+            dispatch(setPaginaMedicos(1))
+            dispatch(fetchMedicos({ pagina: 1, tamano: 10 }))
         } else {
             toast.error(res.payload || 'Error al deshabilitar')
         }

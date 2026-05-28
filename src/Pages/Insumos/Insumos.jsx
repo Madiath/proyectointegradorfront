@@ -35,7 +35,8 @@ const Insumos = () => {
         if (deshabilitarInsumo.fulfilled.match(res)) {
             toast.success('Insumo deshabilitado')
             setInsumoADeshabilitar(null)
-            dispatch(fetchInsumos({ pagina, tamano }))
+            dispatch(setPaginaInsumos(1))
+            dispatch(fetchInsumos({ pagina: 1, tamano }))
         } else {
             toast.error(res.payload || 'Error al deshabilitar')
         }
