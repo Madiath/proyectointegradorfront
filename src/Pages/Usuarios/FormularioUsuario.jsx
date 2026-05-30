@@ -44,6 +44,7 @@ const FormularioUsuario = ({ onCerrar, onCreado }) => {
                                         type="text"
                                         className={`form-control ${errors.nombre ? 'is-invalid' : ''}`}
                                         {...register('nombre', { required: 'El nombre es obligatorio' })}
+                                        maxLength={30}
                                     />
                                     {errors.nombre && <div className="invalid-feedback">{errors.nombre.message}</div>}
                                 </div>
@@ -57,6 +58,7 @@ const FormularioUsuario = ({ onCerrar, onCreado }) => {
                                             required: 'El email es obligatorio',
                                             pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Formato de email inválido' },
                                         })}
+                                        maxLength={30}
                                     />
                                     {errors.email && <div className="invalid-feedback">{errors.email.message}</div>}
                                 </div>
@@ -70,6 +72,7 @@ const FormularioUsuario = ({ onCerrar, onCreado }) => {
                                             required: 'La contraseña es obligatoria',
                                             minLength: { value: 6, message: 'Mínimo 6 caracteres' },
                                         })}
+                                        maxLength={200}
                                     />
                                     {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
                                 </div>

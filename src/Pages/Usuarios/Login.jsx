@@ -115,6 +115,12 @@ const Login = () => {
       if (code === "campos_vacios") {
         toast.error("Por favor, completa todos los campos.")
       }
+      else if (code === "minMax_mail") {
+        toast.error("El email debe tener entre 2 y 30 caracteres.")
+      }
+      else if (code === "minMax_pass") {
+        toast.error("La contraseña debe tener entre 2 y 200 caracteres.")
+      }
       else if (code === "informacion_incorrecta") {
         toast.error("Email o contraseña incorrectos.")
       }
@@ -148,6 +154,7 @@ const Login = () => {
               placeholder="Email"
               value={form.email}
               onChange={handleChange}
+              maxLength={30}
             />
           </div>
 
@@ -160,6 +167,7 @@ const Login = () => {
               placeholder="Contraseña"
               value={form.password}
               onChange={handleChange}
+              maxLength={200}
             />
           </div>
 

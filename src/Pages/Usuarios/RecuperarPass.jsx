@@ -96,24 +96,39 @@ const RecuperarPass = () => {
     setForm({ ...form, [e.target.name]: e.target.value })
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+  e.preventDefault()
 
-    if (!form.email) {
-      toast.error("Ingresá un email")
+  if (!form.email) {
+    toast.error("Ingresá un email")
+    return
+  }
+
+  setLoading(true)
+
+  try {
+    await recuperarContraseña(form.email)
+
+    setEnviado(true)
+  }
+  catch (error) {
+
+    const mensaje = error.message
+
+    if (mensaje === "minMax_mail") {
+      toast.error("El email debe tener entre 2 y 30 caracteres")
+      return
+    }
+    if(mensaje === "null_usuario"){
+      setEnviado(true) // Para no revelar si el email existe o no, mostramos el mensaje de éxito igual
       return
     }
 
-    setLoading(true)
-
-    try {
-      await recuperarContraseña(form.email)
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setEnviado(true)
-      setLoading(false)
-    }
+    toast.error("Ocurrió un error al procesar la solicitud")
   }
+  finally {
+    setLoading(false)
+  }
+}
 
   if (loading) return <LoadingScreen />
 
@@ -152,6 +167,7 @@ const RecuperarPass = () => {
                 placeholder="Ingresá tu email"
                 value={form.email}
                 onChange={handleChange}
+                maxLength={30}
               />
             </div>
 

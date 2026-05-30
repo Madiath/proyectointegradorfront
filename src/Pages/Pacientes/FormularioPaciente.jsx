@@ -2,14 +2,17 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { crearPaciente, fetchPacientes } from '../../../features/pacientesSlice'
+import { verificarDocumento } from '../../Services/pacienteService'
 import { toast } from 'react-toastify'
 
 const FormularioPaciente = ({ onCerrar }) => {
     const dispatch = useDispatch()
     const { cargando, pagina, tamano, orden } = useSelector(state => state.pacientes)
     const [errorServidor, setErrorServidor] = useState(null)
+    const [documentoDuplicado, setDocumentoDuplicado] = useState(false)
 
     const { register, handleSubmit, formState: { errors } } = useForm()
+
 
     const onSubmit = async (data) => {
         setErrorServidor(null)
@@ -22,6 +25,20 @@ const FormularioPaciente = ({ onCerrar }) => {
             setErrorServidor(resultado.payload || 'Error al registrar paciente')
         }
     }
+
+
+    const verificarDocumentoExistente = async (documento) => {
+        if (!documento) return
+
+        try {
+            const existe = await verificarDocumento(documento);
+            setDocumentoDuplicado(existe)
+        } catch {
+            setDocumentoDuplicado(false)
+        }
+    }
+
+
 
     return (
         <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
@@ -57,19 +74,40 @@ const FormularioPaciente = ({ onCerrar }) => {
                                 <div className="col-md-6">
                                     <label className="form-label">N° de documento *</label>
                                     <input
-                                        className={`form-control ${errors.numeroDocumento ? 'is-invalid' : ''}`}
+                                        className={`form-control ${errors.numeroDocumento || documentoDuplicado
+                                            ? 'is-invalid'
+                                            : ''
+                                            }`}
                                         {...register('numeroDocumento', {
                                             required: 'El número de documento es obligatorio',
-                                            pattern: { value: /^\d+$/, message: 'Solo se permiten números' },
-                                            minLength: { value: 6, message: 'Mínimo 6 dígitos' },
-                                            maxLength: { value: 15, message: 'Máximo 15 dígitos' },
+                                            pattern: {
+                                                value: /^\d+$/,
+                                                message: 'Solo se permiten números'
+                                            },
+                                            minLength: {
+                                                value: 6,
+                                                message: 'Mínimo 6 dígitos'
+                                            },
+                                            maxLength: {
+                                                value: 15,
+                                                message: 'Máximo 15 dígitos'
+                                            }
                                         })}
+                                        onBlur={(e) => verificarDocumentoExistente(e.target.value)}
                                     />
+
                                     {errors.numeroDocumento && (
-                                        <div className="invalid-feedback">{errors.numeroDocumento.message}</div>
+                                        <div className="invalid-feedback">
+                                            {errors.numeroDocumento.message}
+                                        </div>
+                                    )}
+
+                                    {!errors.numeroDocumento && documentoDuplicado && (
+                                        <div className="invalid-feedback">
+                                            Ya existe un paciente con ese documento.
+                                        </div>
                                     )}
                                 </div>
-
                                 <div className="col-md-6">
                                     <label className="form-label">Email</label>
                                     <input
@@ -92,6 +130,13 @@ const FormularioPaciente = ({ onCerrar }) => {
                                         className={`form-control ${errors.fechaNacimiento ? 'is-invalid' : ''}`}
                                         {...register('fechaNacimiento', {
                                             required: 'La fecha de nacimiento es obligatoria',
+                                            validate: (value) => {
+                                                const fecha = new Date(value);
+                                                const limite = new Date();
+                                                limite.setFullYear(limite.getFullYear() - 140);
+
+                                                return fecha >= limite || 'La edad no puede ser mayor a 140 años';
+                                            }
                                         })}
                                     />
                                     {errors.fechaNacimiento && (

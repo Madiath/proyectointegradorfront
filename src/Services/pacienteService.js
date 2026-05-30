@@ -30,3 +30,24 @@ export const getPaciente = (id) => {
 export const eliminarPaciente = (id) => {
     return axiosInstance.delete(`${BASE_URL}/${id}`)
 }
+export const verificarDocumento = async (documento) => {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+        `${BASE_URL}/verificarCi?ci=${documento}`,
+        {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error('Error al verificar documento');
+    }
+
+    return await response.json();
+}
