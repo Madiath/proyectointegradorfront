@@ -2,7 +2,8 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   getEvolucionesPorPaciente,
   altaEvolucion,
-  editarEvolucion
+  editarEvolucion,
+  getEvolucionesPorFecha
 } from "../src/Services/evolucionService";
 
 export const fetchEvolucionesPorPaciente = createAsyncThunk(
@@ -43,6 +44,23 @@ export const actualizarEvolucion = createAsyncThunk(
     }
   }
 );
+
+
+//Filtro por fecha
+export const fetchEvolucionesPorFecha = createAsyncThunk(
+  "evolucion/fetchEvolucionesPorFecha",
+  async ({ pacienteId, fechaDesde, fechaHasta }, thunkAPI) => {
+    try {
+      return await getEvolucionesPorFecha(pacienteId, fechaDesde, fechaHasta);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.mensaje || "Error al obtener evoluciones"
+      );
+    }
+  }
+);
+
+
 
 const evolucionSlice = createSlice({
   name: "evolucion",
@@ -101,7 +119,19 @@ const evolucionSlice = createSlice({
       .addCase(actualizarEvolucion.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+      .addCase(fetchEvolucionesPorFecha.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchEvolucionesPorFecha.fulfilled, (state, action) => {
+        state.loading = false;
+        state.evoluciones = action.payload.listaEvoluciones || [];
+      })
+      .addCase(fetchEvolucionesPorFecha.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
   }
 });
 

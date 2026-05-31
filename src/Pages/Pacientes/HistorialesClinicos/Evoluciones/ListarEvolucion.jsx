@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchEvolucionesPorPaciente,
   limpiarMensajeEvolucion,
+  fetchEvolucionesPorFecha
 } from "../../../../../features/evolucionSlice";
 import '../../../../Shared/CSS/style.css'
 
@@ -12,6 +13,11 @@ const ListaEvoluciones = () => {
   const dispatch = useDispatch();
 
   const { evoluciones, loading, error } = useSelector((state) => state.evolucion);
+
+  //Fechas de filtro
+  const [fechaDesde, setFechaDesde] = useState("");
+  const [fechaHasta, setFechaHasta] = useState("");
+
 
   useEffect(() => {
     dispatch(fetchEvolucionesPorPaciente(id));
@@ -23,12 +29,30 @@ const ListaEvoluciones = () => {
 
   if (loading) return <p>Cargando evoluciones...</p>;
 
+  //Filtro
+  const handleFiltrar = () => {
+    dispatch(fetchEvolucionesPorFecha({
+      pacienteId: id,
+      fechaDesde: fechaDesde,
+      fechaHasta: fechaHasta
+    }));
+  };
+
+  //Limpiar filtro
+  const handleLimpiarFiltro = () => {
+    setFechaDesde("");
+    setFechaHasta("");
+    dispatch(fetchEvolucionesPorPaciente(id));
+  };
+
   return (
     <div className="container mt-4">
       <div className="sticky-header">
         <h2>Evoluciones del Paciente</h2>
 
         {error && <div className="alert alert-warning">{error}</div>}
+
+
 
         <div className="mb-3 d-flex gap-2">
           <Link
@@ -45,6 +69,35 @@ const ListaEvoluciones = () => {
             Volver al historial
           </Link>
         </div>
+
+        <div className="d-flex gap-2 mb-3">
+          <input
+            type="date"
+            value={fechaDesde}
+            onChange={(e) => setFechaDesde(e.target.value)}
+          />
+
+          <input
+            type="date"
+            value={fechaHasta}
+            onChange={(e) => setFechaHasta(e.target.value)}
+          />
+          <button
+            className="btn btn-primary"
+            onClick={handleFiltrar}
+          >
+            Filtrar
+          </button>
+
+          <button
+            className="btn btn-secondary"
+            onClick={handleLimpiarFiltro}
+          >
+            Limpiar
+          </button>
+        </div>
+
+
       </div>
 
       {!evoluciones || evoluciones.length === 0 ? (
