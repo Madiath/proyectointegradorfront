@@ -69,21 +69,19 @@ const DetalleHistorialClinico = () => {
 
   return (
     <div className="container mt-4">
-      <div className="sticky-header">
-        <div className="titulo-centrado">
-          <h2>Detalle del Historial Clínico</h2>
-        </div>
+      <div className="sticky-header d-flex align-items-center justify-content-between">
+        <div className="sticky-header d-flex align-items-center gap-3">
+          <Link
+            to={`/pacientes/${id}`}
+            className="btn btn-outline-secondary btn-sm"
+          >
+            Volver al paciente
+          </Link>
 
-        <div className="btn-volver">
-          <div className="d-flex gap-2 mb-3">
-            <Link to={`/pacientes/${id}`} className="btn btn-secondary">
-              Volver al paciente
-            </Link>
-          </div>
+          <h2 className="mb-0">Detalle del Historial Clínico</h2>
         </div>
 
       </div>
-
       {error && <div className="alert alert-warning">{error}</div>}
 
       {!historial ? (

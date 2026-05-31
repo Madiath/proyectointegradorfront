@@ -48,55 +48,70 @@ const ListaEvoluciones = () => {
   return (
     <div className="container mt-4">
       <div className="sticky-header">
-        <h2>Evoluciones del Paciente</h2>
 
-        {error && <div className="alert alert-warning">{error}</div>}
-
-
-
-        <div className="mb-3 d-flex gap-2">
-          <Link
-            to={`/pacientes/${id}/evoluciones/nueva`}
-            className="btn btn-primary"
-          >
-            Agregar evolución
-          </Link>
+        <div className="d-flex justify-content-between align-items-center mb-2">
 
           <Link
             to={`/pacientes/${id}/historial`}
-            className="btn btn-secondary"
+            className="btn btn-outline-secondary btn-sm"
           >
-            Volver al historial
+            Volver
           </Link>
+
+          <h3 className="mb-0">Evoluciones del Paciente</h3>
+
+          <Link
+            to={`/pacientes/${id}/evoluciones/nueva`}
+            className="btn btn-primary btn-sm"
+          >
+            Agregar
+          </Link>
+
         </div>
 
-        <div className="d-flex gap-2 mb-3">
+        {error && (
+          <div className="alert alert-warning py-2 mb-2">
+            {error}
+          </div>
+        )}
+
+        <div className="d-flex align-items-center gap-2 mb-2 flex-wrap">
+
+          <small>Desde</small>
+
           <input
             type="date"
+            className="form-control form-control-sm"
+            style={{ width: "150px" }}
             value={fechaDesde}
             onChange={(e) => setFechaDesde(e.target.value)}
           />
 
+          <small>Hasta</small>
+
           <input
             type="date"
+            className="form-control form-control-sm"
+            style={{ width: "150px" }}
             value={fechaHasta}
             onChange={(e) => setFechaHasta(e.target.value)}
           />
+
           <button
-            className="btn btn-primary"
+            className="btn btn-primary btn-sm"
             onClick={handleFiltrar}
           >
             Filtrar
           </button>
 
           <button
-            className="btn btn-secondary"
+            className="btn btn-outline-secondary btn-sm"
             onClick={handleLimpiarFiltro}
           >
             Limpiar
           </button>
-        </div>
 
+        </div>
 
       </div>
 

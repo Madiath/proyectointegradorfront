@@ -100,7 +100,7 @@ const FormularioEditarHistorialClinico = () => {
     <div className="container mt-4">
       <button
   type="button"
-  className="btn btn-secondary mb-3"
+  className="btn btn-outline-secondary btn-sm"
   onClick={() => navigate(`/pacientes/${id}`)}
 >
   Volver al paciente
