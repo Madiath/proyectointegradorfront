@@ -27,20 +27,38 @@ const DetalleHistorialClinico = () => {
     cargarHistorial();
   }, [id]);
 
+
   const handleExportarPdf = async () => {
     try {
-      const pdfBlob = await generarPdfHistorialClinico(id);
+      const response = await generarPdfHistorialClinico(id);
 
-      const url = window.URL.createObjectURL(
-        new Blob([pdfBlob], { type: "application/pdf" })
-      );
+      const pdfBlob = response.data;
+
+      const contentDisposition =
+        response.headers["content-disposition"];
+
+      let nombreArchivo = "HistoriaClinica.pdf";
+
+
+
+
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename=([^;]+)/);
+        if (match?.[1]) {
+          nombreArchivo = match[1].replaceAll('"', '').trim();
+        }
+      }
+
+      const url = window.URL.createObjectURL(pdfBlob);
 
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `HistorialClinico_Paciente_${id}.pdf`);
+      link.download = nombreArchivo;
+
       document.body.appendChild(link);
       link.click();
-      link.remove();
+      document.body.removeChild(link);
+
       window.URL.revokeObjectURL(url);
     } catch (err) {
       setError(err.message || "No se pudo exportar el PDF");
@@ -51,13 +69,20 @@ const DetalleHistorialClinico = () => {
 
   return (
     <div className="container mt-4">
-      <div className="d-flex gap-2 mb-3">
-        <Link to={`/pacientes/${id}`} className="btn btn-secondary">
-          Volver al paciente
-        </Link>
-      </div>
+      <div className="sticky-header">
+        <div className="titulo-centrado">
+          <h2>Detalle del Historial Clínico</h2>
+        </div>
 
-      <h2>Detalle del Historial Clínico</h2>
+        <div className="btn-volver">
+          <div className="d-flex gap-2 mb-3">
+            <Link to={`/pacientes/${id}`} className="btn btn-secondary">
+              Volver al paciente
+            </Link>
+          </div>
+        </div>
+
+      </div>
 
       {error && <div className="alert alert-warning">{error}</div>}
 
@@ -125,7 +150,7 @@ const DetalleHistorialClinico = () => {
           </div>
 
           <div className="mt-3 d-flex gap-2">
-          
+
 
             <Link
               to={`/pacientes/${id}/evoluciones`}
