@@ -1,13 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import {
     descargarArchivoExamen,
+    editarExamenPaciente,
     eliminarExamenPaciente,
     listarExamenesPaciente,
     subirExamenPaciente
 } from '../../Services/examenPacienteService'
 
 const extensionesPermitidas = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx', 'xls', 'xlsx']
+const tamanioMaximoBytes = 20 * 1024 * 1024
+const examenesPorPagina = 5
+
+const obtenerExtension = (nombreArchivo = '') =>
+    nombreArchivo.includes('.') ? nombreArchivo.split('.').pop().toLowerCase() : ''
 
 const ExamenesPaciente = () => {
     const { id } = useParams()
@@ -21,6 +27,18 @@ const ExamenesPaciente = () => {
     const [subiendo, setSubiendo] = useState(false)
     const [mensaje, setMensaje] = useState('')
     const [error, setError] = useState('')
+    const [busqueda, setBusqueda] = useState('')
+    const [filtroExtension, setFiltroExtension] = useState('')
+    const [paginaActual, setPaginaActual] = useState(1)
+    const [examenAEliminar, setExamenAEliminar] = useState(null)
+    const [motivoEliminacion, setMotivoEliminacion] = useState('')
+    const [errorMotivo, setErrorMotivo] = useState('')
+    const [eliminando, setEliminando] = useState(false)
+    const [examenAEditar, setExamenAEditar] = useState(null)
+    const [nombreEdicion, setNombreEdicion] = useState('')
+    const [archivoEdicion, setArchivoEdicion] = useState(null)
+    const [errorEdicion, setErrorEdicion] = useState('')
+    const [editando, setEditando] = useState(false)
 
     const cargarExamenes = async () => {
         setLoading(true)
@@ -29,7 +47,7 @@ const ExamenesPaciente = () => {
             const data = await listarExamenesPaciente(id)
             setExamenes(data)
         } catch (err) {
-            setError(err.response?.data?.mensaje || 'No se pudieron cargar los exámenes.')
+            setError(err.response?.data?.mensaje || 'No se pudieron cargar los examenes.')
         } finally {
             setLoading(false)
         }
@@ -39,16 +57,49 @@ const ExamenesPaciente = () => {
         cargarExamenes()
     }, [id])
 
-    const validarArchivo = (file) => {
-        if (!file) return 'Debe seleccionar un archivo.'
+    useEffect(() => {
+        setPaginaActual(1)
+    }, [busqueda, filtroExtension])
 
-        const extension = file.name.split('.').pop()?.toLowerCase()
+    const validarArchivo = (file, obligatorio = true) => {
+        if (!file) return obligatorio ? 'Debe seleccionar un archivo.' : ''
+
+        if (file.size > tamanioMaximoBytes) {
+            return 'El archivo no puede superar los 20 MB.'
+        }
+
+        const extension = obtenerExtension(file.name)
         if (!extensionesPermitidas.includes(extension)) {
             return 'Formato no permitido. Use PDF, JPG, JPEG, PNG, DOC, DOCX, XLS o XLSX.'
         }
 
         return ''
     }
+
+    const extensionesDisponibles = useMemo(() => {
+        const extensiones = examenes
+            .map((examen) => obtenerExtension(examen.nombreArchivoOriginal))
+            .filter(Boolean)
+
+        return [...new Set(extensiones)].sort()
+    }, [examenes])
+
+    const examenesFiltrados = useMemo(() => {
+        const texto = busqueda.trim().toLowerCase()
+
+        return examenes.filter((examen) => {
+            const coincideNombre = !texto || examen.nombre.toLowerCase().includes(texto)
+            const extension = obtenerExtension(examen.nombreArchivoOriginal)
+            const coincideExtension = !filtroExtension || extension === filtroExtension
+
+            return coincideNombre && coincideExtension
+        })
+    }, [examenes, busqueda, filtroExtension])
+
+    const totalPaginas = Math.max(1, Math.ceil(examenesFiltrados.length / examenesPorPagina))
+    const paginaSegura = Math.min(paginaActual, totalPaginas)
+    const inicioPagina = (paginaSegura - 1) * examenesPorPagina
+    const examenesPagina = examenesFiltrados.slice(inicioPagina, inicioPagina + examenesPorPagina)
 
     const handleSubmit = async (event) => {
         event.preventDefault()
@@ -105,18 +156,70 @@ const ExamenesPaciente = () => {
         }
     }
 
-    const handleEliminar = async (examenId) => {
-        const confirmado = window.confirm('¿Seguro que quiere eliminar este examen?')
-        if (!confirmado) return
-
-        setError('')
+    const abrirModalEliminar = (examen) => {
+        setExamenAEliminar(examen)
+        setMotivoEliminacion('')
+        setErrorMotivo('')
         setMensaje('')
+        setError('')
+    }
+
+    const confirmarEliminar = async () => {
+        if (!motivoEliminacion.trim()) {
+            setErrorMotivo('Ingrese un motivo de eliminacion.')
+            return
+        }
+
+        setEliminando(true)
+        setErrorMotivo('')
         try {
-            await eliminarExamenPaciente(examenId)
+            await eliminarExamenPaciente(examenAEliminar.id, motivoEliminacion.trim())
+            setExamenAEliminar(null)
+            setMotivoEliminacion('')
             setMensaje('Examen eliminado correctamente.')
             await cargarExamenes()
         } catch (err) {
-            setError(err.response?.data?.mensaje || 'No se pudo eliminar el examen.')
+            setErrorMotivo(err.response?.data?.mensaje || 'No se pudo eliminar el examen.')
+        } finally {
+            setEliminando(false)
+        }
+    }
+
+    const abrirModalEditar = (examen) => {
+        setExamenAEditar(examen)
+        setNombreEdicion(examen.nombre)
+        setArchivoEdicion(null)
+        setErrorEdicion('')
+        setMensaje('')
+        setError('')
+    }
+
+    const confirmarEdicion = async (event) => {
+        event.preventDefault()
+
+        if (!nombreEdicion.trim()) {
+            setErrorEdicion('Ingrese un nombre para el examen.')
+            return
+        }
+
+        const errorArchivo = validarArchivo(archivoEdicion, false)
+        if (errorArchivo) {
+            setErrorEdicion(errorArchivo)
+            return
+        }
+
+        setEditando(true)
+        setErrorEdicion('')
+        try {
+            await editarExamenPaciente(examenAEditar.id, nombreEdicion.trim(), archivoEdicion)
+            setExamenAEditar(null)
+            setArchivoEdicion(null)
+            setMensaje('Examen actualizado correctamente.')
+            await cargarExamenes()
+        } catch (err) {
+            setErrorEdicion(err.response?.data?.mensaje || 'No se pudo actualizar el examen.')
+        } finally {
+            setEditando(false)
         }
     }
 
@@ -133,7 +236,7 @@ const ExamenesPaciente = () => {
         <div className="container mt-4">
             <div className="d-flex justify-content-between align-items-center gap-2 mb-3 flex-wrap">
                 <div>
-                    <h2 className="mb-1">Exámenes del paciente</h2>
+                    <h2 className="mb-1">Examenes del paciente</h2>
                     <p className="text-muted mb-0">Estudios y documentos asociados al paciente.</p>
                 </div>
                 <Link to={`/pacientes/${id}`} className="btn btn-outline-secondary">
@@ -170,6 +273,7 @@ const ExamenesPaciente = () => {
                                     onChange={(e) => setArchivo(e.target.files?.[0] || null)}
                                     disabled={subiendo}
                                 />
+                                <div className="form-text">Maximo 20 MB. Formatos: PDF, JPG, PNG, DOC, DOCX, XLS, XLSX.</div>
                             </div>
                             <div className="col-md-2 d-flex align-items-end">
                                 <button type="submit" className="btn btn-primary w-100" disabled={subiendo}>
@@ -183,67 +287,246 @@ const ExamenesPaciente = () => {
 
             <div className="card shadow-sm">
                 <div className="card-header fw-semibold" style={{ backgroundColor: '#f0f0f0' }}>
-                    Exámenes cargados
+                    Examenes cargados
                 </div>
                 <div className="card-body">
+                    <div className="row g-3 mb-3">
+                        <div className="col-md-8">
+                            <label className="form-label">Buscar por nombre</label>
+                            <input
+                                type="search"
+                                className="form-control"
+                                value={busqueda}
+                                onChange={(e) => setBusqueda(e.target.value)}
+                                placeholder="Nombre del examen o documento"
+                            />
+                        </div>
+                        <div className="col-md-4">
+                            <label className="form-label">Tipo de archivo</label>
+                            <select
+                                className="form-select"
+                                value={filtroExtension}
+                                onChange={(e) => setFiltroExtension(e.target.value)}
+                            >
+                                <option value="">Todos</option>
+                                {extensionesDisponibles.map((extension) => (
+                                    <option key={extension} value={extension}>
+                                        {extension.toUpperCase()}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
                     {loading ? (
                         <div className="text-center py-4">
                             <div className="spinner-border text-success" role="status" />
                         </div>
                     ) : examenes.length === 0 ? (
-                        <div className="alert alert-info mb-0">Este paciente aún no tiene exámenes cargados.</div>
+                        <div className="alert alert-info mb-0">Este paciente aun no tiene examenes cargados.</div>
+                    ) : examenesFiltrados.length === 0 ? (
+                        <div className="alert alert-info mb-0">No se encontraron examenes con esos filtros.</div>
                     ) : (
-                        <div className="table-responsive">
-                            <table className="table table-hover align-middle mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Nombre</th>
-                                        <th>Fecha de carga</th>
-                                        <th>Archivo original</th>
-                                        <th className="text-end">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {examenes.map((examen) => (
-                                        <tr key={examen.id}>
-                                            <td className="fw-medium">{examen.nombre}</td>
-                                            <td>{formatearFecha(examen.fechaCarga)}</td>
-                                            <td>{examen.nombreArchivoOriginal}</td>
-                                            <td>
-                                                <div className="d-flex gap-2 justify-content-end flex-wrap">
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-sm btn-outline-primary"
-                                                        onClick={() => abrirArchivo(examen)}
-                                                    >
-                                                        Ver archivo
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-sm btn-outline-secondary"
-                                                        onClick={() => abrirArchivo(examen, true)}
-                                                    >
-                                                        Descargar
-                                                    </button>
-                                                    {puedeGestionar && (
+                        <>
+                            <div className="table-responsive">
+                                <table className="table table-hover align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Fecha de carga</th>
+                                            <th>Archivo original</th>
+                                            <th>Tipo</th>
+                                            <th className="text-end">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {examenesPagina.map((examen) => (
+                                            <tr key={examen.id}>
+                                                <td className="fw-medium">{examen.nombre}</td>
+                                                <td>{formatearFecha(examen.fechaCarga)}</td>
+                                                <td>{examen.nombreArchivoOriginal}</td>
+                                                <td>{obtenerExtension(examen.nombreArchivoOriginal).toUpperCase() || '-'}</td>
+                                                <td>
+                                                    <div className="d-flex gap-2 justify-content-end flex-wrap">
                                                         <button
                                                             type="button"
-                                                            className="btn btn-sm btn-outline-danger"
-                                                            onClick={() => handleEliminar(examen.id)}
+                                                            className="btn btn-sm btn-outline-primary"
+                                                            onClick={() => abrirArchivo(examen)}
                                                         >
-                                                            Eliminar
+                                                            Ver archivo
                                                         </button>
-                                                    )}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-sm btn-outline-secondary"
+                                                            onClick={() => abrirArchivo(examen, true)}
+                                                        >
+                                                            Descargar
+                                                        </button>
+                                                        {puedeGestionar && (
+                                                            <>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-warning"
+                                                                    onClick={() => abrirModalEditar(examen)}
+                                                                >
+                                                                    Editar
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-danger"
+                                                                    onClick={() => abrirModalEliminar(examen)}
+                                                                >
+                                                                    Eliminar
+                                                                </button>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div className="d-flex justify-content-between align-items-center gap-2 mt-3 flex-wrap">
+                                <span className="text-muted small">
+                                    Mostrando {inicioPagina + 1}-{Math.min(inicioPagina + examenesPorPagina, examenesFiltrados.length)} de {examenesFiltrados.length}
+                                </span>
+                                <div className="btn-group">
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-secondary btn-sm"
+                                        disabled={paginaSegura === 1}
+                                        onClick={() => setPaginaActual((pagina) => Math.max(1, pagina - 1))}
+                                    >
+                                        Anterior
+                                    </button>
+                                    <button type="button" className="btn btn-outline-secondary btn-sm" disabled>
+                                        {paginaSegura} / {totalPaginas}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-secondary btn-sm"
+                                        disabled={paginaSegura === totalPaginas}
+                                        onClick={() => setPaginaActual((pagina) => Math.min(totalPaginas, pagina + 1))}
+                                    >
+                                        Siguiente
+                                    </button>
+                                </div>
+                            </div>
+                        </>
                     )}
                 </div>
             </div>
+
+            {examenAEliminar && (
+                <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Eliminar examen</h5>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    onClick={() => setExamenAEliminar(null)}
+                                    disabled={eliminando}
+                                />
+                            </div>
+                            <div className="modal-body">
+                                <p className="mb-2">
+                                    Confirme la eliminacion logica de <strong>{examenAEliminar.nombre}</strong>.
+                                </p>
+                                <label className="form-label">Motivo de eliminacion *</label>
+                                <textarea
+                                    className={`form-control ${errorMotivo ? 'is-invalid' : ''}`}
+                                    rows="3"
+                                    value={motivoEliminacion}
+                                    onChange={(e) => setMotivoEliminacion(e.target.value)}
+                                    disabled={eliminando}
+                                />
+                                {errorMotivo && <div className="invalid-feedback d-block">{errorMotivo}</div>}
+                            </div>
+                            <div className="modal-footer">
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={() => setExamenAEliminar(null)}
+                                    disabled={eliminando}
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-danger"
+                                    onClick={confirmarEliminar}
+                                    disabled={eliminando}
+                                >
+                                    {eliminando ? 'Eliminando...' : 'Eliminar'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {examenAEditar && (
+                <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <form onSubmit={confirmarEdicion}>
+                                <div className="modal-header">
+                                    <h5 className="modal-title">Editar examen</h5>
+                                    <button
+                                        type="button"
+                                        className="btn-close"
+                                        onClick={() => setExamenAEditar(null)}
+                                        disabled={editando}
+                                    />
+                                </div>
+                                <div className="modal-body">
+                                    {errorEdicion && <div className="alert alert-danger">{errorEdicion}</div>}
+                                    <div className="mb-3">
+                                        <label className="form-label">Nombre del examen</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={nombreEdicion}
+                                            onChange={(e) => setNombreEdicion(e.target.value)}
+                                            disabled={editando}
+                                        />
+                                    </div>
+                                    <div className="mb-2">
+                                        <label className="form-label">Reemplazar archivo</label>
+                                        <input
+                                            type="file"
+                                            className="form-control"
+                                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+                                            onChange={(e) => setArchivoEdicion(e.target.files?.[0] || null)}
+                                            disabled={editando}
+                                        />
+                                        <div className="form-text">
+                                            Archivo actual: {examenAEditar.nombreArchivoOriginal}. Si no selecciona uno nuevo, se conserva el existente.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="modal-footer">
+                                    <button
+                                        type="button"
+                                        className="btn btn-secondary"
+                                        onClick={() => setExamenAEditar(null)}
+                                        disabled={editando}
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button type="submit" className="btn btn-primary" disabled={editando}>
+                                        {editando ? 'Guardando...' : 'Guardar cambios'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
