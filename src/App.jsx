@@ -52,25 +52,29 @@ function App() {
           <Route path="/login" element={<Login />} />
 
           {/* 🔐 MFA */}
-          <Route path="/authsecure" element={<Mfa/>} />
+          <Route path="/authsecure" element={<Mfa />} />
 
           {/* 🔑 Recuperar password */}
           <Route path="/rec-pass" element={<RecuperarPass />} />
           <Route path="/restbl-pass" element={<RestablecerPass />} />
 
-          {/* 📊 Historial clínico (públicas o mover luego si querés) */}
-          <Route path="/pacientes/:id/historial" element={<DetalleHistorialClinico />} />
-          <Route path="/pacientes/:id/historial/nuevo" element={<FormularioHistorialClinico />} />
-          <Route path="/pacientes/:id/historial/editar" element={<FormularioEditarHistorialClinico />} />
-
-          {/* 📈 Evoluciones */}
-          <Route path="/pacientes/:id/evoluciones" element={<ListarEvolucion />} />
-          <Route path="/pacientes/:id/evoluciones/nueva" element={<FormularioEvolucion />} />
-          <Route path="/pacientes/:idPaciente/evoluciones/:idEvolucion/editar" element={<FormularioEditarEvolucion />} />
 
           {/* 🔒 Protegidas */}
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
+
+
+              {/* 📊 Historial clínico (públicas o mover luego si querés) */}
+              <Route path="/pacientes/:id/historial" element={<DetalleHistorialClinico />} />
+              <Route path="/pacientes/:id/historial/nuevo" element={<FormularioHistorialClinico />} />
+              <Route path="/pacientes/:id/historial/editar" element={<FormularioEditarHistorialClinico />} />
+
+              {/* 📈 Evoluciones */}
+              <Route path="/pacientes/:id/evoluciones" element={<ListarEvolucion />} />
+              <Route path="/pacientes/:id/evoluciones/nueva" element={<FormularioEvolucion />} />
+              <Route path="/pacientes/:idPaciente/evoluciones/:idEvolucion/editar" element={<FormularioEditarEvolucion />} />
+
+
 
               <Route path="/pacientes" element={<Pacientes />} />
               <Route path="/pacientes/:id" element={<DetallePaciente />} />
