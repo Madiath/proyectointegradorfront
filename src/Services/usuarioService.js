@@ -30,23 +30,27 @@ export const loginUsuario = async (usuario) => {
   })
 
   if (!response.ok) {
-    const text = await response.text()
+  const text = await response.text()
 
-    let mensaje = "Error en el servidor"
+  let mensaje = "Error en el servidor"
 
-    try {
-      const json = JSON.parse(text)
+  try {
+    const json = JSON.parse(text)
+
+    if (json.errors) {
+      const primerCampo = Object.keys(json.errors)[0]
+      mensaje = json.errors[primerCampo][0]
+    } else {
       mensaje = json.mensaje || mensaje
-    } catch {
-      mensaje = text
     }
-
-    throw new Error(mensaje)
+  } catch {
+    mensaje = text
   }
 
+  throw new Error(mensaje)
+}
   return response.json()
 }
-
 
 // =========================
 // MFA

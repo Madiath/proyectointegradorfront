@@ -84,6 +84,8 @@ const s = {
 const Login = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const [errorEmail, setErrorEmail] = useState("")
+  const [errorPassword, setErrorPassword] = useState("")
   const [form, setForm] = useState({ email: '', password: '' })
 
   const handleChange = (e) =>
@@ -110,28 +112,44 @@ const Login = () => {
 
     } catch (error) {
 
-      const code = error.message
-
-      if (code === "campos_vacios") {
-        toast.error("Por favor, completa todos los campos.")
-      }
-      else if (code === "minMax_mail") {
-        toast.error("El email debe tener entre 2 y 30 caracteres.")
-      }
-      else if (code === "minMax_pass") {
-        toast.error("La contraseña debe tener entre 2 y 200 caracteres.")
-      }
-      else if (code === "informacion_incorrecta") {
-        toast.error("Email o contraseña incorrectos.")
-      }
-      else {
-        toast.error("Ocurrió un error. Intentá nuevamente.")
-      }
+      toast.error(error.message || "Error al iniciar sesión");
 
     } finally {
       setLoading(false)
     }
   }
+
+  const validarEmail = () => {
+    if (!form.email.trim()) {
+      setErrorEmail("El email es obligatorio")
+      return
+    }
+
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+    if (!regex.test(form.email)) {
+      setErrorEmail("El formato del email no es válido")
+      return
+    }
+
+    setErrorEmail("")
+  }
+
+  const validarPassword = () => {
+    if (!form.password.trim()) {
+      setErrorPassword("La contraseña es obligatoria")
+      return
+    }
+
+    if (form.password.length < 2 || form.password.length > 200) {
+      setErrorPassword("La contraseña debe tener almenos 2 caracteres y máximo 200")
+      return
+    }
+
+    setErrorPassword("")
+  }
+
+
 
   if (loading) return <LoadingScreen />
 
@@ -147,28 +165,72 @@ const Login = () => {
 
           <div style={s.inputWrapper}>
             <span style={s.inputIcon}><User size={16} /></span>
-            <input
-              style={s.input}
-              type="text"
-              name="email"
-              placeholder="Email"
-              value={form.email}
-              onChange={handleChange}
-              maxLength={30}
-            />
+            <div style={{ width: '100%' }}>
+              <div style={s.inputWrapper}>
+                <span style={s.inputIcon}>
+                  <User size={16} />
+                </span>
+
+                <input
+                  style={s.input}
+                  type="text"
+                  name="email"
+                  placeholder="Email"
+                  value={form.email}
+                  onChange={handleChange}
+                  onBlur={validarEmail}
+                  maxLength={30}
+                />
+              </div>
+
+              {errorEmail && (
+                <div
+                  style={{
+                    color: '#fff',
+                    fontSize: '0.8rem',
+                    marginTop: '4px',
+                    paddingLeft: '4px'
+                  }}
+                >
+                  {errorEmail}
+                </div>
+              )}
+            </div>
           </div>
 
           <div style={s.inputWrapper}>
             <span style={s.inputIcon}><Lock size={16} /></span>
-            <input
-              style={s.input}
-              type="password"
-              name="password"
-              placeholder="Contraseña"
-              value={form.password}
-              onChange={handleChange}
-              maxLength={200}
-            />
+            <div style={{ width: '100%' }}>
+              <div style={s.inputWrapper}>
+                <span style={s.inputIcon}>
+                  <Lock size={16} />
+                </span>
+
+                <input
+                  style={s.input}
+                  type="password"
+                  name="password"
+                  placeholder="Contraseña"
+                  value={form.password}
+                  onChange={handleChange}
+                  onBlur={validarPassword}
+                  maxLength={200}
+                />
+              </div>
+
+              {errorPassword && (
+                <div
+                  style={{
+                    color: '#fff',
+                    fontSize: '0.8rem',
+                    marginTop: '4px',
+                    paddingLeft: '4px'
+                  }}
+                >
+                  {errorPassword}
+                </div>
+              )}
+            </div>
           </div>
 
           <div style={s.row}>
