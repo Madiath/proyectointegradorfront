@@ -80,12 +80,14 @@ function App() {
               <Route path="/pacientes/:id" element={<DetallePaciente />} />
               <Route path="/pacientes/:id/examenes" element={<ExamenesPaciente />} />
 
+
+              <Route path="/agenda" element={<Agenda />} />
+
               <Route element={<RutaProtegidaPorRol rolesPermitidos={['Admin']} />}>
                 <Route path="/usuarios" element={<Usuarios />} />
                 <Route path="/usuarios/:id" element={<DetalleUsuario />} />
                 <Route path="/medicos/:id" element={<DetalleMedico />} />
                 <Route path="/insumos" element={<Insumos />} />
-                <Route path="/agenda" element={<Agenda />} />
                 <Route path="/dashboard" element={<Dashboard />} />
               </Route>
 

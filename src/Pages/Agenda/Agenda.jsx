@@ -4,6 +4,11 @@ import { fetchHorariosAgenda, fetchTurnos } from '../../../features/agendaSlice'
 import FormularioTurno from './FormularioTurno'
 import './Agenda.css'
 
+
+
+
+
+
 const DIAS = [
     { num: 1, label: 'Lunes' },
     { num: 2, label: 'Martes' },
@@ -63,6 +68,12 @@ const Agenda = () => {
     const [weekStart, setWeekStart] = useState(() => getMonday(new Date()))
     const [turnoModal, setTurnoModal] = useState(null) // { medico, fechaHora }
 
+    const [medicoSeleccionado, setMedicoSeleccionado] = useState('')
+    const [fechaDesde, setFechaDesde] = useState('')
+    const [fechaHasta, setFechaHasta] = useState('')
+
+
+
     // Carga horarios una sola vez
     useEffect(() => {
         dispatch(fetchHorariosAgenda())
@@ -73,16 +84,20 @@ const Agenda = () => {
         dispatch(fetchTurnos(toDateStr(weekStart)))
     }, [weekStart])
 
+    // Filtrado de médicos (si se implementa el select)
+    const medicosFiltrados = medicoSeleccionado
+        ? medicos.filter(m => m.id === Number(medicoSeleccionado))
+        : medicos
     // Mapa de color por médico (estable por índice)
     const colorPorMedico = Object.fromEntries(
-        medicos.map((m, i) => [m.id, COLORES[i % COLORES.length]])
+        medicosFiltrados.map((m, i) => [m.id, COLORES[i % COLORES.length]])
     )
 
     // Médicos que atienden en un slot concreto (diaNum, horaNum)
     const medicosEnSlot = (diaNum, horaNum) => {
         const slotDesde = horaNum * 60
         const slotHasta = slotDesde + 60
-        return medicos.filter(m =>
+        return medicosFiltrados.filter(m =>
             m.horarios.some(h =>
                 h.diaSemana === diaNum &&
                 horaToMin(h.horaDesde) < slotHasta &&
@@ -91,11 +106,29 @@ const Agenda = () => {
         )
     }
 
+    const turnosFiltrados = turnos.filter(t => {
+        const fechaTurno = new Date(t.fechaHora)
+
+        if (fechaDesde && fechaTurno < new Date(fechaDesde))
+            return false
+
+        if (fechaHasta) {
+            const hasta = new Date(fechaHasta)
+            hasta.setHours(23, 59, 59, 999)
+
+            if (fechaTurno > hasta)
+                return false
+        }
+
+        return true
+    })
+
+
     // Turno de un médico en un slot concreto.
     // Parseamos el string directamente para evitar conversiones de zona horaria del browser.
     // Formato esperado del backend: "yyyy-MM-ddTHH:mm:ss"
     const turnoEnSlot = (diaNum, horaNum, medicoId) => {
-        return turnos.find(t => {
+        return turnosFiltrados.find(t => {
             const [fechaParte, horaParte] = t.fechaHora.split('T')
             const tHora = parseInt(horaParte.split(':')[0], 10)
             const [y, m, d] = fechaParte.split('-').map(Number)
@@ -147,6 +180,85 @@ const Agenda = () => {
                     <button className="btn btn-outline-secondary btn-sm" onClick={irSemanaSiguiente}>
                         Siguiente ›
                     </button>
+                </div>
+            </div>
+
+
+            <div className="card mb-3">
+                <div className="card-body">
+                    <div className="row g-3">
+
+                        <div className="col-md-4">
+                            <label className="form-label">
+                                Médico
+                            </label>
+
+                            <select
+                                className="form-select"
+                                value={medicoSeleccionado}
+                                onChange={(e) =>
+                                    setMedicoSeleccionado(e.target.value)
+                                }
+                            >
+                                <option value="">
+                                    Todos los médicos
+                                </option>
+
+                                {medicos.map(m => (
+                                    <option
+                                        key={m.id}
+                                        value={m.id}
+                                    >
+                                        {m.nombre}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="col-md-3">
+                            <label className="form-label">
+                                Fecha desde
+                            </label>
+
+                            <input
+                                type="date"
+                                className="form-control"
+                                value={fechaDesde}
+                                onChange={(e) =>
+                                    setFechaDesde(e.target.value)
+                                }
+                            />
+                        </div>
+
+                        <div className="col-md-3">
+                            <label className="form-label">
+                                Fecha hasta
+                            </label>
+
+                            <input
+                                type="date"
+                                className="form-control"
+                                value={fechaHasta}
+                                onChange={(e) =>
+                                    setFechaHasta(e.target.value)
+                                }
+                            />
+                        </div>
+
+                        <div className="col-md-2 d-flex align-items-end">
+                            <button
+                                className="btn btn-outline-secondary w-100"
+                                onClick={() => {
+                                    setMedicoSeleccionado('')
+                                    setFechaDesde('')
+                                    setFechaHasta('')
+                                }}
+                            >
+                                Limpiar
+                            </button>
+                        </div>
+
+                    </div>
                 </div>
             </div>
 
