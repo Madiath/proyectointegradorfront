@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchDetallePaciente, limpiarDetalle, deshabilitarPaciente } from '../../../features/pacientesSlice'
+import { fetchDetallePaciente, limpiarDetalle, deshabilitarPaciente, setPagina } from '../../../features/pacientesSlice'
 import FormularioEditar from './FormularioEditar'
 
 import { getHistorialClinico } from '../../Services/historialClinicoService'
@@ -44,6 +44,7 @@ const DetallePaciente = () => {
     const handleEliminar = async () => {
         const resultado = await dispatch(deshabilitarPaciente(detalle.id))
         if (deshabilitarPaciente.fulfilled.match(resultado)) {
+            dispatch(setPagina(1))
             navigate('/pacientes')
         }
     }

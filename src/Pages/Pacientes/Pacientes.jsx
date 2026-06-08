@@ -7,7 +7,7 @@ import FormularioPaciente from './FormularioPaciente'
 const Pacientes = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const { lista, totalBackend, cargando, error, pagina, tamano, orden } = useSelector(state => state.pacientes)
+    const { lista, hayMas, cargando, error, pagina, tamano, orden } = useSelector(state => state.pacientes)
 
     const [busNombre, setBusNombre] = useState('')
     const [busDocumento, setBusDocumento] = useState('')
@@ -48,7 +48,7 @@ const Pacientes = () => {
     }
 
     const handlePaginaSiguiente = () => {
-        if (totalBackend === tamano) dispatch(setPagina(pagina + 1))
+        if (hayMas) dispatch(setPagina(pagina + 1))
     }
 
     return (
@@ -183,7 +183,7 @@ const Pacientes = () => {
                                 <button
                                     className="btn btn-outline-secondary btn-sm"
                                     onClick={handlePaginaSiguiente}
-                                    disabled={totalBackend < tamano}
+                                    disabled={!hayMas}
                                 >
                                     Siguiente
                                 </button>
