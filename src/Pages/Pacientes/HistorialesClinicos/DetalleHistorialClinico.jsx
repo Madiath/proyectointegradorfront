@@ -122,44 +122,48 @@ const DetalleHistorialClinico = () => {
         <div className="card p-4">
           <h3 className="mb-4">Historia clínica</h3>
 
-          <div className="mb-3">
-            <strong>Motivo de Consulta:</strong>
-            <p>{historial.motivoDeConsulta}</p>
+          <div className="row">
+            <div className="col-md-6 mb-3">
+              <strong>Motivo de Consulta:</strong>
+              <p>{historial.motivoDeConsulta}</p>
+            </div>
+            <div className="col-md-6 mb-3">
+              <strong>Enfermedad Actual:</strong>
+              <p>{historial.enfermedadActual}</p>
+            </div>
           </div>
 
-          <div className="mb-3">
-            <strong>Enfermedad Actual:</strong>
-            <p>{historial.enfermedadActual}</p>
+          <div className="row">
+            <div className="col-md-6 mb-3">
+              <strong>Antecedentes:</strong>
+              <p>{historial.antecedentes}</p>
+            </div>
+            <div className="col-md-6 mb-3">
+              <strong>Hábitos PSB:</strong>
+              <p>{historial.habitosPSB}</p>
+            </div>
           </div>
 
-          <div className="mb-3">
-            <strong>Antecedentes:</strong>
-            <p>{historial.antecedentes}</p>
+          <div className="row">
+            <div className="col-md-6 mb-3">
+              <strong>Examen Físico:</strong>
+              <p>{historial.examenFisico}</p>
+            </div>
+            <div className="col-md-6 mb-3">
+              <strong>Diagnóstico:</strong>
+              <p>{historial.diagnostico}</p>
+            </div>
           </div>
 
-          <div className="mb-3">
-            <strong>Hábitos PSB:</strong>
-            <p>{historial.habitosPSB}</p>
-          </div>
-
-          <div className="mb-3">
-            <strong>Examen Físico:</strong>
-            <p>{historial.examenFisico}</p>
-          </div>
-
-          <div className="mb-3">
-            <strong>Diagnóstico:</strong>
-            <p>{historial.diagnostico}</p>
-          </div>
-
-          <div className="mb-3">
-            <strong>Examen de Laboratorio:</strong>
-            <p>{historial.examenLaboratorio}</p>
-          </div>
-
-          <div className="mb-3">
-            <strong>Tratamiento:</strong>
-            <p>{historial.tratamiento}</p>
+          <div className="row">
+            <div className="col-md-6 mb-3">
+              <strong>Examen de Laboratorio:</strong>
+              <p>{historial.examenLaboratorio}</p>
+            </div>
+            <div className="col-md-6 mb-3">
+              <strong>Tratamiento:</strong>
+              <p>{historial.tratamiento}</p>
+            </div>
           </div>
 
           <div className="mt-3 d-flex gap-2">

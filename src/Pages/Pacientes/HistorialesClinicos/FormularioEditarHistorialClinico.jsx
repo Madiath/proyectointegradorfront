@@ -98,144 +98,140 @@ const FormularioEditarHistorialClinico = () => {
 
   return (
     <div className="container mt-4">
-      <button
-  type="button"
-  className="btn btn-outline-secondary btn-sm"
-  onClick={() => navigate(`/pacientes/${id}`)}
->
-  Volver al paciente
-</button>
-      <h2>Editar Historial Clínico</h2>
+      <div className="d-flex align-items-center gap-3 mb-3">
+        <button
+          type="button"
+          className="btn btn-outline-secondary btn-sm"
+          onClick={() => navigate(`/pacientes/${id}`)}
+        >
+          Volver al paciente
+        </button>
+      </div>
 
       {mensaje && <div className="alert alert-success">{mensaje}</div>}
       {error && <div className="alert alert-danger">{error}</div>}
 
+      <div className="card p-4">
+        <h3 className="mb-4">Editar Historial Clínico</h3>
       <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="form-label">Motivo de Consulta</label>
-          <input
-            type="text"
-            className={`form-control ${erroresCampos.MotivoDeConsulta ? "is-invalid" : ""}`}
-            name="motivoDeConsulta"
-            value={formData.motivoDeConsulta}
-            onChange={handleChange}
-          />
-          {erroresCampos.MotivoDeConsulta && (
-            <div className="text-danger mt-1">
-              {erroresCampos.MotivoDeConsulta[0]}
-            </div>
-          )}
+        <div className="row">
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Motivo de Consulta</label>
+            <input
+              type="text"
+              className={`form-control ${erroresCampos.MotivoDeConsulta ? "is-invalid" : ""}`}
+              name="motivoDeConsulta"
+              value={formData.motivoDeConsulta}
+              onChange={handleChange}
+            />
+            {erroresCampos.MotivoDeConsulta && (
+              <div className="text-danger mt-1">{erroresCampos.MotivoDeConsulta[0]}</div>
+            )}
+          </div>
+
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Enfermedad Actual</label>
+            <textarea
+              className={`form-control ${erroresCampos.EnfermedadActual ? "is-invalid" : ""}`}
+              name="enfermedadActual"
+              value={formData.enfermedadActual}
+              onChange={handleChange}
+            />
+            {erroresCampos.EnfermedadActual && (
+              <div className="text-danger mt-1">{erroresCampos.EnfermedadActual[0]}</div>
+            )}
+          </div>
         </div>
 
-        <div className="mb-3">
-          <label className="form-label">Enfermedad Actual</label>
-          <textarea
-            className={`form-control ${erroresCampos.EnfermedadActual ? "is-invalid" : ""}`}
-            name="enfermedadActual"
-            value={formData.enfermedadActual}
-            onChange={handleChange}
-          />
-          {erroresCampos.EnfermedadActual && (
-            <div className="text-danger mt-1">
-              {erroresCampos.EnfermedadActual[0]}
-            </div>
-          )}
+        <div className="row">
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Antecedentes</label>
+            <textarea
+              className={`form-control ${erroresCampos.Antecedentes ? "is-invalid" : ""}`}
+              name="antecedentes"
+              value={formData.antecedentes}
+              onChange={handleChange}
+            />
+            {erroresCampos.Antecedentes && (
+              <div className="text-danger mt-1">{erroresCampos.Antecedentes[0]}</div>
+            )}
+          </div>
+
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Hábitos PSB</label>
+            <textarea
+              className={`form-control ${erroresCampos.HabitosPSB ? "is-invalid" : ""}`}
+              name="habitosPSB"
+              value={formData.habitosPSB}
+              onChange={handleChange}
+            />
+            {erroresCampos.HabitosPSB && (
+              <div className="text-danger mt-1">{erroresCampos.HabitosPSB[0]}</div>
+            )}
+          </div>
         </div>
 
-        <div className="mb-3">
-          <label className="form-label">Antecedentes</label>
-          <textarea
-            className={`form-control ${erroresCampos.Antecedentes ? "is-invalid" : ""}`}
-            name="antecedentes"
-            value={formData.antecedentes}
-            onChange={handleChange}
-          />
-          {erroresCampos.Antecedentes && (
-            <div className="text-danger mt-1">
-              {erroresCampos.Antecedentes[0]}
-            </div>
-          )}
+        <div className="row">
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Examen Físico</label>
+            <textarea
+              className={`form-control ${erroresCampos.ExamenFisico ? "is-invalid" : ""}`}
+              name="examenFisico"
+              value={formData.examenFisico}
+              onChange={handleChange}
+            />
+            {erroresCampos.ExamenFisico && (
+              <div className="text-danger mt-1">{erroresCampos.ExamenFisico[0]}</div>
+            )}
+          </div>
+
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Diagnóstico</label>
+            <textarea
+              className={`form-control ${erroresCampos.Diagnostico ? "is-invalid" : ""}`}
+              name="diagnostico"
+              value={formData.diagnostico}
+              onChange={handleChange}
+            />
+            {erroresCampos.Diagnostico && (
+              <div className="text-danger mt-1">{erroresCampos.Diagnostico[0]}</div>
+            )}
+          </div>
         </div>
 
-        <div className="mb-3">
-          <label className="form-label">Hábitos PSB</label>
-          <textarea
-            className={`form-control ${erroresCampos.HabitosPSB ? "is-invalid" : ""}`}
-            name="habitosPSB"
-            value={formData.habitosPSB}
-            onChange={handleChange}
-          />
-          {erroresCampos.HabitosPSB && (
-            <div className="text-danger mt-1">
-              {erroresCampos.HabitosPSB[0]}
-            </div>
-          )}
-        </div>
+        <div className="row">
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Examen de Laboratorio</label>
+            <textarea
+              className={`form-control ${erroresCampos.ExamenLaboratorio ? "is-invalid" : ""}`}
+              name="examenLaboratorio"
+              value={formData.examenLaboratorio}
+              onChange={handleChange}
+            />
+            {erroresCampos.ExamenLaboratorio && (
+              <div className="text-danger mt-1">{erroresCampos.ExamenLaboratorio[0]}</div>
+            )}
+          </div>
 
-        <div className="mb-3">
-          <label className="form-label">Examen Físico</label>
-          <textarea
-            className={`form-control ${erroresCampos.ExamenFisico ? "is-invalid" : ""}`}
-            name="examenFisico"
-            value={formData.examenFisico}
-            onChange={handleChange}
-          />
-          {erroresCampos.ExamenFisico && (
-            <div className="text-danger mt-1">
-              {erroresCampos.ExamenFisico[0]}
-            </div>
-          )}
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Diagnóstico</label>
-          <textarea
-            className={`form-control ${erroresCampos.Diagnostico ? "is-invalid" : ""}`}
-            name="diagnostico"
-            value={formData.diagnostico}
-            onChange={handleChange}
-          />
-          {erroresCampos.Diagnostico && (
-            <div className="text-danger mt-1">
-              {erroresCampos.Diagnostico[0]}
-            </div>
-          )}
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Examen de Laboratorio</label>
-          <textarea
-            className={`form-control ${erroresCampos.ExamenLaboratorio ? "is-invalid" : ""}`}
-            name="examenLaboratorio"
-            value={formData.examenLaboratorio}
-            onChange={handleChange}
-          />
-          {erroresCampos.ExamenLaboratorio && (
-            <div className="text-danger mt-1">
-              {erroresCampos.ExamenLaboratorio[0]}
-            </div>
-          )}
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Tratamiento</label>
-          <textarea
-            className={`form-control ${erroresCampos.Tratamiento ? "is-invalid" : ""}`}
-            name="tratamiento"
-            value={formData.tratamiento}
-            onChange={handleChange}
-          />
-          {erroresCampos.Tratamiento && (
-            <div className="text-danger mt-1">
-              {erroresCampos.Tratamiento[0]}
-            </div>
-          )}
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Tratamiento</label>
+            <textarea
+              className={`form-control ${erroresCampos.Tratamiento ? "is-invalid" : ""}`}
+              name="tratamiento"
+              value={formData.tratamiento}
+              onChange={handleChange}
+            />
+            {erroresCampos.Tratamiento && (
+              <div className="text-danger mt-1">{erroresCampos.Tratamiento[0]}</div>
+            )}
+          </div>
         </div>
 
         <button type="submit" className="btn btn-primary">
           Guardar cambios
         </button>
       </form>
+      </div>
     </div>
   );
 };
