@@ -27,7 +27,6 @@ const DetalleHistorialClinico = () => {
     cargarHistorial();
   }, [id]);
 
-
   const handleExportarPdf = async () => {
     try {
       const response = await generarPdfHistorialClinico(id);
@@ -39,9 +38,6 @@ const DetalleHistorialClinico = () => {
 
       let nombreArchivo = "HistoriaClinica.pdf";
 
-
-
-
       if (contentDisposition) {
         const match = contentDisposition.match(/filename=([^;]+)/);
 
@@ -49,20 +45,6 @@ const DetalleHistorialClinico = () => {
           nombreArchivo = match[1].replaceAll('"', '').trim();
         }
       }
-
-      // Separar extensión
-      const ultimoPunto = nombreArchivo.lastIndexOf(".");
-      const extension =
-        ultimoPunto !== -1 ? nombreArchivo.substring(ultimoPunto) : "";
-
-      const nombreSinExtension =
-        ultimoPunto !== -1
-          ? nombreArchivo.substring(0, ultimoPunto)
-          : nombreArchivo;
-
-      // Quitar espacios del nombre
-      nombreArchivo =
-        nombreSinExtension.replaceAll(" ", "") + extension;
 
       const url = window.URL.createObjectURL(pdfBlob);
 
@@ -79,7 +61,6 @@ const DetalleHistorialClinico = () => {
       setError(err.message || "No se pudo exportar el PDF");
     }
   };
-
   if (loading) return <p>Cargando historial clínico...</p>;
 
   return (

@@ -24,7 +24,6 @@ export const fetchDetalleUsuario = createAsyncThunk(
         }
     }
 )
-
 export const crearUsuario = createAsyncThunk(
     'usuarios/crearUsuario',
     async (datos, { rejectWithValue }) => {
@@ -32,7 +31,17 @@ export const crearUsuario = createAsyncThunk(
             const res = await altaUsuario(datos)
             return res.data
         } catch (err) {
-            return rejectWithValue(err.response?.data?.mensaje || 'Error al registrar usuario')
+
+            const data = err.response?.data
+
+            if (data?.errors) {
+                const errores = Object.values(data.errors).flat()
+                return rejectWithValue(errores)
+            }
+
+            return rejectWithValue(
+                data?.mensaje || 'Error al registrar administrador'
+            )
         }
     }
 )

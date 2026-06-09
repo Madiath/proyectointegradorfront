@@ -165,20 +165,25 @@ const Insumos = () => {
                         <table className="table table-hover table-bordered align-middle">
                             <thead className="table-dark">
                                 <tr>
+                                    <th>ID</th>
                                     <th>Nombre</th>
                                     <th>Categoría</th>
                                     <th>Unidad</th>
                                     <th className="text-center">Stock actual</th>
                                     <th className="text-center">Stock mínimo</th>
                                     <th className="text-center">Estado</th>
-                                    <th></th>
-                                </tr>
+                                    <th>Acciones</th></tr>
                             </thead>
                             <tbody>
                                 {insumosFiltrados.map(i => {
                                     const config = estadoConfig[i.estadoStock] ?? estadoConfig.OK
+                                    const codigo = `INS-${String(i.id).padStart(4, '0')}`
                                     return (
                                         <tr key={i.id} className={config.clase}>
+                                            <td className="text-center fw-bold">
+                                                {codigo}
+                                            </td>
+
                                             <td>
                                                 <div className="fw-semibold">{i.nombre}</div>
                                                 {i.descripcion && <div className="text-muted small">{i.descripcion}</div>}
@@ -217,6 +222,7 @@ const Insumos = () => {
                     <div className="d-sm-none">
                         {insumosFiltrados.map(i => {
                             const config = estadoConfig[i.estadoStock] ?? estadoConfig.OK
+                            const codigo = `INS-${String(i.id).padStart(4, '0')}`
                             const estiloFondo = i.estadoStock === 'BAJO'
                                 ? { borderLeft: '4px solid var(--bs-danger)' }
                                 : i.estadoStock === 'MINIMO'
@@ -228,6 +234,12 @@ const Insumos = () => {
                                         <div className="d-flex justify-content-between align-items-start">
                                             <div>
                                                 <div className="fw-semibold">{i.nombre}</div>
+                                                <div
+                                                    className="text-muted"
+                                                    style={{ fontSize: '0.75rem' }}
+                                                >
+                                                    Código: {codigo}
+                                                </div>
                                                 <div className="text-muted small">{i.categoria} · {i.unidadMedida}</div>
                                             </div>
                                             <div className="text-end">

@@ -9,7 +9,12 @@ const FormularioUsuario = ({ onCerrar, onCreado }) => {
     const { cargando } = useSelector(state => state.usuarios)
     const [errorServidor, setErrorServidor] = useState(null)
 
-    const { register, handleSubmit, formState: { errors } } = useForm()
+    const {
+        register,
+        handleSubmit,
+        setError,
+        formState: { errors }
+    } = useForm()
 
     const onSubmit = async (data) => {
         setErrorServidor(null)
@@ -34,9 +39,14 @@ const FormularioUsuario = ({ onCerrar, onCreado }) => {
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <div className="modal-body">
                             {errorServidor && (
-                                <div className="alert alert-danger">{errorServidor}</div>
-                            )}
-                            <div className="row g-3">
+                                <div className="alert alert-danger">
+                                    {Array.isArray(errorServidor)
+                                        ? errorServidor.map((e, i) => (
+                                            <div key={i}>{e}</div>
+                                        ))
+                                        : errorServidor}
+                                </div>
+                            )} <div className="row g-3">
 
                                 <div className="col-12">
                                     <label className="form-label">Nombre *</label>
