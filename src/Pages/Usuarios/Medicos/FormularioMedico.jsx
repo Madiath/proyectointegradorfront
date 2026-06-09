@@ -36,11 +36,14 @@ const FormularioMedico = ({ onCerrar, onCreado }) => {
             }))
         }
         const resultado = await dispatch(crearMedico(payload))
+
+        console.log(resultado.payload)
+
         if (crearMedico.fulfilled.match(resultado)) {
             toast.success('Médico registrado correctamente')
             onCreado()
         } else {
-            setErrorServidor(resultado.payload || 'Error al registrar médico')
+            setErrorServidor(resultado.payload)
         }
     }
 
@@ -56,9 +59,14 @@ const FormularioMedico = ({ onCerrar, onCreado }) => {
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <div className="modal-body">
                             {errorServidor && (
-                                <div className="alert alert-danger">{errorServidor}</div>
-                            )}
-                            <div className="row g-3">
+                                <div className="alert alert-danger">
+                                    {Array.isArray(errorServidor)
+                                        ? errorServidor.map((e, i) => (
+                                            <div key={i}>{e}</div>
+                                        ))
+                                        : errorServidor}
+                                </div>
+                            )} <div className="row g-3">
 
                                 <div className="col-md-6">
                                     <label className="form-label">Nombre *</label>

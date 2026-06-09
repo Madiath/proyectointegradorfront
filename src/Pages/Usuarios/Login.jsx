@@ -112,8 +112,15 @@ const Login = () => {
 
     } catch (error) {
 
-      toast.error(error.message || "Error al iniciar sesión");
+      if (
+        error.message === "Failed to fetch" ||
+        error.code === "ERR_NETWORK"
+      ) {
+        toast.error("No se pudo conectar con el servidor");
+        return;
+      }
 
+      toast.error(error.message || "Error al iniciar sesión");
     } finally {
       setLoading(false)
     }
