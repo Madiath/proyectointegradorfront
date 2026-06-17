@@ -62,6 +62,7 @@ const formatSemana = (weekStart) => {
 }
 
 const Agenda = () => {
+    const rol = localStorage.getItem("rol")
     const dispatch = useDispatch()
     const { medicos, turnos, cargando, error } = useSelector(state => state.agenda)
 
@@ -69,8 +70,10 @@ const Agenda = () => {
     const [turnoModal, setTurnoModal] = useState(null) // { medico, fechaHora }
 
     const [medicoSeleccionado, setMedicoSeleccionado] = useState('')
-    const [fechaDesde, setFechaDesde] = useState('')
-    const [fechaHasta, setFechaHasta] = useState('')
+
+    const [mesSeleccionado, setMesSeleccionado] = useState(
+        new Date().getMonth()
+    )
 
 
 
@@ -106,29 +109,13 @@ const Agenda = () => {
         )
     }
 
-    const turnosFiltrados = turnos.filter(t => {
-        const fechaTurno = new Date(t.fechaHora)
-
-        if (fechaDesde && fechaTurno < new Date(fechaDesde))
-            return false
-
-        if (fechaHasta) {
-            const hasta = new Date(fechaHasta)
-            hasta.setHours(23, 59, 59, 999)
-
-            if (fechaTurno > hasta)
-                return false
-        }
-
-        return true
-    })
 
 
     // Turno de un médico en un slot concreto.
     // Parseamos el string directamente para evitar conversiones de zona horaria del browser.
     // Formato esperado del backend: "yyyy-MM-ddTHH:mm:ss"
     const turnoEnSlot = (diaNum, horaNum, medicoId) => {
-        return turnosFiltrados.find(t => {
+        return turnos.find(t => {
             const [fechaParte, horaParte] = t.fechaHora.split('T')
             const tHora = parseInt(horaParte.split(':')[0], 10)
             const [y, m, d] = fechaParte.split('-').map(Number)
@@ -151,6 +138,19 @@ const Agenda = () => {
         setWeekStart(next)
     }
 
+    const cambiarMes = (mes) => {
+        setMesSeleccionado(Number(mes))
+
+        const nuevaFecha = new Date(weekStart)
+
+        nuevaFecha.setMonth(Number(mes))
+        nuevaFecha.setDate(1)
+
+        setWeekStart(getMonday(nuevaFecha))
+    }
+
+
+
     const handleBadgeClick = (m, diaNum, hora) => {
         const fechaHora = buildCellDate(weekStart, diaNum, hora)
         const turnoExistente = turnoEnSlot(diaNum, hora, m.id) ?? null
@@ -169,7 +169,9 @@ const Agenda = () => {
         <div>
             {/* Encabezado con navegación de semana */}
             <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                <h2 className="mb-0">Agenda</h2>
+                <h2 className="mb-0">
+                    {rol === 'Medico' ? 'Mi Agenda' : 'Agenda'}
+                </h2>
                 <div className="d-flex align-items-center gap-2">
                     <button className="btn btn-outline-secondary btn-sm" onClick={irSemanaAnterior}>
                         ‹ Anterior
@@ -188,70 +190,61 @@ const Agenda = () => {
                 <div className="card-body">
                     <div className="row g-3">
 
-                        <div className="col-md-4">
+                        {rol === 'Admin' && (
+                            <div className="col-md-4">
+                                <label className="form-label">
+                                    Médico
+                                </label>
+
+                                <select
+                                    className="form-select"
+                                    value={medicoSeleccionado}
+                                    onChange={(e) => setMedicoSeleccionado(e.target.value)}
+                                >
+                                    <option value="">
+                                        Todos los médicos
+                                    </option>
+
+                                    {medicos.map(m => (
+                                        <option key={m.id} value={m.id}>
+                                            {m.nombre}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+
+                        <div className={rol === 'Admin' ? 'col-md-4' : 'col-md-6'}>
                             <label className="form-label">
-                                Médico
+                                Mes
                             </label>
 
                             <select
                                 className="form-select"
-                                value={medicoSeleccionado}
-                                onChange={(e) =>
-                                    setMedicoSeleccionado(e.target.value)
-                                }
+                                value={mesSeleccionado}
+                                onChange={(e) => cambiarMes(e.target.value)}
                             >
-                                <option value="">
-                                    Todos los médicos
-                                </option>
-
-                                {medicos.map(m => (
-                                    <option
-                                        key={m.id}
-                                        value={m.id}
-                                    >
-                                        {m.nombre}
-                                    </option>
-                                ))}
+                                <option value={0}>Enero</option>
+                                <option value={1}>Febrero</option>
+                                <option value={2}>Marzo</option>
+                                <option value={3}>Abril</option>
+                                <option value={4}>Mayo</option>
+                                <option value={5}>Junio</option>
+                                <option value={6}>Julio</option>
+                                <option value={7}>Agosto</option>
+                                <option value={8}>Septiembre</option>
+                                <option value={9}>Octubre</option>
+                                <option value={10}>Noviembre</option>
+                                <option value={11}>Diciembre</option>
                             </select>
                         </div>
-
-                        <div className="col-md-3">
-                            <label className="form-label">
-                                Fecha desde
-                            </label>
-
-                            <input
-                                type="date"
-                                className="form-control"
-                                value={fechaDesde}
-                                onChange={(e) =>
-                                    setFechaDesde(e.target.value)
-                                }
-                            />
-                        </div>
-
-                        <div className="col-md-3">
-                            <label className="form-label">
-                                Fecha hasta
-                            </label>
-
-                            <input
-                                type="date"
-                                className="form-control"
-                                value={fechaHasta}
-                                onChange={(e) =>
-                                    setFechaHasta(e.target.value)
-                                }
-                            />
-                        </div>
-
                         <div className="col-md-2 d-flex align-items-end">
                             <button
                                 className="btn btn-outline-secondary w-100"
                                 onClick={() => {
                                     setMedicoSeleccionado('')
-                                    setFechaDesde('')
-                                    setFechaHasta('')
+                                    setMesSeleccionado(new Date().getMonth())
+                                    setWeekStart(getMonday(new Date()))
                                 }}
                             >
                                 Limpiar
@@ -273,21 +266,28 @@ const Agenda = () => {
             {medicos.length > 0 && (
                 <>
                     {/* Leyenda de médicos */}
-                    <div className="d-flex flex-wrap gap-2 mb-3">
-                        {medicos.map(m => (
-                            <span
-                                key={m.id}
-                                className="badge"
-                                style={{ backgroundColor: colorPorMedico[m.id], fontSize: '0.8rem', padding: '5px 10px' }}
-                            >
-                                {m.nombre}
-                                {m.especialidad && (
-                                    <span style={{ fontWeight: 'normal', opacity: 0.85 }}> — {m.especialidad}</span>
-                                )}
-                            </span>
-                        ))}
-                    </div>
-
+                    {rol === 'Administrador' && (
+                        <div className="d-flex flex-wrap gap-2 mb-3">
+                            {medicos.map(m => (
+                                <span
+                                    key={m.id}
+                                    className="badge"
+                                    style={{
+                                        backgroundColor: colorPorMedico[m.id],
+                                        fontSize: '0.8rem',
+                                        padding: '5px 10px'
+                                    }}
+                                >
+                                    {m.nombre}
+                                    {m.especialidad && (
+                                        <span style={{ fontWeight: 'normal', opacity: 0.85 }}>
+                                            {' '}— {m.especialidad}
+                                        </span>
+                                    )}
+                                </span>
+                            ))}
+                        </div>
+                    )}
                     {/* Grilla */}
                     <div className="agenda-wrapper">
                         <table className="agenda-table table mb-0">
