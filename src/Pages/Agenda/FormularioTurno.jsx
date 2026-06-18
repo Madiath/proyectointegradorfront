@@ -13,7 +13,14 @@ const toLocalISO = (date) => {
  * turnoExistente: objeto { id, pacienteId, pacienteNombre, ... } si hay un turno en ese slot.
  *                null si es un slot vacío (crear nuevo turno).
  */
+
+
+
 const FormularioTurno = ({ medico, fechaHora, weekStartStr, turnoExistente, onClose }) => {
+    //Nos traemos el rol para saber si es medico o admin, ya que el medico no puede crear los turnos o editarlos. 
+    const rol = localStorage.getItem('rol')
+    const esMedico = rol === 'Medico'
+
     const dispatch = useDispatch()
     const pacientes = useSelector(state => state.pacientes.lista)
 
@@ -26,7 +33,13 @@ const FormularioTurno = ({ medico, fechaHora, weekStartStr, turnoExistente, onCl
     const [error, setError] = useState(null)
 
     useEffect(() => {
-        dispatch(fetchPacientes({ pagina: 1, tamano: 1000, orden: 'nombre' }))
+        if (!esMedico) {
+            dispatch(fetchPacientes({
+                pagina: 1,
+                tamano: 1000,
+                orden: 'nombre'
+            }))
+        }
     }, [])
 
     const formatFechaHora = (date) => {
@@ -99,47 +112,72 @@ const FormularioTurno = ({ medico, fechaHora, weekStartStr, turnoExistente, onCl
 
                             <div className="mb-3">
                                 <label className="form-label fw-bold">Paciente</label>
-                                <select
-                                    className="form-select"
-                                    value={pacienteId}
-                                    onChange={e => setPacienteId(e.target.value)}
-                                >
-                                    <option value="">
-                                        {modoEdicion ? 'Sin paciente asignado (elimina el turno)' : 'Sin paciente asignado'}
-                                    </option>
-                                    {pacientes.map(p => (
-                                        <option key={p.id} value={p.id}>
-                                            {p.nombreCompleto}
-                                        </option>
-                                    ))}
-                                </select>
-                                {modoEdicion && pacienteId === '' && (
-                                    <div className="form-text text-danger">
-                                        Al guardar sin paciente, el turno será eliminado.
-                                    </div>
+
+                                {esMedico ? (
+                                    turnoExistente?.pacienteNombre ? (
+                                        <div className="form-control bg-light">
+                                            {turnoExistente.pacienteNombre}
+                                        </div>
+                                    ) : (
+                                        <div className="alert alert-secondary mb-0">
+                                            No tiene ningún paciente agendado.
+                                        </div>
+                                    )
+                                ) : (
+                                    <>
+                                        <select
+                                            className="form-select"
+                                            value={pacienteId}
+                                            onChange={e => setPacienteId(e.target.value)}
+                                        >
+                                            <option value="">
+                                                {modoEdicion
+                                                    ? 'Sin paciente asignado (elimina el turno)'
+                                                    : 'Sin paciente asignado'}
+                                            </option>
+
+                                            {pacientes.map(p => (
+                                                <option key={p.id} value={p.id}>
+                                                    {p.nombreCompleto}
+                                                </option>
+                                            ))}
+                                        </select>
+
+                                        {modoEdicion && pacienteId === '' && (
+                                            <div className="form-text text-danger">
+                                                Al guardar sin paciente, el turno será eliminado.
+                                            </div>
+                                        )}
+                                    </>
                                 )}
                             </div>
                         </div>
 
                         <div className="modal-footer">
+
                             <button
                                 type="button"
                                 className="btn btn-secondary"
                                 onClick={onClose}
                                 disabled={enviando}
                             >
-                                Cancelar
+                                {esMedico ? 'Cerrar' : 'Cancelar'}
                             </button>
-                            <button
-                                type="submit"
-                                className="btn btn-success"
-                                disabled={enviando}
-                            >
-                                {enviando
-                                    ? 'Guardando…'
-                                    : modoEdicion ? 'Guardar cambios' : 'Crear turno'
-                                }
-                            </button>
+
+                            {!esMedico && (
+                                <button
+                                    type="submit"
+                                    className="btn btn-success"
+                                    disabled={enviando}
+                                >
+                                    {enviando
+                                        ? 'Guardando...'
+                                        : modoEdicion
+                                            ? 'Guardar cambios'
+                                            : 'Crear turno'}
+                                </button>
+                            )}
+
                         </div>
                     </form>
                 </div>
