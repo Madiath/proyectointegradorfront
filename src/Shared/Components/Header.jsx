@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router'
 import logo from '../../assets/logo_clinica.png'
+import NotificationBell from './NotificationBell'
 import './Header.css'
 
 const Header = () => {
@@ -63,6 +64,7 @@ const Header = () => {
       </div>
 
       <div className="header-user">
+        {usuario && <NotificationBell />}
         <span className="header-user-info">{usuario} — {rol}</span>
         <button className="header-logout-btn" onClick={handleLogout}>
           Cerrar sesión
