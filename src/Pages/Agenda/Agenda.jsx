@@ -100,15 +100,36 @@ const Agenda = () => {
     const medicosEnSlot = (diaNum, horaNum) => {
         const slotDesde = horaNum * 60
         const slotHasta = slotDesde + 60
-        return medicosFiltrados.filter(m =>
-            m.horarios.some(h =>
-                h.diaSemana === diaNum &&
-                horaToMin(h.horaDesde) < slotHasta &&
-                horaToMin(h.horaHasta) > slotDesde
+        return medicosFiltrados.filter(m => {
+            const fechaSlot = buildCellDate(weekStart, diaNum)
+
+            if (medicoEstaDeLicencia(m, fechaSlot))
+                return false
+
+            return m.horarios.some(
+                h =>
+                    h.diaSemana === diaNum &&
+                    horaToMin(h.horaDesde) < slotHasta &&
+                    horaToMin(h.horaHasta) > slotDesde
             )
-        )
+        })
     }
 
+
+
+    const medicoEstaDeLicencia = (medico, fecha) => {
+        if (!medico.licencias?.length) return false
+
+        return medico.licencias.some(l => {
+            const desde = new Date(l.fechaDesde)
+            const hasta = new Date(l.fechaHasta)
+
+            desde.setHours(0, 0, 0, 0)
+            hasta.setHours(23, 59, 59, 999)
+
+            return fecha >= desde && fecha <= hasta
+        })
+    }
 
 
     // Turno de un médico en un slot concreto.
