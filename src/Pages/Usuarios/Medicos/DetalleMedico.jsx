@@ -100,6 +100,28 @@ const DetalleMedico = () => {
                     ) : (
                         <p className="text-muted">Sin horarios asignados.</p>
                     )}
+                    <h6 className="mt-4">Licencias</h6>
+
+                    {detalle.licencias && detalle.licencias.length > 0 ? (
+                        <table className="table table-bordered table-sm">
+                            <thead className="table-dark">
+                                <tr>
+                                    <th>Desde</th>
+                                    <th>Hasta</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {detalle.licencias.map(l => (
+                                    <tr key={l.id}>
+                                        <td>{l.fechaDesde}</td>
+                                        <td>{l.fechaHasta}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <p className="text-muted">Sin licencias registradas.</p>
+                    )}
                 </div>
             </div>
         </div>

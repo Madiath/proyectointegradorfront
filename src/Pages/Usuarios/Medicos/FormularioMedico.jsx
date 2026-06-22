@@ -20,10 +20,14 @@ const FormularioMedico = ({ onCerrar, onCreado }) => {
     const [errorServidor, setErrorServidor] = useState(null)
 
     const { register, handleSubmit, control, formState: { errors } } = useForm({
-        defaultValues: { horarios: [] }
+        defaultValues: { horarios: [], licencias: [] }
     })
 
     const { fields, append, remove } = useFieldArray({ control, name: 'horarios' })
+    const { fields: licenciasFields, append: appendLicencia, remove: removeLicencia } = useFieldArray({
+        control,
+        name: 'licencias'
+    })
 
     const onSubmit = async (data) => {
         setErrorServidor(null)
@@ -33,6 +37,10 @@ const FormularioMedico = ({ onCerrar, onCreado }) => {
                 diaSemana: Number(h.diaSemana),
                 horaDesde: h.horaDesde,
                 horaHasta: h.horaHasta,
+            })),
+            licencias: data.licencias.map(l => ({
+                fechaDesde: l.fechaDesde,
+                fechaHasta: l.fechaHasta
             }))
         }
         const resultado = await dispatch(crearMedico(payload))
@@ -180,6 +188,89 @@ const FormularioMedico = ({ onCerrar, onCreado }) => {
                                                         ✕
                                                     </button>
                                                 </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="col-12 mt-4">
+                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                        <label className="form-label mb-0">
+                                            Licencias
+                                        </label>
+
+                                        <button
+                                            type="button"
+                                            className="btn btn-outline-warning btn-sm"
+                                            onClick={() =>
+                                                appendLicencia({
+                                                    fechaDesde: '',
+                                                    fechaHasta: ''
+                                                })
+                                            }
+                                        >
+                                            + Agregar licencia
+                                        </button>
+                                    </div>
+
+                                    {licenciasFields.length === 0 && (
+                                        <p className="text-muted small">
+                                            Sin licencias registradas.
+                                        </p>
+                                    )}
+
+                                    {licenciasFields.map((field, index) => (
+                                        <div
+                                            key={field.id}
+                                            className="border rounded p-2 mb-2"
+                                        >
+                                            <div className="row g-2 align-items-end">
+
+                                                <div className="col-md-5">
+                                                    <label className="form-label small">
+                                                        Desde *
+                                                    </label>
+
+                                                    <input
+                                                        type="date"
+                                                        className="form-control form-control-sm"
+                                                        {...register(
+                                                            `licencias.${index}.fechaDesde`,
+                                                            {
+                                                                required: 'Requerido'
+                                                            }
+                                                        )}
+                                                    />
+                                                </div>
+
+                                                <div className="col-md-5">
+                                                    <label className="form-label small">
+                                                        Hasta *
+                                                    </label>
+
+                                                    <input
+                                                        type="date"
+                                                        className="form-control form-control-sm"
+                                                        {...register(
+                                                            `licencias.${index}.fechaHasta`,
+                                                            {
+                                                                required: 'Requerido'
+                                                            }
+                                                        )}
+                                                    />
+                                                </div>
+
+                                                <div className="col-md-2 text-end">
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-outline-danger btn-sm"
+                                                        onClick={() =>
+                                                            removeLicencia(index)
+                                                        }
+                                                    >
+                                                        ✕
+                                                    </button>
+                                                </div>
+
                                             </div>
                                         </div>
                                     ))}
