@@ -11,6 +11,10 @@ import {
 } from '../../../features/notificacionesSlice'
 import { crearConexionNotificaciones } from '../../Services/notificacionService'
 
+const POLLING_NOTIFICACIONES_MS = 30000
+
+const obtenerNoLeidasPayload = (payload) => payload?.noLeidas ?? payload?.cantidad ?? payload?.NoLeidas ?? 0
+
 const formatearFecha = (fecha) =>
   new Intl.DateTimeFormat('es-UY', {
     day: '2-digit',
@@ -32,12 +36,15 @@ const NotificationBell = () => {
 
     const conexion = crearConexionNotificaciones()
 
-    conexion.on('NotificacionRecibida', ({ notificacion, noLeidas }) => {
-      dispatch(recibirNotificacion({ notificacion, noLeidas }))
+    conexion.on('NotificacionRecibida', (payload) => {
+      dispatch(recibirNotificacion({
+        notificacion: payload?.notificacion ?? payload?.Notificacion,
+        noLeidas: obtenerNoLeidasPayload(payload),
+      }))
     })
 
-    conexion.on('NotificacionesNoLeidasActualizadas', ({ noLeidas }) => {
-      dispatch(actualizarNoLeidas(noLeidas))
+    conexion.on('NotificacionesNoLeidasActualizadas', (payload) => {
+      dispatch(actualizarNoLeidas(obtenerNoLeidasPayload(payload)))
       dispatch(fetchNotificaciones())
     })
 
@@ -51,7 +58,13 @@ const NotificationBell = () => {
       dispatch(fetchNotificacionesNoLeidas())
     })
 
+    const pollingId = window.setInterval(() => {
+      dispatch(fetchNotificaciones())
+      dispatch(fetchNotificacionesNoLeidas())
+    }, POLLING_NOTIFICACIONES_MS)
+
     return () => {
+      window.clearInterval(pollingId)
       conexion.stop()
     }
   }, [dispatch])
