@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { crearTurno, editarTurno } from '../../../features/agendaSlice'
 import { fetchPacientes } from '../../../features/pacientesSlice'
+import { toast } from 'react-toastify'
 
 // Formatea la fecha como ISO local (sin conversión UTC) para evitar desfase de zona horaria
 const toLocalISO = (date) => {
@@ -65,6 +66,7 @@ const FormularioTurno = ({ medico, fechaHora, weekStartStr, turnoExistente, onCl
                     id: turnoExistente.id,
                     pacienteId: pacienteId ? parseInt(pacienteId) : null,
                 })).unwrap()
+                toast.success('Turno actualizado correctamente')
             } else {
                 // Crear nuevo turno
                 await dispatch(crearTurno({
@@ -72,9 +74,16 @@ const FormularioTurno = ({ medico, fechaHora, weekStartStr, turnoExistente, onCl
                     pacienteId: pacienteId ? parseInt(pacienteId) : null,
                     fechaHora: toLocalISO(fechaHora),
                 })).unwrap()
+                toast.success('Turno creado correctamente')
             }
             onClose()
         } catch (err) {
+            console.error(err)
+            setError(
+                typeof err === 'string'
+                    ? err
+                    : err?.message || 'Error al guardar el turno'
+            )
             setError(typeof err === 'string' ? err : 'Error al guardar el turno')
             setEnviando(false)
         }

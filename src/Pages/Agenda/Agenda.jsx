@@ -62,6 +62,7 @@ const formatSemana = (weekStart) => {
 }
 
 const Agenda = () => {
+
     const rol = localStorage.getItem("rol")
     const dispatch = useDispatch()
     const { medicos, turnos, cargando, error } = useSelector(state => state.agenda)
@@ -100,19 +101,15 @@ const Agenda = () => {
     const medicosEnSlot = (diaNum, horaNum) => {
         const slotDesde = horaNum * 60
         const slotHasta = slotDesde + 60
-        return medicosFiltrados.filter(m => {
-            const fechaSlot = buildCellDate(weekStart, diaNum)
 
-            if (medicoEstaDeLicencia(m, fechaSlot))
-                return false
-
-            return m.horarios.some(
+        return medicosFiltrados.filter(m =>
+            m.horarios.some(
                 h =>
                     h.diaSemana === diaNum &&
                     horaToMin(h.horaDesde) < slotHasta &&
                     horaToMin(h.horaHasta) > slotDesde
             )
-        })
+        )
     }
 
 
@@ -287,7 +284,7 @@ const Agenda = () => {
             {medicos.length > 0 && (
                 <>
                     {/* Leyenda de médicos */}
-                    {rol === 'Administrador' && (
+                    {rol === 'Admin' && (
                         <div className="d-flex flex-wrap gap-2 mb-3">
                             {medicos.map(m => (
                                 <span
@@ -334,28 +331,51 @@ const Agenda = () => {
                                                 <td key={d.num} className="slot">
                                                     {presentes.length > 0
                                                         ? presentes.map(m => {
+
+                                                            const fechaSlot = buildCellDate(weekStart, d.num, hora)
+                                                            const estaDeLicencia = medicoEstaDeLicencia(m, fechaSlot)
+
                                                             const turno = turnoEnSlot(d.num, hora, m.id)
                                                             return (
                                                                 <span
                                                                     key={m.id}
                                                                     className="agenda-badge"
                                                                     style={{
-                                                                        backgroundColor: colorPorMedico[m.id],
-                                                                        cursor: 'pointer',
+                                                                        backgroundColor: estaDeLicencia
+                                                                            ? '#6c757d'
+                                                                            : colorPorMedico[m.id],
+                                                                        cursor: estaDeLicencia ? 'not-allowed' : 'pointer',
+                                                                        opacity: estaDeLicencia ? 0.7 : 1
                                                                     }}
-                                                                    title={turno
-                                                                        ? `${m.nombre} — ${turno.pacienteNombre ?? 'Sin paciente'}`
-                                                                        : `${m.nombre}${m.especialidad ? ` — ${m.especialidad}` : ''} (click para agregar turno)`
+                                                                    title={
+                                                                        estaDeLicencia
+                                                                            ? `${m.nombre} — DE LICENCIA`
+                                                                            : turno
+                                                                                ? `${m.nombre} — ${turno.pacienteNombre ?? 'Sin paciente'}`
+                                                                                : `${m.nombre}${m.especialidad ? ` — ${m.especialidad}` : ''}`
                                                                     }
-                                                                    onClick={() => handleBadgeClick(m, d.num, hora)}
+                                                                    onClick={() => {
+                                                                        if (!estaDeLicencia) {
+                                                                            handleBadgeClick(m, d.num, hora)
+                                                                        }
+                                                                    }}
                                                                 >
                                                                     {m.nombre}
-                                                                    {turno && (
+
+                                                                    {estaDeLicencia && (
                                                                         <span className="agenda-badge-paciente">
-                                                                            {' — '}{turno.pacienteNombre ?? 'Sin paciente'}
+                                                                            {' — '}Licencia
+                                                                        </span>
+                                                                    )}
+
+                                                                    {!estaDeLicencia && turno && (
+                                                                        <span className="agenda-badge-paciente">
+                                                                            {' — '}
+                                                                            {turno.pacienteNombre ?? 'Sin paciente'}
                                                                         </span>
                                                                     )}
                                                                 </span>
+
                                                             )
                                                         })
                                                         : <span className="slot-vacio">·</span>
