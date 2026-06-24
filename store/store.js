@@ -7,6 +7,7 @@ import evolucionReducer from "../features/evolucionSlice";
 import insumosReducer from "../features/insumosSlice";
 import agendaReducer from "../features/agendaSlice";
 import dashboardReducer from "../features/dashboardSlice";
+import notificacionesReducer from "../features/notificacionesSlice";
 
 export const store = configureStore({
     reducer: {
@@ -18,5 +19,6 @@ export const store = configureStore({
         insumos: insumosReducer,
         agenda: agendaReducer,
         dashboard: dashboardReducer,
+        notificaciones: notificacionesReducer,
     }
 })
