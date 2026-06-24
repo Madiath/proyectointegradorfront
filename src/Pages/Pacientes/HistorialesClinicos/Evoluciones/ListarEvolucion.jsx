@@ -4,9 +4,17 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchEvolucionesPorPaciente,
   limpiarMensajeEvolucion,
-  fetchEvolucionesPorFecha
+  fetchEvolucionesPorFecha,
+  eliminarImagenDeEvolucion
 } from "../../../../../features/evolucionSlice";
+import API_BASE_URL from "../../../../Services/config";
 import '../../../../Shared/CSS/style.css'
+
+const obtenerUrlImagen = (url) => {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return `${API_BASE_URL}${url}`;
+};
 
 const ListaEvoluciones = () => {
   const { id } = useParams();
@@ -14,14 +22,11 @@ const ListaEvoluciones = () => {
 
   const { evoluciones, loading, error } = useSelector((state) => state.evolucion);
 
-  //Fechas de filtro
   const [fechaDesde, setFechaDesde] = useState("");
   const [fechaHasta, setFechaHasta] = useState("");
 
-  // Paginación
   const TAMANO = 10;
   const [pagina, setPagina] = useState(1);
-
 
   useEffect(() => {
     dispatch(fetchEvolucionesPorPaciente(id));
@@ -33,7 +38,6 @@ const ListaEvoluciones = () => {
 
   if (loading) return <p>Cargando evoluciones...</p>;
 
-  //Filtro
   const handleFiltrar = () => {
     setPagina(1);
     dispatch(fetchEvolucionesPorFecha({
@@ -43,12 +47,15 @@ const ListaEvoluciones = () => {
     }));
   };
 
-  //Limpiar filtro
   const handleLimpiarFiltro = () => {
     setFechaDesde("");
     setFechaHasta("");
     setPagina(1);
     dispatch(fetchEvolucionesPorPaciente(id));
+  };
+
+  const handleEliminarImagen = (idEvolucion, idImagen) => {
+    dispatch(eliminarImagenDeEvolucion({ idEvolucion, idImagen }));
   };
 
   return (
@@ -147,11 +154,46 @@ const ListaEvoluciones = () => {
                 </div>
 
                 <div className="mb-2">
-                  <strong>Descripción de la evolución:</strong>
+                  <strong>Descripcion de la evolucion:</strong>
                   <p className="mb-1">
                     {evolucion.descripcionEvolucion}
                   </p>
                 </div>
+
+                {evolucion.imagenes?.length > 0 && (
+                  <div className="mb-2">
+                    <strong>Imagenes:</strong>
+                    <div className="d-flex gap-2 flex-wrap mt-2">
+                      {evolucion.imagenes.map((imagen) => {
+                        const urlImagen = obtenerUrlImagen(imagen.url);
+
+                        return (
+                          <div key={imagen.id} className="border rounded p-1">
+                            <a href={urlImagen} target="_blank" rel="noreferrer">
+                              <img
+                                src={urlImagen}
+                                alt={imagen.nombreArchivo || "Imagen de evolucion"}
+                                style={{
+                                  width: "120px",
+                                  height: "90px",
+                                  objectFit: "cover",
+                                  display: "block"
+                                }}
+                              />
+                            </a>
+                            <button
+                              type="button"
+                              className="btn btn-outline-danger btn-sm mt-1 w-100"
+                              onClick={() => handleEliminarImagen(evolucion.id, imagen.id)}
+                            >
+                              Eliminar
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 <div className="d-flex gap-2 mt-2">
                   <Link
@@ -168,7 +210,7 @@ const ListaEvoluciones = () => {
           {evoluciones.length > TAMANO && (
             <div className="d-flex justify-content-between align-items-center mt-3">
               <span className="text-muted small">
-                Página {pagina} — {evoluciones.length} evoluciones en total
+                Pagina {pagina} - {evoluciones.length} evoluciones en total
               </span>
               <div className="d-flex gap-2">
                 <button

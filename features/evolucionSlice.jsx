@@ -3,7 +3,9 @@ import {
   getEvolucionesPorPaciente,
   altaEvolucion,
   editarEvolucion,
-  getEvolucionesPorFecha
+  getEvolucionesPorFecha,
+  subirImagenesEvolucion,
+  eliminarImagenEvolucion
 } from "../src/Services/evolucionService";
 
 export const fetchEvolucionesPorPaciente = createAsyncThunk(
@@ -21,12 +23,48 @@ export const fetchEvolucionesPorPaciente = createAsyncThunk(
 
 export const crearEvolucion = createAsyncThunk(
   "evolucion/crearEvolucion",
-  async (evolucionDto, thunkAPI) => {
+  async ({ evolucionDto, imagenes = [] }, thunkAPI) => {
     try {
-      return await altaEvolucion(evolucionDto);
+      const evolucionCreada = await altaEvolucion(evolucionDto);
+
+      if (imagenes.length > 0 && evolucionCreada?.id) {
+        await subirImagenesEvolucion(evolucionCreada.id, imagenes);
+      }
+
+      return evolucionCreada;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.mensaje || "Error al registrar evolución"
+        error.response?.data?.mensaje || "Error al registrar evolucion"
+      );
+    }
+  }
+);
+
+export const subirImagenesAEvolucion = createAsyncThunk(
+  "evolucion/subirImagenesAEvolucion",
+  async ({ idEvolucion, imagenes }, thunkAPI) => {
+    try {
+      return {
+        idEvolucion,
+        resultado: await subirImagenesEvolucion(idEvolucion, imagenes)
+      };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.mensaje || "Error al subir imagenes"
+      );
+    }
+  }
+);
+
+export const eliminarImagenDeEvolucion = createAsyncThunk(
+  "evolucion/eliminarImagenDeEvolucion",
+  async ({ idEvolucion, idImagen }, thunkAPI) => {
+    try {
+      await eliminarImagenEvolucion(idImagen);
+      return { idEvolucion, idImagen };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.mensaje || "Error al eliminar la imagen"
       );
     }
   }
@@ -39,14 +77,12 @@ export const actualizarEvolucion = createAsyncThunk(
       return await editarEvolucion(id, evolucionDto);
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.mensaje || "Error al editar evolución"
+        error.response?.data?.mensaje || "Error al editar evolucion"
       );
     }
   }
 );
 
-
-//Filtro por fecha
 export const fetchEvolucionesPorFecha = createAsyncThunk(
   "evolucion/fetchEvolucionesPorFecha",
   async ({ pacienteId, fechaDesde, fechaHasta }, thunkAPI) => {
@@ -59,8 +95,6 @@ export const fetchEvolucionesPorFecha = createAsyncThunk(
     }
   }
 );
-
-
 
 const evolucionSlice = createSlice({
   name: "evolucion",
@@ -98,11 +132,50 @@ const evolucionSlice = createSlice({
       })
       .addCase(crearEvolucion.fulfilled, (state, action) => {
         state.loading = false;
-        state.mensaje =
-          action.payload?.mensaje || "Evolución registrada correctamente.";
+        state.mensaje = action.payload?.mensaje || "Evolucion registrada correctamente.";
       })
       .addCase(crearEvolucion.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload;
+      })
+
+      .addCase(subirImagenesAEvolucion.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.mensaje = "";
+      })
+      .addCase(subirImagenesAEvolucion.fulfilled, (state, action) => {
+        state.loading = false;
+        const evolucion = state.evoluciones.find(
+          (ev) => Number(ev.id) === Number(action.payload.idEvolucion)
+        );
+
+        if (evolucion) {
+          evolucion.imagenes = [
+            ...(evolucion.imagenes || []),
+            ...(action.payload.resultado?.imagenes || [])
+          ];
+        }
+
+        state.mensaje = action.payload.resultado?.mensaje || "Imagenes subidas correctamente.";
+      })
+      .addCase(subirImagenesAEvolucion.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      .addCase(eliminarImagenDeEvolucion.fulfilled, (state, action) => {
+        const evolucion = state.evoluciones.find(
+          (ev) => Number(ev.id) === Number(action.payload.idEvolucion)
+        );
+
+        if (evolucion) {
+          evolucion.imagenes = (evolucion.imagenes || []).filter(
+            (imagen) => Number(imagen.id) !== Number(action.payload.idImagen)
+          );
+        }
+      })
+      .addCase(eliminarImagenDeEvolucion.rejected, (state, action) => {
         state.error = action.payload;
       })
 
@@ -113,13 +186,13 @@ const evolucionSlice = createSlice({
       })
       .addCase(actualizarEvolucion.fulfilled, (state, action) => {
         state.loading = false;
-        state.mensaje =
-          action.payload?.mensaje || "Evolución actualizada correctamente.";
+        state.mensaje = action.payload?.mensaje || "Evolucion actualizada correctamente.";
       })
       .addCase(actualizarEvolucion.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
+
       .addCase(fetchEvolucionesPorFecha.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -131,7 +204,7 @@ const evolucionSlice = createSlice({
       .addCase(fetchEvolucionesPorFecha.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      })
+      });
   }
 });
 
