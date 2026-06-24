@@ -3,8 +3,11 @@ import API_BASE_URL from './config'
 
 const BASE_URL = `${API_BASE_URL}/api/usuario`
 
-export const listarUsuarios = (pagina = 1, tamano = 10) =>
-  axiosInstance.get(BASE_URL, { params: { pagina, tamano } })
+export const listarUsuarios = (pagina = 1, tamano = 10, busqueda = '') => {
+  const params = { pagina, tamano }
+  if (busqueda?.trim()) params.busqueda = busqueda.trim()
+  return axiosInstance.get(BASE_URL, { params })
+}
 
 export const getUsuario = (id) =>
   axiosInstance.get(`${BASE_URL}/${id}`)

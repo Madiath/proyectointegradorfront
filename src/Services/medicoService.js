@@ -3,8 +3,11 @@ import API_BASE_URL from './config'
 
 const BASE_URL = `${API_BASE_URL}/api/medico`
 
-export const listarMedicos = (pagina = 1, tamano = 10) =>
-    axiosInstance.get(BASE_URL, { params: { pagina, tamano } })
+export const listarMedicos = (pagina = 1, tamano = 10, busqueda = '') => {
+    const params = { pagina, tamano }
+    if (busqueda?.trim()) params.busqueda = busqueda.trim()
+    return axiosInstance.get(BASE_URL, { params })
+}
 
 export const getMedico = (id) => axiosInstance.get(`${BASE_URL}/${id}`)
 

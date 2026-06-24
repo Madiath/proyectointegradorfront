@@ -3,10 +3,10 @@ import { listarMedicos, getMedico, altaMedico, editarMedico, eliminarMedico } fr
 
 export const fetchMedicos = createAsyncThunk(
     'medicos/fetchMedicos',
-    async ({ pagina, tamano }, { rejectWithValue }) => {
+    async ({ pagina, tamano, busqueda = '' }, { rejectWithValue }) => {
         try {
-            const res = await listarMedicos(pagina, tamano)
-            return res.data
+            const res = await listarMedicos(pagina, tamano, busqueda)
+            return { datos: res.data, buscando: Boolean(busqueda?.trim()) }
         } catch (err) {
             return rejectWithValue(err.response?.data?.mensaje || 'Error al cargar médicos')
         }
@@ -99,8 +99,9 @@ const medicosSlice = createSlice({
             })
             .addCase(fetchMedicos.fulfilled, (state, action) => {
                 state.cargando = false
-                state.hayMas = action.payload.length > state.tamano
-                state.lista = action.payload.slice(0, state.tamano)
+                const { datos, buscando } = action.payload
+                state.hayMas = !buscando && datos.length > state.tamano
+                state.lista = buscando ? datos : datos.slice(0, state.tamano)
             })
             .addCase(fetchMedicos.rejected, (state, action) => {
                 state.cargando = false

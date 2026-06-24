@@ -16,26 +16,89 @@ const Usuarios = () => {
     const [mostrarFormularioMedico, setMostrarFormularioMedico] = useState(false)
     const [medicoADeshabilitar, setMedicoADeshabilitar] = useState(null)
     const [deshabilitando, setDeshabilitando] = useState(false)
+    const [busquedaMedicos, setBusquedaMedicos] = useState('')
+    const [busquedaAdmins, setBusquedaAdmins] = useState('')
+    const [buscandoMedicos, setBuscandoMedicos] = useState(false)
+    const [buscandoAdmins, setBuscandoAdmins] = useState(false)
 
-    const { lista: listaAdmins, hayMas: hayMasAdmins, cargando: cargandoAdmins, error: errorAdmins, pagina: paginaAdmins } = useSelector(state => state.usuarios)
-    const { lista: listaMedicos, hayMas: hayMasMedicos, cargando: cargandoMedicos, error: errorMedicos, pagina: paginaMedicos } = useSelector(state => state.medicos)
+    const {
+        lista: listaAdmins,
+        hayMas: hayMasAdmins,
+        cargando: cargandoAdmins,
+        error: errorAdmins,
+        pagina: paginaAdmins,
+        tamano: tamanoAdmins,
+    } = useSelector(state => state.usuarios)
+
+    const {
+        lista: listaMedicos,
+        hayMas: hayMasMedicos,
+        cargando: cargandoMedicos,
+        error: errorMedicos,
+        pagina: paginaMedicos,
+        tamano: tamanoMedicos,
+    } = useSelector(state => state.medicos)
 
     useEffect(() => {
-        dispatch(fetchUsuarios({ pagina: paginaAdmins, tamano: 10 }))
-    }, [paginaAdmins])
+        if (!buscandoAdmins) {
+            dispatch(fetchUsuarios({ pagina: paginaAdmins, tamano: tamanoAdmins }))
+        }
+    }, [paginaAdmins, tamanoAdmins, buscandoAdmins])
 
     useEffect(() => {
-        dispatch(fetchMedicos({ pagina: paginaMedicos, tamano: 10 }))
-    }, [paginaMedicos])
+        if (!buscandoMedicos) {
+            dispatch(fetchMedicos({ pagina: paginaMedicos, tamano: tamanoMedicos }))
+        }
+    }, [paginaMedicos, tamanoMedicos, buscandoMedicos])
 
     const handleAdminCreado = () => {
         setMostrarFormularioAdmin(false)
-        dispatch(fetchUsuarios({ pagina: paginaAdmins, tamano: 10 }))
+        setBuscandoAdmins(false)
+        dispatch(fetchUsuarios({ pagina: paginaAdmins, tamano: tamanoAdmins }))
     }
 
     const handleMedicoCreado = () => {
         setMostrarFormularioMedico(false)
-        dispatch(fetchMedicos({ pagina: paginaMedicos, tamano: 10 }))
+        setBuscandoMedicos(false)
+        dispatch(fetchMedicos({ pagina: paginaMedicos, tamano: tamanoMedicos }))
+    }
+
+    const handleBuscarMedicos = (e) => {
+        e.preventDefault()
+        const termino = busquedaMedicos.trim()
+        if (!termino) {
+            handleLimpiarMedicos()
+            return
+        }
+
+        setBuscandoMedicos(true)
+        dispatch(fetchMedicos({ pagina: 1, tamano: 100, busqueda: termino }))
+    }
+
+    const handleLimpiarMedicos = () => {
+        setBusquedaMedicos('')
+        setBuscandoMedicos(false)
+        dispatch(setPaginaMedicos(1))
+        dispatch(fetchMedicos({ pagina: 1, tamano: tamanoMedicos }))
+    }
+
+    const handleBuscarAdmins = (e) => {
+        e.preventDefault()
+        const termino = busquedaAdmins.trim()
+        if (!termino) {
+            handleLimpiarAdmins()
+            return
+        }
+
+        setBuscandoAdmins(true)
+        dispatch(fetchUsuarios({ pagina: 1, tamano: 100, busqueda: termino }))
+    }
+
+    const handleLimpiarAdmins = () => {
+        setBusquedaAdmins('')
+        setBuscandoAdmins(false)
+        dispatch(setPagina(1))
+        dispatch(fetchUsuarios({ pagina: 1, tamano: tamanoAdmins }))
     }
 
     const handleConfirmarDeshabilitar = async () => {
@@ -45,9 +108,10 @@ const Usuarios = () => {
         setDeshabilitando(false)
         setMedicoADeshabilitar(null)
         if (deshabilitarMedico.fulfilled.match(res)) {
-            toast.success('Médico deshabilitado')
+            toast.success('Medico deshabilitado')
+            setBuscandoMedicos(false)
             dispatch(setPaginaMedicos(1))
-            dispatch(fetchMedicos({ pagina: 1, tamano: 10 }))
+            dispatch(fetchMedicos({ pagina: 1, tamano: tamanoMedicos }))
         } else {
             toast.error(res.payload || 'Error al deshabilitar')
         }
@@ -62,16 +126,15 @@ const Usuarios = () => {
                 <FormularioMedico onCerrar={() => setMostrarFormularioMedico(false)} onCreado={handleMedicoCreado} />
             )}
 
-            {/* Modal confirmación deshabilitar médico */}
             {medicoADeshabilitar && (
                 <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
                     <div className="modal-dialog modal-dialog-centered">
                         <div className="modal-content">
                             <div className="modal-body text-center py-4">
-                                <p className="mb-1 fs-5 fw-semibold">¿Deshabilitar médico?</p>
+                                <p className="mb-1 fs-5 fw-semibold">Deshabilitar medico?</p>
                                 <p className="text-muted mb-0">
-                                    Se deshabilitará a <strong>{medicoADeshabilitar.nombre}</strong>.
-                                    Esta acción se puede revertir.
+                                    Se deshabilitara a <strong>{medicoADeshabilitar.nombre}</strong>.
+                                    Esta accion se puede revertir.
                                 </p>
                             </div>
                             <div className="modal-footer justify-content-center border-0 pt-0">
@@ -87,7 +150,7 @@ const Usuarios = () => {
                                     onClick={handleConfirmarDeshabilitar}
                                     disabled={deshabilitando}
                                 >
-                                    {deshabilitando ? 'Deshabilitando…' : 'Deshabilitar'}
+                                    {deshabilitando ? 'Deshabilitando...' : 'Deshabilitar'}
                                 </button>
                             </div>
                         </div>
@@ -97,14 +160,13 @@ const Usuarios = () => {
 
             <h2 className="mb-3">Usuarios</h2>
 
-            {/* Tabs */}
             <ul className="nav nav-tabs mb-4">
                 <li className="nav-item">
                     <button
                         className={`nav-link ${tabActivo === 'medicos' ? 'active' : ''}`}
                         onClick={() => setTabActivo('medicos')}
                     >
-                        Médicos
+                        Medicos
                     </button>
                 </li>
                 <li className="nav-item">
@@ -117,15 +179,36 @@ const Usuarios = () => {
                 </li>
             </ul>
 
-            {/* ── TAB MÉDICOS ── */}
             {tabActivo === 'medicos' && (
                 <div>
                     <div className="d-flex justify-content-between align-items-center mb-3">
-                        <h5 className="mb-0">Médicos</h5>
+                        <h5 className="mb-0">Medicos</h5>
                         <button className="btn btn-success btn-sm" onClick={() => setMostrarFormularioMedico(true)}>
                             + Agregar
                         </button>
                     </div>
+
+                    <form className="row g-2 mb-3" onSubmit={handleBuscarMedicos}>
+                        <div className="col-12 col-sm-auto">
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Nombre, email o especialidad"
+                                value={busquedaMedicos}
+                                onChange={e => setBusquedaMedicos(e.target.value)}
+                            />
+                        </div>
+                        <div className="col-6 col-sm-auto">
+                            <button type="submit" className="btn btn-primary w-100">Buscar</button>
+                        </div>
+                        {buscandoMedicos && (
+                            <div className="col-6 col-sm-auto">
+                                <button type="button" className="btn btn-secondary w-100" onClick={handleLimpiarMedicos}>
+                                    Limpiar
+                                </button>
+                            </div>
+                        )}
+                    </form>
 
                     {errorMedicos && <div className="alert alert-danger">{errorMedicos}</div>}
 
@@ -134,10 +217,9 @@ const Usuarios = () => {
                             <div className="spinner-border text-success" role="status" />
                         </div>
                     ) : listaMedicos.length === 0 ? (
-                        <p className="text-center text-muted py-4">No se encontraron médicos.</p>
+                        <p className="text-center text-muted py-4">No se encontraron medicos.</p>
                     ) : (
                         <>
-                            {/* Tabla — solo desktop */}
                             <div className="d-none d-sm-block table-responsive">
                                 <table className="table table-hover table-bordered align-middle">
                                     <thead className="table-dark">
@@ -175,7 +257,6 @@ const Usuarios = () => {
                                 </table>
                             </div>
 
-                            {/* Tarjetas — solo mobile */}
                             <div className="d-sm-none">
                                 {listaMedicos.map(m => (
                                     <div key={m.id} className="card mb-2">
@@ -194,39 +275,39 @@ const Usuarios = () => {
                                                     setMedicoADeshabilitar(m)
                                                 }}
                                             >
-                                                ✕
+                                                x
                                             </button>
                                         </div>
                                     </div>
                                 ))}
                             </div>
 
-                            {/* Paginación */}
-                            <div className="d-flex justify-content-between align-items-center mt-2">
-                                <span className="text-muted small">Página {paginaMedicos}</span>
-                                <div>
-                                    <button
-                                        className="btn btn-outline-secondary btn-sm me-2"
-                                        onClick={() => dispatch(setPaginaMedicos(paginaMedicos - 1))}
-                                        disabled={paginaMedicos === 1}
-                                    >
-                                        Anterior
-                                    </button>
-                                    <button
-                                        className="btn btn-outline-secondary btn-sm"
-                                        onClick={() => dispatch(setPaginaMedicos(paginaMedicos + 1))}
-                                        disabled={!hayMasMedicos}
-                                    >
-                                        Siguiente
-                                    </button>
+                            {!buscandoMedicos && (
+                                <div className="d-flex justify-content-between align-items-center mt-2">
+                                    <span className="text-muted small">Pagina {paginaMedicos}</span>
+                                    <div>
+                                        <button
+                                            className="btn btn-outline-secondary btn-sm me-2"
+                                            onClick={() => dispatch(setPaginaMedicos(paginaMedicos - 1))}
+                                            disabled={paginaMedicos === 1}
+                                        >
+                                            Anterior
+                                        </button>
+                                        <button
+                                            className="btn btn-outline-secondary btn-sm"
+                                            onClick={() => dispatch(setPaginaMedicos(paginaMedicos + 1))}
+                                            disabled={!hayMasMedicos}
+                                        >
+                                            Siguiente
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                         </>
                     )}
                 </div>
             )}
 
-            {/* ── TAB ADMINS ── */}
             {tabActivo === 'admins' && (
                 <div>
                     <div className="d-flex justify-content-between align-items-center mb-3">
@@ -235,6 +316,28 @@ const Usuarios = () => {
                             + Agregar
                         </button>
                     </div>
+
+                    <form className="row g-2 mb-3" onSubmit={handleBuscarAdmins}>
+                        <div className="col-12 col-sm-auto">
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Nombre o email"
+                                value={busquedaAdmins}
+                                onChange={e => setBusquedaAdmins(e.target.value)}
+                            />
+                        </div>
+                        <div className="col-6 col-sm-auto">
+                            <button type="submit" className="btn btn-primary w-100">Buscar</button>
+                        </div>
+                        {buscandoAdmins && (
+                            <div className="col-6 col-sm-auto">
+                                <button type="button" className="btn btn-secondary w-100" onClick={handleLimpiarAdmins}>
+                                    Limpiar
+                                </button>
+                            </div>
+                        )}
+                    </form>
 
                     {errorAdmins && <div className="alert alert-danger">{errorAdmins}</div>}
 
@@ -246,7 +349,6 @@ const Usuarios = () => {
                         <p className="text-center text-muted py-4">No se encontraron administradores.</p>
                     ) : (
                         <>
-                            {/* Tabla — solo desktop */}
                             <div className="d-none d-sm-block table-responsive">
                                 <table className="table table-hover table-bordered align-middle">
                                     <thead className="table-dark">
@@ -270,7 +372,6 @@ const Usuarios = () => {
                                 </table>
                             </div>
 
-                            {/* Tarjetas — solo mobile */}
                             <div className="d-sm-none">
                                 {listaAdmins.map(u => (
                                     <div
@@ -287,26 +388,27 @@ const Usuarios = () => {
                                 ))}
                             </div>
 
-                            {/* Paginación */}
-                            <div className="d-flex justify-content-between align-items-center mt-2">
-                                <span className="text-muted small">Página {paginaAdmins}</span>
-                                <div>
-                                    <button
-                                        className="btn btn-outline-secondary btn-sm me-2"
-                                        onClick={() => dispatch(setPagina(paginaAdmins - 1))}
-                                        disabled={paginaAdmins === 1}
-                                    >
-                                        Anterior
-                                    </button>
-                                    <button
-                                        className="btn btn-outline-secondary btn-sm"
-                                        onClick={() => dispatch(setPagina(paginaAdmins + 1))}
-                                        disabled={!hayMasAdmins}
-                                    >
-                                        Siguiente
-                                    </button>
+                            {!buscandoAdmins && (
+                                <div className="d-flex justify-content-between align-items-center mt-2">
+                                    <span className="text-muted small">Pagina {paginaAdmins}</span>
+                                    <div>
+                                        <button
+                                            className="btn btn-outline-secondary btn-sm me-2"
+                                            onClick={() => dispatch(setPagina(paginaAdmins - 1))}
+                                            disabled={paginaAdmins === 1}
+                                        >
+                                            Anterior
+                                        </button>
+                                        <button
+                                            className="btn btn-outline-secondary btn-sm"
+                                            onClick={() => dispatch(setPagina(paginaAdmins + 1))}
+                                            disabled={!hayMasAdmins}
+                                        >
+                                            Siguiente
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                         </>
                     )}
                 </div>
