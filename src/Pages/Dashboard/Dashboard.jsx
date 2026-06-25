@@ -26,7 +26,7 @@ const Dashboard = () => {
         dispatch(fetchDashboard())
         const intervalo = setInterval(() => dispatch(fetchDashboard()), INTERVALO_MS)
         return () => clearInterval(intervalo)
-    }, [])
+    }, [dispatch])
 
     const chartData = {
         labels: datos?.pacientesPorMes?.map(p => p.mes) ?? [],

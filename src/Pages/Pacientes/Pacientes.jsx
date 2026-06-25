@@ -18,7 +18,7 @@ const Pacientes = () => {
         if (!buscando) {
             dispatch(fetchPacientes({ pagina, tamano, orden }))
         }
-    }, [pagina, orden, buscando])
+    }, [dispatch, pagina, tamano, orden, buscando])
 
     const handleBuscar = (e) => {
         e.preventDefault()

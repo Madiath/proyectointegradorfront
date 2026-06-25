@@ -81,12 +81,12 @@ const Agenda = () => {
     // Carga horarios una sola vez
     useEffect(() => {
         dispatch(fetchHorariosAgenda())
-    }, [])
+    }, [dispatch])
 
     // Carga turnos al cambiar la semana
     useEffect(() => {
         dispatch(fetchTurnos(toDateStr(weekStart)))
-    }, [weekStart])
+    }, [dispatch, weekStart])
 
     // Filtrado de médicos (si se implementa el select)
     const medicosFiltrados = medicoSeleccionado
@@ -396,7 +396,6 @@ const Agenda = () => {
                 <FormularioTurno
                     medico={turnoModal.medico}
                     fechaHora={turnoModal.fechaHora}
-                    weekStartStr={toDateStr(weekStart)}
                     turnoExistente={turnoModal.turnoExistente}
                     onClose={() => setTurnoModal(null)}
                 />

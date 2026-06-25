@@ -6,6 +6,7 @@ import {
   limpiarMensajeEvolucion,
   fetchEvolucionesPorFecha
 } from "../../../../../features/evolucionSlice";
+import { construirUrlImagenEvolucion } from "../../../../Services/evolucionService";
 import '../../../../Shared/CSS/style.css'
 
 const ListaEvoluciones = () => {
@@ -152,6 +153,34 @@ const ListaEvoluciones = () => {
                     {evolucion.descripcionEvolucion}
                   </p>
                 </div>
+
+                {evolucion.imagenes?.length > 0 && (
+                  <div className="mb-2">
+                    <strong>Imagenes:</strong>
+                    <div className="d-flex gap-2 flex-wrap mt-2">
+                      {evolucion.imagenes.map((imagen) => {
+                        const urlImagen = construirUrlImagenEvolucion(imagen.url);
+
+                        return (
+                          <a
+                            key={imagen.id}
+                            href={urlImagen}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="border rounded overflow-hidden d-inline-flex"
+                            style={{ width: "96px", height: "96px" }}
+                          >
+                            <img
+                              src={urlImagen}
+                              alt={imagen.nombreArchivo || "Imagen de evolucion"}
+                              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                            />
+                          </a>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 <div className="d-flex gap-2 mt-2">
                   <Link

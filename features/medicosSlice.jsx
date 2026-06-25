@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { listarMedicos, getMedico, altaMedico, editarMedico, eliminarMedico } from '../src/Services/medicoService'
+import { listarMedicos, buscarMedicos, getMedico, altaMedico, editarMedico, eliminarMedico } from '../src/Services/medicoService'
 
 export const fetchMedicos = createAsyncThunk(
     'medicos/fetchMedicos',
@@ -9,6 +9,18 @@ export const fetchMedicos = createAsyncThunk(
             return res.data
         } catch (err) {
             return rejectWithValue(err.response?.data?.mensaje || 'Error al cargar médicos')
+        }
+    }
+)
+
+export const fetchBuscarMedicos = createAsyncThunk(
+    'medicos/fetchBuscarMedicos',
+    async ({ nombre, email, especialidad }, { rejectWithValue }) => {
+        try {
+            const res = await buscarMedicos(nombre, email, especialidad)
+            return res.data
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.mensaje || 'Error en la busqueda')
         }
     }
 )
@@ -103,6 +115,19 @@ const medicosSlice = createSlice({
                 state.lista = action.payload.slice(0, state.tamano)
             })
             .addCase(fetchMedicos.rejected, (state, action) => {
+                state.cargando = false
+                state.error = action.payload
+            })
+            .addCase(fetchBuscarMedicos.pending, (state) => {
+                state.cargando = true
+                state.error = null
+            })
+            .addCase(fetchBuscarMedicos.fulfilled, (state, action) => {
+                state.cargando = false
+                state.lista = action.payload
+                state.hayMas = false
+            })
+            .addCase(fetchBuscarMedicos.rejected, (state, action) => {
                 state.cargando = false
                 state.error = action.payload
             })

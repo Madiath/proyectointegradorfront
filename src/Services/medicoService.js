@@ -6,6 +6,9 @@ const BASE_URL = `${API_BASE_URL}/api/medico`
 export const listarMedicos = (pagina = 1, tamano = 10) =>
     axiosInstance.get(BASE_URL, { params: { pagina, tamano } })
 
+export const buscarMedicos = (nombre, email, especialidad) =>
+    axiosInstance.get(`${BASE_URL}/buscar`, { params: { nombre, email, especialidad } })
+
 export const getMedico = (id) => axiosInstance.get(`${BASE_URL}/${id}`)
 
 export const altaMedico = (datos) => axiosInstance.post(BASE_URL, datos)

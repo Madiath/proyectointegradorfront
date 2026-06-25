@@ -26,7 +26,7 @@ const Insumos = () => {
 
     useEffect(() => {
         dispatch(fetchInsumos({ pagina, tamano }))
-    }, [pagina])
+    }, [dispatch, pagina, tamano])
 
     const handleConfirmarDeshabilitar = async () => {
         setDeshabilitando(true)

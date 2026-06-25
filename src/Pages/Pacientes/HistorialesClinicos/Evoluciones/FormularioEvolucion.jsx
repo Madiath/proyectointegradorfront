@@ -6,6 +6,7 @@ import {
   crearEvolucion,
   limpiarMensajeEvolucion,
 } from "../../../../../features/evolucionSlice";
+import { subirImagenesEvolucion } from "../../../../Services/evolucionService";
 
 const FormularioEvolucion = () => {
   const { id } = useParams();
@@ -18,6 +19,9 @@ const FormularioEvolucion = () => {
   const [cargandoHistorial, setCargandoHistorial] = useState(true);
   const [errorHistorial, setErrorHistorial] = useState("");
   const [descripcionEvolucion, setDescripcionEvolucion] = useState("");
+  const [imagenes, setImagenes] = useState([]);
+  const [subiendoImagenes, setSubiendoImagenes] = useState(false);
+  const [errorImagenes, setErrorImagenes] = useState("");
 
   useEffect(() => {
     const cargarHistorial = async () => {
@@ -40,18 +44,9 @@ const FormularioEvolucion = () => {
     };
   }, [id, dispatch]);
 
-  useEffect(() => {
-    if (mensaje) {
-      const timer = setTimeout(() => {
-        navigate(`/pacientes/${id}/evoluciones`);
-      }, 1000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [mensaje, navigate, id]);
-
   const guardarEvolucion = async (e) => {
     e.preventDefault();
+    setErrorImagenes("");
 
     if (!descripcionEvolucion.trim()) {
       return;
@@ -62,7 +57,20 @@ const FormularioEvolucion = () => {
       descripcionEvolucion: descripcionEvolucion,
     };
 
-    dispatch(crearEvolucion(evolucionDto));
+    try {
+      const evolucionCreada = await dispatch(crearEvolucion(evolucionDto)).unwrap();
+
+      if (imagenes.length > 0) {
+        setSubiendoImagenes(true);
+        await subirImagenesEvolucion(evolucionCreada.id, imagenes);
+      }
+
+      navigate(`/pacientes/${id}/evoluciones`);
+    } catch (err) {
+      setErrorImagenes(err?.response?.data?.mensaje || err || "No se pudo guardar la evolucion con imagenes.");
+    } finally {
+      setSubiendoImagenes(false);
+    }
   };
 
   if (cargandoHistorial) return <p>Cargando información...</p>;
@@ -73,6 +81,7 @@ const FormularioEvolucion = () => {
 
       {errorHistorial && <div className="alert alert-warning">{errorHistorial}</div>}
       {error && <div className="alert alert-warning">{error}</div>}
+      {errorImagenes && <div className="alert alert-warning">{errorImagenes}</div>}
       {mensaje && <div className="alert alert-success">{mensaje}</div>}
 
       {!historial ? (
@@ -103,8 +112,26 @@ const FormularioEvolucion = () => {
               />
             </div>
 
+            <div className="mb-3">
+              <label className="form-label">
+                <strong>Imagenes de la evolucion</strong>
+              </label>
+              <input
+                type="file"
+                className="form-control"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                onChange={(e) => setImagenes(Array.from(e.target.files || []))}
+              />
+              {imagenes.length > 0 && (
+                <small className="text-muted">
+                  {imagenes.length} imagen{imagenes.length === 1 ? "" : "es"} seleccionada{imagenes.length === 1 ? "" : "s"}.
+                </small>
+              )}
+            </div>
+
             <div className="d-flex gap-2">
-              <button type="submit" className="btn btn-primary" disabled={loading}>
+              <button type="submit" className="btn btn-primary" disabled={loading || subiendoImagenes}>
                 {loading ? "Guardando..." : "Guardar evolución"}
               </button>
 

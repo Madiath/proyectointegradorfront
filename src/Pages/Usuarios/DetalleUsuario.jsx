@@ -15,7 +15,7 @@ const DetalleUsuario = () => {
     useEffect(() => {
         dispatch(fetchDetalleUsuario(id))
         return () => dispatch(limpiarDetalle())
-    }, [id])
+    }, [dispatch, id])
 
     const handleEditarCerrado = () => {
         setMostrarEditar(false)

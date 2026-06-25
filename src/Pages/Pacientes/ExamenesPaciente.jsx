@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import {
     descargarArchivoExamen,
@@ -40,7 +40,7 @@ const ExamenesPaciente = () => {
     const [errorEdicion, setErrorEdicion] = useState('')
     const [editando, setEditando] = useState(false)
 
-    const cargarExamenes = async () => {
+    const cargarExamenes = useCallback(async () => {
         setLoading(true)
         setError('')
         try {
@@ -51,11 +51,11 @@ const ExamenesPaciente = () => {
         } finally {
             setLoading(false)
         }
-    }
+    }, [id])
 
     useEffect(() => {
         cargarExamenes()
-    }, [id])
+    }, [cargarExamenes])
 
     useEffect(() => {
         setPaginaActual(1)

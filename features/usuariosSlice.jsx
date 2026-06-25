@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { listarUsuarios, getUsuario, altaUsuario, editarUsuario, eliminarUsuario } from '../src/Services/usuarioService'
+import { listarUsuarios, buscarUsuarios, getUsuario, altaUsuario, editarUsuario, eliminarUsuario } from '../src/Services/usuarioService'
 
 export const fetchUsuarios = createAsyncThunk(
     'usuarios/fetchUsuarios',
@@ -9,6 +9,18 @@ export const fetchUsuarios = createAsyncThunk(
             return res.data
         } catch (err) {
             return rejectWithValue(err.response?.data?.mensaje || 'Error al cargar usuarios')
+        }
+    }
+)
+
+export const fetchBuscarUsuarios = createAsyncThunk(
+    'usuarios/fetchBuscarUsuarios',
+    async ({ nombre, email }, { rejectWithValue }) => {
+        try {
+            const res = await buscarUsuarios(nombre, email)
+            return res.data
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.mensaje || 'Error en la busqueda')
         }
     }
 )
@@ -102,6 +114,19 @@ const usuariosSlice = createSlice({
                 state.lista = action.payload.slice(0, state.tamano)
             })
             .addCase(fetchUsuarios.rejected, (state, action) => {
+                state.cargando = false
+                state.error = action.payload
+            })
+            .addCase(fetchBuscarUsuarios.pending, (state) => {
+                state.cargando = true
+                state.error = null
+            })
+            .addCase(fetchBuscarUsuarios.fulfilled, (state, action) => {
+                state.cargando = false
+                state.lista = action.payload
+                state.hayMas = false
+            })
+            .addCase(fetchBuscarUsuarios.rejected, (state, action) => {
                 state.cargando = false
                 state.error = action.payload
             })

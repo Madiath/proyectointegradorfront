@@ -17,7 +17,7 @@ const toLocalISO = (date) => {
 
 
 
-const FormularioTurno = ({ medico, fechaHora, weekStartStr, turnoExistente, onClose }) => {
+const FormularioTurno = ({ medico, fechaHora, turnoExistente, onClose }) => {
     //Nos traemos el rol para saber si es medico o admin, ya que el medico no puede crear los turnos o editarlos. 
     const rol = localStorage.getItem('rol')
     const esMedico = rol === 'Medico'
@@ -41,7 +41,7 @@ const FormularioTurno = ({ medico, fechaHora, weekStartStr, turnoExistente, onCl
                 orden: 'nombre'
             }))
         }
-    }, [])
+    }, [dispatch, esMedico])
 
     const formatFechaHora = (date) => {
         return date.toLocaleString('es-AR', {

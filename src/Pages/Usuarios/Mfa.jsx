@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router'
 import { toast } from 'react-toastify'
 import { segundoPasoMfa } from '../../Services/usuarioService'
 import LoadingScreen from '../../Shared/Components/LoadingScreen'
-import { color } from 'chart.js/helpers'
 
 // mismos estilos base
 const s = {

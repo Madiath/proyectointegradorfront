@@ -12,7 +12,6 @@ const FormularioUsuario = ({ onCerrar, onCreado }) => {
     const {
         register,
         handleSubmit,
-        setError,
         formState: { errors }
     } = useForm()
 

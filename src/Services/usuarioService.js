@@ -6,6 +6,9 @@ const BASE_URL = `${API_BASE_URL}/api/usuario`
 export const listarUsuarios = (pagina = 1, tamano = 10) =>
   axiosInstance.get(BASE_URL, { params: { pagina, tamano } })
 
+export const buscarUsuarios = (nombre, email) =>
+  axiosInstance.get(`${BASE_URL}/buscar`, { params: { nombre, email } })
+
 export const getUsuario = (id) =>
   axiosInstance.get(`${BASE_URL}/${id}`)
 

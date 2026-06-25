@@ -17,7 +17,7 @@ const DetalleMedico = () => {
     useEffect(() => {
         dispatch(fetchDetalleMedico(id))
         return () => dispatch(limpiarDetalleMedico())
-    }, [id])
+    }, [dispatch, id])
 
     const handleEliminar = async () => {
         if (!window.confirm('¿Está seguro que desea deshabilitar este médico?')) return

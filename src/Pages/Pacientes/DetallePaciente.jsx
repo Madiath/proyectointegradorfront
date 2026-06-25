@@ -19,7 +19,7 @@ const DetallePaciente = () => {
     useEffect(() => {
         dispatch(fetchDetallePaciente(id))
         return () => dispatch(limpiarDetalle())
-    }, [id])
+    }, [dispatch, id])
 
 
     useEffect(() => {

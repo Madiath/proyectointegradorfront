@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 
 const FormularioInsumo = ({ onCerrar }) => {
     const dispatch = useDispatch()
-    const { pagina, tamano } = useSelector(state => state.insumos)
+    const { tamano } = useSelector(state => state.insumos)
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm()
 
     const onSubmit = async (data) => {

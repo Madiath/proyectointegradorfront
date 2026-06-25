@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { User, Lock } from 'lucide-react'
-import { loginUsuario, primerPasoMfa } from '../../Services/usuarioService'
+import { loginUsuario } from '../../Services/usuarioService'
 import { useNavigate } from 'react-router'
 import { toast } from 'react-toastify'
 import LoadingScreen from '../../Shared/Components/LoadingScreen'

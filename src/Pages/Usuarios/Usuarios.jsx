@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useLocation } from 'react-router'
-import { fetchUsuarios, setPagina } from '../../../features/usuariosSlice'
-import { fetchMedicos, setPaginaMedicos, deshabilitarMedico } from '../../../features/medicosSlice'
+import { fetchUsuarios, fetchBuscarUsuarios, setPagina } from '../../../features/usuariosSlice'
+import { fetchMedicos, fetchBuscarMedicos, setPaginaMedicos, deshabilitarMedico } from '../../../features/medicosSlice'
 import FormularioUsuario from './FormularioUsuario'
 import FormularioMedico from './Medicos/FormularioMedico'
 import { toast } from 'react-toastify'
@@ -16,17 +16,25 @@ const Usuarios = () => {
     const [mostrarFormularioMedico, setMostrarFormularioMedico] = useState(false)
     const [medicoADeshabilitar, setMedicoADeshabilitar] = useState(null)
     const [deshabilitando, setDeshabilitando] = useState(false)
+    const [busquedaMedicos, setBusquedaMedicos] = useState({ nombre: '', email: '', especialidad: '' })
+    const [busquedaAdmins, setBusquedaAdmins] = useState({ nombre: '', email: '' })
+    const [buscandoMedicos, setBuscandoMedicos] = useState(false)
+    const [buscandoAdmins, setBuscandoAdmins] = useState(false)
 
     const { lista: listaAdmins, hayMas: hayMasAdmins, cargando: cargandoAdmins, error: errorAdmins, pagina: paginaAdmins } = useSelector(state => state.usuarios)
     const { lista: listaMedicos, hayMas: hayMasMedicos, cargando: cargandoMedicos, error: errorMedicos, pagina: paginaMedicos } = useSelector(state => state.medicos)
 
     useEffect(() => {
-        dispatch(fetchUsuarios({ pagina: paginaAdmins, tamano: 10 }))
-    }, [paginaAdmins])
+        if (!buscandoAdmins) {
+            dispatch(fetchUsuarios({ pagina: paginaAdmins, tamano: 10 }))
+        }
+    }, [dispatch, paginaAdmins, buscandoAdmins])
 
     useEffect(() => {
-        dispatch(fetchMedicos({ pagina: paginaMedicos, tamano: 10 }))
-    }, [paginaMedicos])
+        if (!buscandoMedicos) {
+            dispatch(fetchMedicos({ pagina: paginaMedicos, tamano: 10 }))
+        }
+    }, [dispatch, paginaMedicos, buscandoMedicos])
 
     const handleAdminCreado = () => {
         setMostrarFormularioAdmin(false)
@@ -36,6 +44,42 @@ const Usuarios = () => {
     const handleMedicoCreado = () => {
         setMostrarFormularioMedico(false)
         dispatch(fetchMedicos({ pagina: paginaMedicos, tamano: 10 }))
+    }
+
+    const handleBuscarMedicos = (e) => {
+        e.preventDefault()
+        const { nombre, email, especialidad } = busquedaMedicos
+        if (!nombre && !email && !especialidad) {
+            handleLimpiarMedicos()
+            return
+        }
+        setBuscandoMedicos(true)
+        dispatch(fetchBuscarMedicos(busquedaMedicos))
+    }
+
+    const handleLimpiarMedicos = () => {
+        setBusquedaMedicos({ nombre: '', email: '', especialidad: '' })
+        setBuscandoMedicos(false)
+        dispatch(setPaginaMedicos(1))
+        dispatch(fetchMedicos({ pagina: 1, tamano: 10 }))
+    }
+
+    const handleBuscarAdmins = (e) => {
+        e.preventDefault()
+        const { nombre, email } = busquedaAdmins
+        if (!nombre && !email) {
+            handleLimpiarAdmins()
+            return
+        }
+        setBuscandoAdmins(true)
+        dispatch(fetchBuscarUsuarios(busquedaAdmins))
+    }
+
+    const handleLimpiarAdmins = () => {
+        setBusquedaAdmins({ nombre: '', email: '' })
+        setBuscandoAdmins(false)
+        dispatch(setPagina(1))
+        dispatch(fetchUsuarios({ pagina: 1, tamano: 10 }))
     }
 
     const handleConfirmarDeshabilitar = async () => {
@@ -127,6 +171,46 @@ const Usuarios = () => {
                         </button>
                     </div>
 
+                    <form className="row g-2 mb-3" onSubmit={handleBuscarMedicos}>
+                        <div className="col-12 col-md">
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Nombre"
+                                value={busquedaMedicos.nombre}
+                                onChange={e => setBusquedaMedicos({ ...busquedaMedicos, nombre: e.target.value })}
+                            />
+                        </div>
+                        <div className="col-12 col-md">
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Email"
+                                value={busquedaMedicos.email}
+                                onChange={e => setBusquedaMedicos({ ...busquedaMedicos, email: e.target.value })}
+                            />
+                        </div>
+                        <div className="col-12 col-md">
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Especialidad"
+                                value={busquedaMedicos.especialidad}
+                                onChange={e => setBusquedaMedicos({ ...busquedaMedicos, especialidad: e.target.value })}
+                            />
+                        </div>
+                        <div className="col-6 col-md-auto">
+                            <button type="submit" className="btn btn-primary w-100">Buscar</button>
+                        </div>
+                        {buscandoMedicos && (
+                            <div className="col-6 col-md-auto">
+                                <button type="button" className="btn btn-secondary w-100" onClick={handleLimpiarMedicos}>
+                                    Limpiar
+                                </button>
+                            </div>
+                        )}
+                    </form>
+
                     {errorMedicos && <div className="alert alert-danger">{errorMedicos}</div>}
 
                     {cargandoMedicos ? (
@@ -202,7 +286,7 @@ const Usuarios = () => {
                             </div>
 
                             {/* Paginación */}
-                            <div className="d-flex justify-content-between align-items-center mt-2">
+                            {!buscandoMedicos && <div className="d-flex justify-content-between align-items-center mt-2">
                                 <span className="text-muted small">Página {paginaMedicos}</span>
                                 <div>
                                     <button
@@ -220,7 +304,7 @@ const Usuarios = () => {
                                         Siguiente
                                     </button>
                                 </div>
-                            </div>
+                            </div>}
                         </>
                     )}
                 </div>
@@ -235,6 +319,37 @@ const Usuarios = () => {
                             + Agregar
                         </button>
                     </div>
+
+                    <form className="row g-2 mb-3" onSubmit={handleBuscarAdmins}>
+                        <div className="col-12 col-sm-auto">
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Nombre"
+                                value={busquedaAdmins.nombre}
+                                onChange={e => setBusquedaAdmins({ ...busquedaAdmins, nombre: e.target.value })}
+                            />
+                        </div>
+                        <div className="col-12 col-sm-auto">
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Email"
+                                value={busquedaAdmins.email}
+                                onChange={e => setBusquedaAdmins({ ...busquedaAdmins, email: e.target.value })}
+                            />
+                        </div>
+                        <div className="col-6 col-sm-auto">
+                            <button type="submit" className="btn btn-primary w-100">Buscar</button>
+                        </div>
+                        {buscandoAdmins && (
+                            <div className="col-6 col-sm-auto">
+                                <button type="button" className="btn btn-secondary w-100" onClick={handleLimpiarAdmins}>
+                                    Limpiar
+                                </button>
+                            </div>
+                        )}
+                    </form>
 
                     {errorAdmins && <div className="alert alert-danger">{errorAdmins}</div>}
 
@@ -288,7 +403,7 @@ const Usuarios = () => {
                             </div>
 
                             {/* Paginación */}
-                            <div className="d-flex justify-content-between align-items-center mt-2">
+                            {!buscandoAdmins && <div className="d-flex justify-content-between align-items-center mt-2">
                                 <span className="text-muted small">Página {paginaAdmins}</span>
                                 <div>
                                     <button
@@ -306,7 +421,7 @@ const Usuarios = () => {
                                         Siguiente
                                     </button>
                                 </div>
-                            </div>
+                            </div>}
                         </>
                     )}
                 </div>
