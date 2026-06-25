@@ -27,13 +27,31 @@ const NotificationBell = () => {
   const contenedorRef = useRef(null)
 
   useEffect(() => {
-    dispatch(fetchNotificaciones())
-    dispatch(fetchNotificacionesNoLeidas())
+    let pollingId = null
+    let desmontado = false
 
+    const refrescarNotificaciones = () => {
+      dispatch(fetchNotificaciones())
+      dispatch(fetchNotificacionesNoLeidas())
+    }
+
+    const iniciarPolling = () => {
+      if (pollingId) return
+      pollingId = window.setInterval(refrescarNotificaciones, 30000)
+    }
+
+    const detenerPolling = () => {
+      if (!pollingId) return
+      window.clearInterval(pollingId)
+      pollingId = null
+    }
+
+    refrescarNotificaciones()
     const conexion = crearConexionNotificaciones()
 
     conexion.on('NotificacionRecibida', ({ notificacion, noLeidas }) => {
       dispatch(recibirNotificacion({ notificacion, noLeidas }))
+      dispatch(fetchNotificaciones())
     })
 
     conexion.on('NotificacionesNoLeidasActualizadas', ({ noLeidas }) => {
@@ -42,16 +60,28 @@ const NotificationBell = () => {
     })
 
     conexion.onreconnected(() => {
-      dispatch(fetchNotificaciones())
-      dispatch(fetchNotificacionesNoLeidas())
+      detenerPolling()
+      refrescarNotificaciones()
+    })
+
+    conexion.onreconnecting(() => {
+      iniciarPolling()
+    })
+
+    conexion.onclose(() => {
+      if (!desmontado) {
+        iniciarPolling()
+      }
     })
 
     conexion.start().catch(() => {
-      dispatch(fetchNotificaciones())
-      dispatch(fetchNotificacionesNoLeidas())
+      refrescarNotificaciones()
+      iniciarPolling()
     })
 
     return () => {
+      desmontado = true
+      detenerPolling()
       conexion.stop()
     }
   }, [dispatch])

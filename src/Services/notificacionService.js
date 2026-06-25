@@ -20,6 +20,7 @@ export const crearConexionNotificaciones = () =>
   new signalR.HubConnectionBuilder()
     .withUrl(HUB_URL, {
       accessTokenFactory: () => localStorage.getItem('token') || '',
+      withCredentials: true,
     })
     .withAutomaticReconnect()
     .build()
