@@ -74,15 +74,22 @@ const NotificationBell = () => {
       }
     })
 
-    conexion.start().catch(() => {
-      refrescarNotificaciones()
-      iniciarPolling()
-    })
+    let conectado = false
+    conexion.start()
+      .then(() => { conectado = true })
+      .catch(() => {
+        if (!desmontado) {
+          refrescarNotificaciones()
+          iniciarPolling()
+        }
+      })
 
     return () => {
       desmontado = true
       detenerPolling()
-      conexion.stop()
+      if (conectado) {
+        conexion.stop()
+      }
     }
   }, [dispatch])
 
