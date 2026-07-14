@@ -15,6 +15,7 @@ import Insumos from './Pages/Insumos/Insumos'
 import Pacientes from './Pages/Pacientes/Pacientes'
 import DetallePaciente from './Pages/Pacientes/DetallePaciente'
 import ExamenesPaciente from './Pages/Pacientes/ExamenesPaciente'
+import RecipesPaciente from './Pages/Pacientes/RecipesPaciente'
 import Usuarios from './Pages/Usuarios/Usuarios'
 import DetalleUsuario from './Pages/Usuarios/DetalleUsuario'
 import DetalleMedico from './Pages/Usuarios/Medicos/DetalleMedico'
@@ -79,6 +80,7 @@ function App() {
               <Route path="/pacientes" element={<Pacientes />} />
               <Route path="/pacientes/:id" element={<DetallePaciente />} />
               <Route path="/pacientes/:id/examenes" element={<ExamenesPaciente />} />
+              <Route path="/pacientes/:id/recipes" element={<RecipesPaciente />} />
 
 
               <Route path="/agenda" element={<Agenda />} />

@@ -219,6 +219,12 @@ const DetallePaciente = () => {
         >
             Exámenes
         </button>
+        <button
+            className="btn btn-success"
+            onClick={() => navigate(`/pacientes/${id}/recipes`)}
+        >
+            Récipes
+        </button>
     </div>
 ) : (
     <div className="d-flex gap-2 flex-wrap">
@@ -233,6 +239,12 @@ const DetallePaciente = () => {
             onClick={() => navigate(`/pacientes/${id}/examenes`)}
         >
             Exámenes
+        </button>
+        <button
+            className="btn btn-success"
+            onClick={() => navigate(`/pacientes/${id}/recipes`)}
+        >
+            Récipes
         </button>
     </div>
 )}
