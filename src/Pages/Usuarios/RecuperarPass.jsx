@@ -114,6 +114,7 @@ const RecuperarPass = () => {
 
     const mensaje = error.message
 
+
     if (mensaje === "minMax_mail") {
       toast.error("El email debe tener entre 2 y 30 caracteres")
       return
@@ -167,7 +168,7 @@ const RecuperarPass = () => {
                 placeholder="Ingresá tu email"
                 value={form.email}
                 onChange={handleChange}
-                maxLength={30}
+                maxLength={320}
               />
             </div>
 

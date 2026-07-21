@@ -131,7 +131,7 @@ export const recuperarContraseña = async (email) => {
     throw new Error(error.mensaje)
   }
 
-  return response.json()
+  return true
 }
 
 export const restablecerPassword = async ({ token, nuevaPassword }) => {

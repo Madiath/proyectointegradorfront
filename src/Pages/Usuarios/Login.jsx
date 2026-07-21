@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { User, Lock } from 'lucide-react'
-import { loginUsuario } from '../../Services/usuarioService'
+import { loginUsuario, primerPasoMfa } from '../../Services/usuarioService'
 import { useNavigate } from 'react-router'
 import { toast } from 'react-toastify'
 import LoadingScreen from '../../Shared/Components/LoadingScreen'
@@ -101,14 +101,14 @@ const Login = () => {
       localStorage.setItem("usuario", data.email)
       localStorage.setItem("rol", data.rol)
       //Comentar el token una vez integrado el MFA
-      localStorage.setItem("token", data.token)
+      //localStorage.setItem("token", data.token)
 
-      //await  primerPasoMfa({ email: data.email })
+      await  primerPasoMfa({ email: data.email })
 
       //MFA DESHABILITADO PARA TESTEO
-      //navigate("/authsecure")      
+      navigate("/authsecure")      
 
-      navigate("/pacientes")
+      //navigate("/pacientes")
 
     } catch (error) {
 
@@ -186,7 +186,7 @@ const Login = () => {
                   value={form.email}
                   onChange={handleChange}
                   onBlur={validarEmail}
-                  maxLength={30}
+                  maxLength={320}
                 />
               </div>
 
