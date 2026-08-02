@@ -65,7 +65,7 @@ const Pacientes = () => {
                 </button>
             </div>
 
-            {/* Buscador — apila en mobile, inline en desktop */}
+            {/* Buscador */}
             <form className="row g-2 mb-3" onSubmit={handleBuscar}>
                 <div className="col-12 col-sm-auto">
                     <input

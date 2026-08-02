@@ -16,7 +16,7 @@ import { Line } from 'react-chartjs-2'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler)
 
-const INTERVALO_MS = 30_000 // refresco automático cada 30 segundos
+const INTERVALO_MS = 30_000 
 
 const Dashboard = () => {
     const dispatch = useDispatch()

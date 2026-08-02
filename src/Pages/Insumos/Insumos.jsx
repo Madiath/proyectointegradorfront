@@ -18,9 +18,9 @@ const Insumos = () => {
 
     const [mostrarFormInsumo, setMostrarFormInsumo] = useState(false)
     const [insumoEditar, setInsumoEditar] = useState(null)
-    const [insumoADeshabilitar, setInsumoADeshabilitar] = useState(null) // insumo a confirmar o null
+    const [insumoADeshabilitar, setInsumoADeshabilitar] = useState(null) 
     const [deshabilitando, setDeshabilitando] = useState(false)
-    const [modalMovimiento, setModalMovimiento] = useState(null) // null | 'ENTRADA' | 'SALIDA'
+    const [modalMovimiento, setModalMovimiento] = useState(null) 
     const [busqueda, setBusqueda] = useState('')
     const [filtroEstado, setFiltroEstado] = useState('')
 

@@ -5,7 +5,6 @@ import { toast } from 'react-toastify'
 import { restablecerPassword } from '../../Services/usuarioService'
 import LoadingScreen from '../../Shared/Components/LoadingScreen'
 
-// 🔁 mismo estilo que login / recuperar
 const s = {
   page: {
     minHeight: '100vh',

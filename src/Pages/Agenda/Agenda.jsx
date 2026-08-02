@@ -19,7 +19,6 @@ const DIAS = [
     { num: 7, label: 'Domingo' },
 ]
 
-// Franja horaria visible: 07:00 – 21:00 (cada 1 hora)
 const HORAS = Array.from({ length: 15 }, (_, i) => i + 7)
 
 const COLORES = [
@@ -32,20 +31,17 @@ const horaToMin = (str) => {
     return h * 60 + (m || 0)
 }
 
-// Obtiene el lunes de la semana que contiene la fecha dada
 const getMonday = (date) => {
     const d = new Date(date)
-    const day = d.getDay() // 0=Dom, 1=Lun...
+    const day = d.getDay() 
     const diff = d.getDate() - day + (day === 0 ? -6 : 1)
     d.setDate(diff)
     d.setHours(0, 0, 0, 0)
     return d
 }
 
-// Formatea fecha a yyyy-MM-dd para la API
 const toDateStr = (date) => date.toISOString().split('T')[0]
 
-// Construye el DateTime de la celda: weekStart + (diaNum-1) días + hora
 const buildCellDate = (weekStart, diaNum, hora) => {
     const d = new Date(weekStart)
     d.setDate(d.getDate() + (diaNum - 1))
@@ -53,7 +49,6 @@ const buildCellDate = (weekStart, diaNum, hora) => {
     return d
 }
 
-// Formato corto de semana para el título
 const formatSemana = (weekStart) => {
     const fin = new Date(weekStart)
     fin.setDate(fin.getDate() + 6)
@@ -78,26 +73,20 @@ const Agenda = () => {
 
 
 
-    // Carga horarios una sola vez
     useEffect(() => {
         dispatch(fetchHorariosAgenda())
     }, [dispatch])
 
-    // Carga turnos al cambiar la semana
     useEffect(() => {
         dispatch(fetchTurnos(toDateStr(weekStart)))
     }, [dispatch, weekStart])
-
-    // Filtrado de médicos (si se implementa el select)
     const medicosFiltrados = medicoSeleccionado
         ? medicos.filter(m => m.id === Number(medicoSeleccionado))
         : medicos
-    // Mapa de color por médico (estable por índice)
     const colorPorMedico = Object.fromEntries(
         medicosFiltrados.map((m, i) => [m.id, COLORES[i % COLORES.length]])
     )
 
-    // Médicos que atienden en un slot concreto (diaNum, horaNum)
     const medicosEnSlot = (diaNum, horaNum) => {
         const slotDesde = horaNum * 60
         const slotHasta = slotDesde + 60
@@ -129,15 +118,11 @@ const Agenda = () => {
     }
 
 
-    // Turno de un médico en un slot concreto.
-    // Parseamos el string directamente para evitar conversiones de zona horaria del browser.
-    // Formato esperado del backend: "yyyy-MM-ddTHH:mm:ss"
     const turnoEnSlot = (diaNum, horaNum, medicoId) => {
         return turnos.find(t => {
             const [fechaParte, horaParte] = t.fechaHora.split('T')
             const tHora = parseInt(horaParte.split(':')[0], 10)
             const [y, m, d] = fechaParte.split('-').map(Number)
-            // new Date(y, m-1, d) usa hora local → .getDay() es correcto sin desfase
             const diaSemana = new Date(y, m - 1, d).getDay()
             const tDia = diaSemana === 0 ? 7 : diaSemana
             return tDia === diaNum && tHora === horaNum && t.medicoId === medicoId

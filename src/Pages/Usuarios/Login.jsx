@@ -100,15 +100,11 @@ const Login = () => {
 
       localStorage.setItem("usuario", data.email)
       localStorage.setItem("rol", data.rol)
-      //Comentar el token una vez integrado el MFA
-      //localStorage.setItem("token", data.token)
 
-      await  primerPasoMfa({ email: data.email })
+      await primerPasoMfa({ email: data.email })
 
-      //MFA DESHABILITADO PARA TESTEO
-      navigate("/authsecure")      
+      navigate("/authsecure")
 
-      //navigate("/pacientes")
 
     } catch (error) {
 

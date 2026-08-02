@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Link } from 'react-router'
 import { crearTurno, editarTurno } from '../../../features/agendaSlice'
 import { fetchPacientes } from '../../../features/pacientesSlice'
 import { toast } from 'react-toastify'
@@ -125,7 +126,12 @@ const FormularioTurno = ({ medico, fechaHora, turnoExistente, onClose }) => {
                                 {esMedico ? (
                                     turnoExistente?.pacienteNombre ? (
                                         <div className="form-control bg-light">
-                                            {turnoExistente.pacienteNombre}
+                                            <Link
+                                                to={`/pacientes/${turnoExistente.pacienteId}`}
+                                                className="link-primary fw-semibold"
+                                            >
+                                                {turnoExistente.pacienteNombre}
+                                            </Link>
                                         </div>
                                     ) : (
                                         <div className="alert alert-secondary mb-0">

@@ -5,7 +5,6 @@ import { toast } from 'react-toastify'
 import { recuperarContraseña } from '../../Services/usuarioService'
 import LoadingScreen from '../../Shared/Components/LoadingScreen'
 
-// 👇 reutilizamos el mismo estilo del login
 const s = {
   page: {
     minHeight: '100vh',
@@ -120,7 +119,7 @@ const RecuperarPass = () => {
       return
     }
     if(mensaje === "null_usuario"){
-      setEnviado(true) // Para no revelar si el email existe o no, mostramos el mensaje de éxito igual
+      setEnviado(true) 
       return
     }
 
